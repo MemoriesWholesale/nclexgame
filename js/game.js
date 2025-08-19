@@ -303,40 +303,42 @@ import { Enemy, EnemyManager } from './enemy.js';
             
             // Get weapon spawn position from player
             const weaponPos = player.getWeaponSpawnPos();
+
+            const weaponYOffset = player.crouching ? 20 : 0;
             
             switch(currentWeapon) {
                 case 2: 
                     projectiles.push({ 
                         x: weaponPos.x, 
-                        y: weaponPos.y - 3, 
+                        y: weaponPos.y - 3 + weaponYOffset, 
                         vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 
                     }); 
                     break;
                 case 3: 
                     projectiles.push({ 
                         centerX: weaponPos.centerX, 
-                        centerY: weaponPos.centerY, 
+                        centerY: weaponPos.centerY + weaponYOffset, 
                         radius: 120, angle: 0, rotSpeed: 0.2, type: 3 
                     }); 
                     break;
                 case 4: 
                     projectiles.push({ 
                         x: weaponPos.x, 
-                        y: weaponPos.y - 5, 
+                        y: weaponPos.y - 5 + weaponYOffset, 
                         vx: player.facing * 6, vy: -10, width: 30, height: 10, wavePhase: 0, type: 4 
                     }); 
                     break;
                 case 5: 
                     projectiles.push({ 
                         x: player.x + (player.facing > 0 ? player.width : -40), 
-                        y: weaponPos.y - 12, 
+                        y: weaponPos.y - 12 + weaponYOffset, 
                         vx: player.facing * 9, vy: 0, width: 40, height: 4, gap: 4, type: 5 
                     }); 
                     break;
                 case 6: 
                     projectiles.push({ 
                         x: weaponPos.x, 
-                        y: weaponPos.y - 15, 
+                        y: weaponPos.y - 15 + weaponYOffset, 
                         vx: player.facing * 5, vy: 0, size: 30, angle: 0, rotSpeed: 0.15 * player.facing, type: 6 
                     }); 
                     break;
@@ -356,12 +358,16 @@ import { Enemy, EnemyManager } from './enemy.js';
                         dropsLeft: 5, type: 8 
                     }); 
                     break;
-                default: 
+                case 1:
                     projectiles.push({ 
                         x: player.x + (player.facing > 0 ? player.width : -20), 
-                        y: player.y + player.height / 2 - 5 + weaponYOffset, 
-                        vx: player.facing * 8, vy: -8, width: 20, height: 10, type: 1 
-                    }); 
+                        y: player.y + player.height / 2 - 5 + weaponYOffset,
+                        vx: player.facing * 8, 
+                        vy: -8, 
+                        width: 20, 
+                        height: 10, 
+                        type: 1
+                    });
                     break;
             }
         }
