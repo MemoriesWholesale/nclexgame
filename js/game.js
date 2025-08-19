@@ -1,4 +1,5 @@
 import { Player } from './player.js';
+import { Quiz } from './quiz.js';
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -46,6 +47,9 @@ import { Player } from './player.js';
         
         // Create player instance
         const player = new Player(canvas);
+        
+        // Create quiz instance
+        const quiz = new Quiz();
 
         const armorData = [
             { name: 'Default', color: '#FF0000' },
@@ -80,10 +84,6 @@ import { Player } from './player.js';
         const pits = [];
         const chests = [];
         const powerups = [];
-
-        let questionBank = [];
-        let availableQuestions = [];
-        let currentQuestion = null;
         
         let currentWeapon = 1;
         const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
@@ -164,7 +164,8 @@ import { Player } from './player.js';
                     gameState = 'menu';
                     selectedLevel = -1;
                 }
-            } else if (gameState === 'quiz' && currentQuestion) {
+            } else if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
+                const currentQuestion = quiz.getCurrentQuestion();
                 if (currentQuestion.answered) {
                     const targetPlatform = platforms.find(p => p.id === currentQuestion.interactionId);
                     if (targetPlatform && currentQuestion.isCorrect) {
@@ -189,18 +190,13 @@ import { Player } from './player.js';
                     const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.interactionId);
                     if(interactingNpc && !currentQuestion.isCorrect) interactingNpc.isLeaving = true;
                     
-                    currentQuestion = null;
+                    quiz.clearCurrentQuestion();
                     gameState = 'playing';
                 } else {
-                    currentQuestion.shuffledAnswers.forEach((answer) => {
-                        if (mouseX >= answer.x && mouseX <= answer.x + answer.width &&
-                            mouseY >= answer.y && mouseY <= answer.y + answer.height) {
-                            
-                            currentQuestion.answered = true;
-                            currentQuestion.playerAnswer = answer.text;
-                            currentQuestion.isCorrect = (answer.text === currentQuestion.correctAnswer);
-                        }
-                    });
+                    const clickedAnswer = quiz.checkAnswerClick(mouseX, mouseY);
+                    if (clickedAnswer) {
+                        quiz.selectAnswer(clickedAnswer);
+                    }
                 }
             }
         });
@@ -216,17 +212,12 @@ import { Player } from './player.js';
             gate = { worldX: testLevelEndX, width: 60, height: 150, hp: 5, maxHp: 5 };
             boss = null;
             armorPickup = null;
-            currentQuestion = null;
+            quiz.clearCurrentQuestion();
             canFire = true;
 
             if (selectedLevel !== -1) {
-                try {
-                    const response = await fetch(levelData[selectedLevel].file);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    questionBank = await response.json();
-                    availableQuestions = [...questionBank];
-                } catch (error) {
-                    console.error("Could not load question file:", error);
+                const success = await quiz.loadQuestions(levelData[selectedLevel].file);
+                if (!success) {
                     alert("Error: Could not load questions for this level. Please ensure the .json file exists and you are using a live server.");
                     gameState = 'menu';
                     return;
@@ -265,33 +256,8 @@ import { Player } from './player.js';
             }
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
         function askQuestion(interactionId) {
-            if (availableQuestions.length === 0) {
-                availableQuestions = [...questionBank];
-            }
-
-            const qIndex = Math.floor(Math.random() * availableQuestions.length);
-            const questionData = availableQuestions.splice(qIndex, 1)[0];
-
-            const correctAnswer = questionData.answers[0];
-            let shuffledAnswers = [...questionData.answers];
-            shuffleArray(shuffledAnswers);
-
-            currentQuestion = {
-                q: questionData.q,
-                correctAnswer: correctAnswer,
-                shuffledAnswers: shuffledAnswers.map(ans => ({ text: ans })),
-                answered: false, isCorrect: false, playerAnswer: null,
-                interactionId: interactionId
-            };
-            
+            quiz.askQuestion(interactionId);
             gameState = 'quiz';
         }
 
@@ -916,63 +882,15 @@ import { Player } from './player.js';
                     ctx.fillText('Level Select', canvas.width / 2, selectY + buttonHeight / 2 + 8);
                 }
 
-                if (gameState === 'quiz' && currentQuestion) {
-                    drawQuiz();
+                if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
+                    quiz.drawQuiz(ctx, canvas);
                 }
             }
         }
 
-        function drawQuiz() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const boxWidth = canvas.width * 0.8; const boxHeight = canvas.height * 0.7;
-            const boxX = (canvas.width - boxWidth) / 2; const boxY = (canvas.height - boxHeight) / 2;
-            ctx.fillStyle = '#222'; ctx.strokeStyle = '#888'; ctx.lineWidth = 2;
-            ctx.fillRect(boxX, boxY, boxWidth, boxHeight); ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
-
-            ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.textAlign = 'center';
-            const questionText = currentQuestion.q; const textX = canvas.width / 2;
-            let textY = boxY + 40; const maxWidth = boxWidth - 40;
-            const words = questionText.split(' '); let line = '';
-
-            for(let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                    ctx.fillText(line, textX, textY);
-                    line = words[n] + ' '; textY += 25;
-                } else { line = testLine; }
-            }
-            ctx.fillText(line, textX, textY);
-
-            textY += 60;
-            const answerLetters = ['A', 'B', 'C', 'D'];
-            const answerBoxWidth = boxWidth - 80; const answerBoxHeight = 50;
-            
-            currentQuestion.shuffledAnswers.forEach((answer, index) => {
-                const ansX = boxX + 40; const ansY = textY + (index * (answerBoxHeight + 15));
-                answer.x = ansX; answer.y = ansY; answer.width = answerBoxWidth; answer.height = answerBoxHeight;
-                ctx.strokeStyle = '#888'; ctx.fillStyle = '#333';
-                if (currentQuestion.answered) {
-                    if (answer.text === currentQuestion.correctAnswer) { ctx.fillStyle = '#006400'; } 
-                    else if (answer.text === currentQuestion.playerAnswer) { ctx.fillStyle = '#8B0000'; }
-                }
-                ctx.fillRect(ansX, ansY, answerBoxWidth, answerBoxHeight); ctx.strokeRect(ansX, ansY, answerBoxWidth, answerBoxHeight);
-                ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.textAlign = 'left';
-                ctx.fillText(`${answerLetters[index]}. ${answer.text}`, ansX + 15, ansY + 30);
-            });
-            
-            if(currentQuestion.answered) {
-                ctx.fillStyle = currentQuestion.isCorrect ? '#90EE90' : '#F08080'; ctx.font = 'bold 24px Arial'; ctx.textAlign = 'center';
-                const resultText = currentQuestion.isCorrect ? 'Correct!' : 'Incorrect';
-                ctx.fillText(resultText, canvas.width / 2, boxY + boxHeight - 60);
-                ctx.fillStyle = 'white'; ctx.font = '18px Arial';
-                ctx.fillText("Click anywhere to continue...", canvas.width / 2, boxY + boxHeight - 30);
-            }
-        }
-        
         function gameLoop() {
-            update(); 
-            draw(); 
+            update();
+            draw();
             requestAnimationFrame(gameLoop);
         }
         
