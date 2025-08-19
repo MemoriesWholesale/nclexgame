@@ -1,4 +1,6 @@
 import { Player } from './player.js';
+import { Quiz } from './quiz.js';
+import { Enemy, EnemyManager } from './enemy.js';
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -46,6 +48,12 @@ import { Player } from './player.js';
         
         // Create player instance
         const player = new Player(canvas);
+        
+        // Create quiz instance
+        const quiz = new Quiz();
+        
+        // Create enemy manager
+        const enemyManager = new EnemyManager();
 
         const armorData = [
             { name: 'Default', color: '#FF0000' },
@@ -68,10 +76,6 @@ import { Player } from './player.js';
         let screenLocked = false;
         let armorPickup = null;
         
-        const enemies = [];
-        let enemySpawnTimer = 0;
-        let spawnFromRightNext = true;
-        
         const projectiles = [];
         const platforms = [];
         const npcs = [];
@@ -80,10 +84,6 @@ import { Player } from './player.js';
         const pits = [];
         const chests = [];
         const powerups = [];
-
-        let questionBank = [];
-        let availableQuestions = [];
-        let currentQuestion = null;
         
         let currentWeapon = 1;
         const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
@@ -164,7 +164,8 @@ import { Player } from './player.js';
                     gameState = 'menu';
                     selectedLevel = -1;
                 }
-            } else if (gameState === 'quiz' && currentQuestion) {
+            } else if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
+                const currentQuestion = quiz.getCurrentQuestion();
                 if (currentQuestion.answered) {
                     const targetPlatform = platforms.find(p => p.id === currentQuestion.interactionId);
                     if (targetPlatform && currentQuestion.isCorrect) {
@@ -189,18 +190,13 @@ import { Player } from './player.js';
                     const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.interactionId);
                     if(interactingNpc && !currentQuestion.isCorrect) interactingNpc.isLeaving = true;
                     
-                    currentQuestion = null;
+                    quiz.clearCurrentQuestion();
                     gameState = 'playing';
                 } else {
-                    currentQuestion.shuffledAnswers.forEach((answer) => {
-                        if (mouseX >= answer.x && mouseX <= answer.x + answer.width &&
-                            mouseY >= answer.y && mouseY <= answer.y + answer.height) {
-                            
-                            currentQuestion.answered = true;
-                            currentQuestion.playerAnswer = answer.text;
-                            currentQuestion.isCorrect = (answer.text === currentQuestion.correctAnswer);
-                        }
-                    });
+                    const clickedAnswer = quiz.checkAnswerClick(mouseX, mouseY);
+                    if (clickedAnswer) {
+                        quiz.selectAnswer(clickedAnswer);
+                    }
                 }
             }
         });
@@ -210,23 +206,19 @@ import { Player } from './player.js';
             const groundY = canvas.height - 100;
             player.reset(groundY);
             worldX = 0;
-            enemies.length = 0; projectiles.length = 0; pickups.length = 0; platforms.length = 0; npcs.length = 0; pits.length = 0; chests.length = 0; powerups.length = 0;
-            currentWeapon = 1; enemySpawnTimer = 0; pickupSpawnTimer = 0;
+            projectiles.length = 0; pickups.length = 0; platforms.length = 0; npcs.length = 0; pits.length = 0; chests.length = 0; powerups.length = 0;
+            enemyManager.clear();
+            currentWeapon = 1;
             screenLocked = false;
             gate = { worldX: testLevelEndX, width: 60, height: 150, hp: 5, maxHp: 5 };
             boss = null;
             armorPickup = null;
-            currentQuestion = null;
+            quiz.clearCurrentQuestion();
             canFire = true;
 
             if (selectedLevel !== -1) {
-                try {
-                    const response = await fetch(levelData[selectedLevel].file);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    questionBank = await response.json();
-                    availableQuestions = [...questionBank];
-                } catch (error) {
-                    console.error("Could not load question file:", error);
+                const success = await quiz.loadQuestions(levelData[selectedLevel].file);
+                if (!success) {
                     alert("Error: Could not load questions for this level. Please ensure the .json file exists and you are using a live server.");
                     gameState = 'menu';
                     return;
@@ -265,33 +257,8 @@ import { Player } from './player.js';
             }
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
         function askQuestion(interactionId) {
-            if (availableQuestions.length === 0) {
-                availableQuestions = [...questionBank];
-            }
-
-            const qIndex = Math.floor(Math.random() * availableQuestions.length);
-            const questionData = availableQuestions.splice(qIndex, 1)[0];
-
-            const correctAnswer = questionData.answers[0];
-            let shuffledAnswers = [...questionData.answers];
-            shuffleArray(shuffledAnswers);
-
-            currentQuestion = {
-                q: questionData.q,
-                correctAnswer: correctAnswer,
-                shuffledAnswers: shuffledAnswers.map(ans => ({ text: ans })),
-                answered: false, isCorrect: false, playerAnswer: null,
-                interactionId: interactionId
-            };
-            
+            quiz.askQuestion(interactionId);
             gameState = 'quiz';
         }
 
@@ -315,20 +282,6 @@ import { Player } from './player.js';
             }
         }
         
-        function spawnEnemy() {
-            const playerWorldX = player.x - worldX;
-            if (gate === null || boss || playerWorldX > testLevelEndX - canvas.width) return;
-            
-            enemies.push({
-                worldX: spawnFromRightNext ? -worldX + canvas.width + 50 : -worldX - 50,
-                y: canvas.height - 140,
-                vy: 0,
-                width: 40, height: 40,
-                vx: 0, hp: 1,
-                falling: false
-            });
-        }
-
         function spawnPickup() {
             const playerWorldX = player.x - worldX;
             if (gate === null || boss || playerWorldX > testLevelEndX - canvas.width) return;
@@ -419,13 +372,20 @@ import { Player } from './player.js';
             groundY = canvas.height - 100;
             
             if (fireTimer > 0) fireTimer--;
-            enemySpawnTimer++;
             pickupSpawnTimer++;
             
-            if (enemySpawnTimer > 300) { 
-                spawnEnemy(); 
-                spawnFromRightNext = !spawnFromRightNext;
-                enemySpawnTimer = 0; 
+            // Update enemies using enemy manager
+            const enemyResult = enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
+            if (enemyResult.playerHit) {
+                setTimeout(() => {
+                    if (player.lives > 0) {
+                        player.respawn(groundY);
+                        worldX = 0;
+                        enemyManager.clear();
+                    } else {
+                        gameState = 'menu';
+                    }
+                }, 2000);
             }
             if (pickupSpawnTimer > 450) { 
                 spawnPickup(); 
@@ -445,7 +405,7 @@ import { Player } from './player.js';
                     if (player.lives > 0) {
                         player.respawn(groundY);
                         worldX = 0;
-                        enemies.length = 0;
+                        enemyManager.clear();
                     } else {
                         gameState = 'menu';
                     }
@@ -475,51 +435,6 @@ import { Player } from './player.js';
                     npc.worldX -= 2; 
                     if (npc.worldX + worldX < -npc.width) {
                         npcs.splice(i, 1);
-                    }
-                }
-            }
-
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
-                
-                let overPit = false;
-                const enemyCenterX = enemy.worldX + enemy.width / 2;
-                for(const pit of pits) {
-                    if(enemyCenterX > pit.worldX && enemyCenterX < pit.worldX + pit.width) {
-                        overPit = true;
-                        break;
-                    }
-                }
-
-                if (overPit) {
-                    enemy.falling = true;
-                }
-                
-                if (enemy.falling) {
-                    enemy.vy += 0.8;
-                    enemy.y += enemy.vy;
-                    if(enemy.y > canvas.height + 50) {
-                        enemies.splice(i, 1);
-                        continue;
-                    }
-                } else {
-                    const screenX = enemy.worldX + worldX;
-                    const speed = 2;
-                    if (screenX < player.x) { enemy.vx = speed; } 
-                    else { enemy.vx = -speed; }
-                    enemy.worldX += enemy.vx;
-
-                    if (screenX < -100 || screenX > canvas.width + 100) { enemies.splice(i, 1); continue; }
-                    if (player.checkEnemyCollision(enemy, screenX)) {
-                        setTimeout(() => {
-                            if (player.lives > 0) {
-                                player.respawn(groundY);
-                                worldX = 0;
-                                enemies.length = 0;
-                            } else {
-                                gameState = 'menu';
-                            }
-                        }, 2000);
                     }
                 }
             }
@@ -619,31 +534,14 @@ import { Player } from './player.js';
                     }
                 }
 
-                for (let j = enemies.length - 1; j >= 0; j--) {
-                    const enemy = enemies[j];
-                    const enemyScreenX = enemy.worldX + worldX;
-                    let hit = false;
-                    if (proj.type === 3 || proj.type === 7) { 
-                        const numChecks = 10;
-                        for (let k = 0; k <= numChecks; k++) {
-                            const t = k / numChecks;
-                            const checkX = proj.centerX + Math.cos(proj.angle) * proj.radius * t;
-                            const checkY = proj.centerY + Math.sin(proj.angle) * proj.radius * t;
-                            if (checkX > enemyScreenX && checkX < enemyScreenX + enemy.width && checkY > enemy.y && checkY < enemy.y + enemy.height) {
-                                hit = true; break;
-                            }
-                        }
-                    } else {
-                        if (!proj.landed && proj.x < enemyScreenX + enemy.width && proj.x + (proj.width || proj.size || 20) > enemyScreenX && proj.y < enemy.y + enemy.height && proj.y + (proj.height || proj.size || 10) > enemy.y) {
-                            hit = true;
-                        }
-                    }
-                    if (hit) {
-                        enemies.splice(j, 1);
-                        if (proj.type !== 3 && proj.type !== 7) {
-                            projectiles.splice(i, 1);
-                            break; 
-                        }
+                // Check projectile-enemy collisions using enemy manager
+                const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
+                
+                // Remove hit projectiles (excluding rotating weapons)
+                for (const result of hitResults) {
+                    if (result.projectileType !== 3 && result.projectileType !== 7) {
+                        projectiles.splice(result.projectileIndex, 1);
+                        break;
                     }
                 }
             }
@@ -843,17 +741,8 @@ import { Player } from './player.js';
                     }
                 }
                 
-                for (const enemy of enemies) {
-                    const screenX = enemy.worldX + worldX;
-                    ctx.fillStyle = '#8B008B';
-                    ctx.fillRect(screenX, enemy.y, enemy.width, enemy.height);
-                    ctx.fillStyle = '#fff';
-                    ctx.fillRect(screenX + 8, enemy.y + 10, 8, 8);
-                    ctx.fillRect(screenX + 24, enemy.y + 10, 8, 8);
-                    ctx.fillStyle = '#000';
-                    ctx.fillRect(screenX + 10, enemy.y + 12, 4, 4);
-                    ctx.fillRect(screenX + 26, enemy.y + 12, 4, 4);
-                }
+                // Render enemies using enemy manager
+                enemyManager.render(ctx, worldX);
 
                 for (const proj of projectiles) {
                     switch(proj.type) {
@@ -916,63 +805,15 @@ import { Player } from './player.js';
                     ctx.fillText('Level Select', canvas.width / 2, selectY + buttonHeight / 2 + 8);
                 }
 
-                if (gameState === 'quiz' && currentQuestion) {
-                    drawQuiz();
+                if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
+                    quiz.drawQuiz(ctx, canvas);
                 }
             }
         }
 
-        function drawQuiz() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const boxWidth = canvas.width * 0.8; const boxHeight = canvas.height * 0.7;
-            const boxX = (canvas.width - boxWidth) / 2; const boxY = (canvas.height - boxHeight) / 2;
-            ctx.fillStyle = '#222'; ctx.strokeStyle = '#888'; ctx.lineWidth = 2;
-            ctx.fillRect(boxX, boxY, boxWidth, boxHeight); ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
-
-            ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.textAlign = 'center';
-            const questionText = currentQuestion.q; const textX = canvas.width / 2;
-            let textY = boxY + 40; const maxWidth = boxWidth - 40;
-            const words = questionText.split(' '); let line = '';
-
-            for(let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                    ctx.fillText(line, textX, textY);
-                    line = words[n] + ' '; textY += 25;
-                } else { line = testLine; }
-            }
-            ctx.fillText(line, textX, textY);
-
-            textY += 60;
-            const answerLetters = ['A', 'B', 'C', 'D'];
-            const answerBoxWidth = boxWidth - 80; const answerBoxHeight = 50;
-            
-            currentQuestion.shuffledAnswers.forEach((answer, index) => {
-                const ansX = boxX + 40; const ansY = textY + (index * (answerBoxHeight + 15));
-                answer.x = ansX; answer.y = ansY; answer.width = answerBoxWidth; answer.height = answerBoxHeight;
-                ctx.strokeStyle = '#888'; ctx.fillStyle = '#333';
-                if (currentQuestion.answered) {
-                    if (answer.text === currentQuestion.correctAnswer) { ctx.fillStyle = '#006400'; } 
-                    else if (answer.text === currentQuestion.playerAnswer) { ctx.fillStyle = '#8B0000'; }
-                }
-                ctx.fillRect(ansX, ansY, answerBoxWidth, answerBoxHeight); ctx.strokeRect(ansX, ansY, answerBoxWidth, answerBoxHeight);
-                ctx.fillStyle = 'white'; ctx.font = '16px Arial'; ctx.textAlign = 'left';
-                ctx.fillText(`${answerLetters[index]}. ${answer.text}`, ansX + 15, ansY + 30);
-            });
-            
-            if(currentQuestion.answered) {
-                ctx.fillStyle = currentQuestion.isCorrect ? '#90EE90' : '#F08080'; ctx.font = 'bold 24px Arial'; ctx.textAlign = 'center';
-                const resultText = currentQuestion.isCorrect ? 'Correct!' : 'Incorrect';
-                ctx.fillText(resultText, canvas.width / 2, boxY + boxHeight - 60);
-                ctx.fillStyle = 'white'; ctx.font = '18px Arial';
-                ctx.fillText("Click anywhere to continue...", canvas.width / 2, boxY + boxHeight - 30);
-            }
-        }
-        
         function gameLoop() {
-            update(); 
-            draw(); 
+            update();
+            draw();
             requestAnimationFrame(gameLoop);
         }
         
