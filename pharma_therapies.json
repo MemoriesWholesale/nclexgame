@@ -1,0 +1,839 @@
+[
+    {
+      "q": "The physician orders 500 mg of amoxicillin. The pharmacy supplies a suspension with a concentration of 250 mg/5 mL. How many mL should the LVN administer?",
+      "answers": [
+        "10 mL",
+        "2.5 mL",
+        "5 mL",
+        "15 mL"
+      ]
+    },
+    {
+      "q": "An LVN is preparing to administer insulin. Which action is essential for safety?",
+      "answers": [
+        "Having another licensed nurse double-check the dose.",
+        "Administering the insulin immediately upon drawing it up.",
+        "Shaking the vial of NPH insulin vigorously to mix it.",
+        "Using the same needle for drawing up and injecting."
+      ]
+    },
+    {
+      "q": "A client is receiving an IV infusion and complains of pain and swelling at the IV site. The skin is cool to the touch. The LVN should recognize these as signs of what complication?",
+      "answers": [
+        "Infiltration.",
+        "Phlebitis.",
+        "An allergic reaction.",
+        "A bloodstream infection."
+      ]
+    },
+    {
+      "q": "The 'Rights of Medication Administration' include the right patient, right drug, right dose, right route, and what other right?",
+      "answers": [
+        "Right time.",
+        "Right reason.",
+        "Right to refuse.",
+        "Right documentation."
+      ]
+    },
+    {
+      "q": "When administering eardrops to an adult, the LVN should pull the pinna in which direction?",
+      "answers": [
+        "Up and back.",
+        "Down and back.",
+        "Straight back.",
+        "Forward and up."
+      ]
+    },
+    {
+      "q": "A client is prescribed a sublingual medication. What instruction should the LVN give the client?",
+      "answers": [
+        "Place the tablet under your tongue and let it dissolve.",
+        "Swallow the tablet whole with a full glass of water.",
+        "Chew the tablet thoroughly before swallowing.",
+        "Dissolve the tablet in water before drinking it."
+      ]
+    },
+    {
+      "q": "An LVN is preparing to administer a medication via a nasogastric (NG) tube. What is the first and most important action to take before administering?",
+      "answers": [
+        "Check for proper tube placement.",
+        "Flush the tube with 50 mL of sterile water.",
+        "Crush all medications together and mix with water.",
+        "Position the client flat on their back."
+      ]
+    },
+    {
+      "q": "A client is taking warfarin, an anticoagulant. The LVN should instruct the client to avoid sudden increases in which type of food?",
+      "answers": [
+        "Leafy green vegetables.",
+        "Citrus fruits.",
+        "Dairy products.",
+        "Red meat."
+      ]
+    },
+    {
+      "q": "Which site is most commonly used for intramuscular (IM) injections in adults?",
+      "answers": [
+        "Ventrogluteal.",
+        "Deltoid.",
+        "Vastus lateralis.",
+        "Dorsogluteal."
+      ]
+    },
+    {
+      "q": "A client is experiencing an anaphylactic reaction to a medication. The LVN's first priority is to:",
+      "answers": [
+        "Ensure a patent airway.",
+        "Administer epinephrine as ordered.",
+        "Notify the physician.",
+        "Document the reaction in the chart."
+      ]
+    },
+    {
+      "q": "The physician has ordered 0.5 g of a medication. The tablets available are 250 mg. How many tablets should the LVN administer?",
+      "answers": [
+        "2 tablets.",
+        "1 tablet.",
+        "0.5 tablets.",
+        "4 tablets."
+      ]
+    },
+    {
+      "q": "What is the correct angle of insertion for an intradermal injection?",
+      "answers": [
+        "10 to 15 degrees.",
+        "45 degrees.",
+        "90 degrees.",
+        "30 degrees."
+      ]
+    },
+    {
+      "q": "A client's IV site is red, warm, and swollen with a palpable cord along the vein. These are classic signs of:",
+      "answers": [
+        "Phlebitis.",
+        "Infiltration.",
+        "Extravasation.",
+        "Hematoma."
+      ]
+    },
+    {
+      "q": "The LVN is administering a medication and the client states, 'This pill looks different from the one I usually take.' What is the LVN's best response?",
+      "answers": [
+        "'Let me double-check the medication and the order before you take it.'",
+        "'It's probably just a different manufacturer, it's the same medicine.'",
+        "'You should take it, the doctor ordered it for you.'",
+        "'I can't give you any other pill, this is what the pharmacy sent.'"
+      ]
+    },
+    {
+      "q": "Which of the following abbreviations is on The Joint Commission's 'Do Not Use' list?",
+      "answers": [
+        "U (for unit).",
+        "mL (for milliliter).",
+        "mg (for milligram).",
+        "PO (for by mouth)."
+      ]
+    },
+    {
+      "q": "A client is receiving a continuous IV infusion via an electronic pump. The pump alarms for an occlusion. What should the LVN do first?",
+      "answers": [
+        "Check the IV tubing for kinks and assess the catheter site.",
+        "Silence the alarm and reset the pump.",
+        "Call the physician to report the problem.",
+        "Increase the infusion rate to clear the line."
+      ]
+    },
+    {
+      "q": "A medication's 'trough' level is drawn at what time?",
+      "answers": [
+        "Immediately before the next scheduled dose.",
+        "30-60 minutes after the dose is administered.",
+        "At the halfway point between two doses.",
+        "At a random time during the day."
+      ]
+    },
+    {
+      "q": "When administering a transdermal patch, the LVN should perform which action?",
+      "answers": [
+        "Remove the old patch before applying a new one.",
+        "Apply the new patch to the exact same spot as the old one.",
+        "Shave the area with a razor before applying the patch.",
+        "Write the client's name directly on top of the patch with a sharpie."
+      ]
+    },
+    {
+      "q": "A physician orders 25 mg of a drug. The vial is labeled 50 mg/mL. How many mL should the nurse administer?",
+      "answers": [
+        "0.5 mL.",
+        "1 mL.",
+        "2 mL.",
+        "0.25 mL."
+      ]
+    },
+    {
+      "q": "Which route of administration provides the fastest absorption of a medication?",
+      "answers": [
+        "Intravenous (IV).",
+        "Intramuscular (IM).",
+        "Subcutaneous (Subcut).",
+        "Oral (PO)."
+      ]
+    },
+    {
+      "q": "A client is prescribed an enteric-coated tablet. The LVN should instruct the client to:",
+      "answers": [
+        "Swallow the tablet whole.",
+        "Crush the tablet and mix it with applesauce.",
+        "Chew the tablet before swallowing.",
+        "Allow the tablet to dissolve under the tongue."
+      ]
+    },
+    {
+      "q": "An LVN is preparing to give a subcutaneous injection of heparin. Which action is correct?",
+      "answers": [
+        "Inject the medication into the abdomen, avoiding the area around the umbilicus.",
+        "Massage the site firmly after the injection to aid absorption.",
+        "Aspirate for blood return before injecting the medication.",
+        "Use a 1-inch needle and inject at a 90-degree angle."
+      ]
+    },
+    {
+      "q": "A client is taking a diuretic. The LVN should monitor the client closely for signs of what electrolyte imbalance?",
+      "answers": [
+        "Hypokalemia (low potassium).",
+        "Hypernatremia (high sodium).",
+        "Hypercalcemia (high calcium).",
+        "Hypomagnesemia (low magnesium)."
+      ]
+    },
+    {
+      "q": "To prevent medication errors, the LVN should check the medication against the MAR (Medication Administration Record) at what three points?",
+      "answers": [
+        "When removing the medication from the dispenser, when preparing it, and at the bedside.",
+        "At the beginning of the shift, at noon, and at the end of the shift.",
+        "When the pharmacy delivers it, when the LVN stocks it, and when the client requests it.",
+        "Only at the bedside immediately before administration."
+      ]
+    },
+    {
+      "q": "The doctor's order is for 1 L of Normal Saline to infuse over 8 hours. The IV tubing has a drop factor of 15 gtt/mL. The LVN should set the manual IV to infuse at how many drops per minute (gtt/min)?",
+      "answers": [
+        "31 gtt/min.",
+        "15 gtt/min.",
+        "42 gtt/min.",
+        "21 gtt/min."
+      ]
+    },
+    {
+      "q": "A client is receiving a blood transfusion and suddenly develops shortness of breath, chills, and lower back pain. What is the LVN's priority action?",
+      "answers": [
+        "Stop the transfusion immediately.",
+        "Administer an antihistamine as ordered.",
+        "Check the client's vital signs.",
+        "Notify the charge nurse."
+      ]
+    },
+    {
+      "q": "What is the primary reason for using the Z-track method for certain IM injections?",
+      "answers": [
+        "To prevent the medication from leaking back into the subcutaneous tissue.",
+        "To reduce the pain of the injection.",
+        "To increase the rate of absorption.",
+        "To allow for a larger volume of medication to be injected."
+      ]
+    },
+    {
+      "q": "A client is taking digoxin. Which finding would indicate a potential sign of digoxin toxicity?",
+      "answers": [
+        "Visual disturbances, such as seeing yellow halos.",
+        "An increase in appetite.",
+        "A heart rate of 90 beats per minute.",
+        "A decrease in urine output."
+      ]
+    },
+    {
+      "q": "The order is for morphine 4 mg IV push. The vial is labeled 10 mg/mL. How much should the LVN draw up?",
+      "answers": [
+        "0.4 mL.",
+        "4 mL.",
+        "1.4 mL.",
+        "2.5 mL."
+      ]
+    },
+    {
+      "q": "Before administering a 'prn' (as needed) pain medication, what is the LVN's most important assessment?",
+      "answers": [
+        "The client's pain level on a scale of 0-10.",
+        "The time the last dose of any medication was given.",
+        "The client's blood pressure and heart rate.",
+        "The client's allergy history."
+      ]
+    },
+    {
+      "q": "When administering ophthalmic (eye) ointment, the LVN should apply it where?",
+      "answers": [
+        "To the lower conjunctival sac.",
+        "Directly onto the cornea.",
+        "On the upper eyelid.",
+        "In the inner canthus of the eye."
+      ]
+    },
+    {
+      "q": "A client's IV infusion has stopped running. The IV site shows no signs of infiltration or phlebitis. What is the most likely cause?",
+      "answers": [
+        "The IV bag has run dry or is positioned too low.",
+        "The client has developed a systemic infection.",
+        "The catheter has become dislodged from the vein.",
+        "The client is having an allergic reaction."
+      ]
+    },
+    {
+      "q": "The term 'parenteral' refers to medication administered by which route?",
+      "answers": [
+        "By injection (e.g., IM, IV, subcut).",
+        "By mouth (oral).",
+        "By inhalation (nebulizer).",
+        "By application to the skin (topical)."
+      ]
+    },
+    {
+      "q": "A client is prescribed an ACE inhibitor like lisinopril. The LVN should monitor for which common, persistent side effect?",
+      "answers": [
+        "A dry, hacking cough.",
+        "A rapid heart rate.",
+        "Severe headache.",
+        "Blurred vision."
+      ]
+    },
+    {
+      "q": "The order is for 650 mg of acetaminophen. The supply is 325 mg tablets. How many tablets should be given?",
+      "answers": [
+        "2 tablets.",
+        "1 tablet.",
+        "1.5 tablets.",
+        "3 tablets."
+      ]
+    },
+    {
+      "q": "Which action should the LVN take when administering medication through an NG tube connected to suction?",
+      "answers": [
+        "Clamp the NG tube for 30-60 minutes after medication administration.",
+        "Mix all medications together in one syringe to save time.",
+        "Administer the medication without flushing the tube.",
+        "Immediately reconnect the tube to suction after giving the medication."
+      ]
+    },
+    {
+      "q": "An LVN is giving an IM injection to a very thin adult. What is the most appropriate needle size and angle?",
+      "answers": [
+        "A 1-inch needle at a 45- to 90-degree angle.",
+        "A 1.5-inch needle at a 90-degree angle.",
+        "A 5/8-inch needle at a 15-degree angle.",
+        "A 2-inch needle at a 90-degree angle."
+      ]
+    },
+    {
+      "q": "A client receiving a heparin infusion has a critically high aPTT level. The LVN should anticipate an order for which antidote?",
+      "answers": [
+        "Protamine sulfate.",
+        "Vitamin K.",
+        "Naloxone.",
+        "Flumazenil."
+      ]
+    },
+    {
+      "q": "Which right of medication administration is best checked by asking the client to state their name and date of birth?",
+      "answers": [
+        "Right patient.",
+        "Right drug.",
+        "Right dose.",
+        "Right time."
+      ]
+    },
+    {
+      "q": "The physician orders 'Lasix 20 mg IV push now'. The LVN knows that this medication should be administered slowly to prevent what adverse effect?",
+      "answers": [
+        "Ototoxicity (hearing loss).",
+        "Hypertension.",
+        "Tachycardia.",
+        "Hypoglycemia."
+      ]
+    },
+    {
+      "q": "The order is for 3000 mL of D5W to be infused over 24 hours. The LVN should set the infusion pump to deliver how many mL/hr?",
+      "answers": [
+        "125 mL/hr.",
+        "100 mL/hr.",
+        "150 mL/hr.",
+        "75 mL/hr."
+      ]
+    },
+    {
+      "q": "Which site is preferred for a tuberculin (PPD) test?",
+      "answers": [
+        "The inner forearm.",
+        "The deltoid muscle.",
+        "The abdomen.",
+        "The ventrogluteal site."
+      ]
+    },
+    {
+      "q": "A client is taking a potassium-sparing diuretic like spironolactone. The LVN should advise the client to avoid which of these?",
+      "answers": [
+        "Salt substitutes.",
+        "High-sodium foods.",
+        "Grapefruit juice.",
+        "Dairy products."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to administer a medication from an ampule. Which action is necessary?",
+      "answers": [
+        "Use a filter needle to draw up the medication.",
+        "Inject air into the ampule before withdrawing the medication.",
+        "Cleanse the rubber stopper with an alcohol swab.",
+        "Shake the ampule to ensure the medication is mixed."
+      ]
+    },
+    {
+      "q": "A client is prescribed eye drops for both eyes. How long should the LVN wait between instilling drops in the same eye, if a second drop is needed?",
+      "answers": [
+        "5 minutes.",
+        "30 seconds.",
+        "1 minute.",
+        "10 minutes."
+      ]
+    },
+    {
+      "q": "The order is for a medication to be given 'ac'. When should the LVN administer it?",
+      "answers": [
+        "Before meals.",
+        "After meals.",
+        "At bedtime.",
+        "In the morning."
+      ]
+    },
+    {
+      "q": "An IV is infusing at 100 mL/hr. The 1 L (1000 mL) bag was hung at 8:00 AM. At what time will the infusion be complete?",
+      "answers": [
+        "6:00 PM (18:00).",
+        "4:00 PM (16:00).",
+        "8:00 PM (20:00).",
+        "10:00 AM (10:00)."
+      ]
+    },
+    {
+      "q": "Which patient identifier is considered most reliable when administering medications?",
+      "answers": [
+        "The client's wristband.",
+        "The sign on the client's door.",
+        "The client's roommate.",
+        "A photo of the client in the chart."
+      ]
+    },
+    {
+      "q": "A client is taking an opioid analgesic. The LVN's priority assessment is for which of the following?",
+      "answers": [
+        "Respiratory depression.",
+        "Increased heart rate.",
+        "High blood pressure.",
+        "Diarrhea."
+      ]
+    },
+    {
+      "q": "The order is for a medication to be administered at 0900. According to military time, this is:",
+      "answers": [
+        "9:00 AM.",
+        "9:00 PM.",
+        "12:00 PM (noon).",
+        "12:00 AM (midnight)."
+      ]
+    },
+    {
+      "q": "A client is receiving TPN (Total Parenteral Nutrition). A new bag is not available from the pharmacy when the current bag runs out. The LVN should hang a bag of which solution to prevent a complication?",
+      "answers": [
+        "10% Dextrose in Water (D10W).",
+        "0.9% Normal Saline (NS).",
+        "Lactated Ringer's (LR).",
+        "Sterile Water."
+      ]
+    },
+    {
+      "q": "When giving a subcutaneous injection, what is the maximum volume that can be injected into one site?",
+      "answers": [
+        "1.5 mL.",
+        "0.5 mL.",
+        "3 mL.",
+        "5 mL."
+      ]
+    },
+    {
+      "q": "A client complains of itching and a rash after starting a new antibiotic. The LVN should recognize this as what type of adverse effect?",
+      "answers": [
+        "An allergic reaction.",
+        "A toxic effect.",
+        "A side effect.",
+        "An idiosyncratic reaction."
+      ]
+    },
+    {
+      "q": "The physician orders 1 mg of a medication. The available vial contains 1000 mcg/mL. How many mL should the nurse administer?",
+      "answers": [
+        "1 mL.",
+        "0.1 mL.",
+        "10 mL.",
+        "0.01 mL."
+      ]
+    },
+    {
+      "q": "A client is to receive a rectal suppository. In what position should the LVN place the client?",
+      "answers": [
+        "Left Sims' position.",
+        "Supine.",
+        "Prone.",
+        "High Fowler's."
+      ]
+    },
+    {
+      "q": "An IV piggyback (IVPB) medication should be hung in what position relative to the primary IV bag?",
+      "answers": [
+        "Higher than the primary bag.",
+        "Lower than the primary bag.",
+        "At the same level as the primary bag.",
+        "It does not matter."
+      ]
+    },
+    {
+      "q": "A client taking a monoamine oxidase inhibitor (MAOI) should be instructed to avoid foods high in what substance?",
+      "answers": [
+        "Tyramine.",
+        "Potassium.",
+        "Vitamin C.",
+        "Iron."
+      ]
+    },
+    {
+      "q": "Before administering digoxin, the LVN must perform which assessment?",
+      "answers": [
+        "Check the client's apical pulse for one full minute.",
+        "Measure the client's blood pressure.",
+        "Assess the client's respiratory rate.",
+        "Check the client's temperature."
+      ]
+    },
+    {
+      "q": "The order is for a 100 mL bag of medication to infuse over 30 minutes. The LVN should set the infusion pump to what rate (mL/hr)?",
+      "answers": [
+        "200 mL/hr.",
+        "100 mL/hr.",
+        "50 mL/hr.",
+        "300 mL/hr."
+      ]
+    },
+    {
+      "q": "Which action helps to reduce the risk of a needlestick injury?",
+      "answers": [
+        "Activating the needle's safety device immediately after use.",
+        "Recapping the needle before disposal.",
+        "Carrying the used needle to the sharps container in your hand.",
+        "Placing the used needle on the bedside table temporarily."
+      ]
+    },
+    {
+      "q": "A client is prescribed a medication to be given 'stat'. The LVN should administer the medication:",
+      "answers": [
+        "Immediately.",
+        "Within 30 minutes.",
+        "Within the next hour.",
+        "At the next scheduled medication time."
+      ]
+    },
+    {
+      "q": "When administering a nasal spray, the client should be instructed to:",
+      "answers": [
+        "Inhale gently as the spray is administered.",
+        "Blow their nose forcefully after administration.",
+        "Tilt their head back as far as possible.",
+        "Exhale forcefully as the spray is administered."
+      ]
+    },
+    {
+      "q": "The physician's order reads '2.0 mg'. According to safety guidelines, how should the LVN interpret this dose?",
+      "answers": [
+        "2 mg.",
+        "20 mg.",
+        "0.2 mg.",
+        "The order is ambiguous and should be clarified."
+      ]
+    },
+    {
+      "q": "Which part of the syringe should the LVN ensure remains sterile during medication preparation?",
+      "answers": [
+        "The needle and the tip of the syringe.",
+        "The barrel of the syringe.",
+        "The plunger handle.",
+        "The entire outside of the syringe."
+      ]
+    },
+    {
+      "q": "A client is receiving a parenteral lipid emulsion. The LVN notices fat globules floating in the IV bag. What is the appropriate action?",
+      "answers": [
+        "Stop the infusion and return the bag to the pharmacy.",
+        "Shake the bag vigorously to mix the solution.",
+        "Continue the infusion as this is a normal finding.",
+        "Slow down the infusion rate."
+      ]
+    },
+    {
+      "q": "A client is ordered to receive 1 unit of packed red blood cells (300 mL) over 4 hours. The LVN should set the infusion pump to what rate (mL/hr)?",
+      "answers": [
+        "75 mL/hr.",
+        "100 mL/hr.",
+        "50 mL/hr.",
+        "125 mL/hr."
+      ]
+    },
+    {
+      "q": "Which medication requires the use of the Z-track injection technique?",
+      "answers": [
+        "Iron dextran.",
+        "Insulin.",
+        "Heparin.",
+        "Vitamin B12."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to administer a medication. The client states they are allergic to penicillin. The medication order is for ampicillin. What should the LVN do?",
+      "answers": [
+        "Withhold the medication and notify the physician.",
+        "Administer the medication as it is not penicillin.",
+        "Administer a half dose to see if a reaction occurs.",
+        "Tell the client that ampicillin is a different class of drug."
+      ]
+    },
+    {
+      "q": "What is the primary landmark for locating the ventrogluteal IM injection site?",
+      "answers": [
+        "The greater trochanter of the femur.",
+        "The acromion process of the scapula.",
+        "The anterior superior iliac spine.",
+        "The patella."
+      ]
+    },
+    {
+      "q": "The order is for 1 grain of a medication. The pharmacy supplies 30 mg tablets. How many tablets should the nurse administer? (1 grain = 60 mg)",
+      "answers": [
+        "2 tablets.",
+        "1 tablet.",
+        "0.5 tablets.",
+        "3 tablets."
+      ]
+    },
+    {
+      "q": "A client with a saline lock (intermittent IV) complains that it is difficult to flush. The LVN should first:",
+      "answers": [
+        "Assess the site for signs of infiltration or phlebitis.",
+        "Apply forceful pressure to the syringe to clear the line.",
+        "Remove the saline lock and insert a new one.",
+        "Notify the physician that the IV is clotted."
+      ]
+    },
+    {
+      "q": "A client is taking a loop diuretic, such as furosemide, and a potassium supplement. This is an example of what kind of drug interaction?",
+      "answers": [
+        "A therapeutic interaction.",
+        "An antagonistic interaction.",
+        "A synergistic interaction.",
+        "An adverse interaction."
+      ]
+    },
+    {
+      "q": "When preparing medication for multiple clients, the LVN should:",
+      "answers": [
+        "Prepare medications for one client at a time.",
+        "Prepare all morning medications at the beginning of the shift.",
+        "Line up all medication cups on a single tray to save time.",
+        "Ask a UAP to help prepare the medications."
+      ]
+    },
+    {
+      "q": "The order is for 250 mg of a medication in 100 mL of fluid, to infuse over 20 minutes. The infusion pump should be set to what rate in mL/hr?",
+      "answers": [
+        "300 mL/hr.",
+        "200 mL/hr.",
+        "100 mL/hr.",
+        "250 mL/hr."
+      ]
+    },
+    {
+      "q": "After administering a new medication, the LVN should monitor the client for:",
+      "answers": [
+        "Both therapeutic and adverse effects.",
+        "Only the expected therapeutic effects.",
+        "Only potential adverse effects.",
+        "The client's subjective opinion of the medication."
+      ]
+    },
+    {
+      "q": "The LVN is administering a medication via a metered-dose inhaler (MDI). What is a critical instruction to give the client?",
+      "answers": [
+        "Hold their breath for 10 seconds after inhaling the medication.",
+        "Inhale quickly and deeply as they press the canister.",
+        "Exhale immediately after the medication is delivered.",
+        "Use the inhaler while lying down."
+      ]
+    },
+    {
+      "q": "A client is taking a medication that can cause orthostatic hypotension. What instruction is most important for the LVN to provide?",
+      "answers": [
+        "Change positions slowly, from lying to sitting to standing.",
+        "Take the medication with a full glass of water.",
+        "Monitor your blood glucose levels daily.",
+        "Avoid eating aged cheeses and cured meats."
+      ]
+    },
+    {
+      "q": "The physician orders a 'loading dose' of a medication. The LVN understands this is given to:",
+      "answers": [
+        "Achieve a therapeutic drug level in the bloodstream quickly.",
+        "Test the client's sensitivity to the medication.",
+        "Gradually introduce the medication to the body.",
+        "Decrease the risk of side effects."
+      ]
+    },
+    {
+      "q": "A client's IV bag has 200 mL remaining and is infusing at 50 mL/hr. How many hours will it take for the infusion to complete?",
+      "answers": [
+        "4 hours.",
+        "2 hours.",
+        "5 hours.",
+        "3 hours."
+      ]
+    },
+    {
+      "q": "What is the term for a severe, life-threatening allergic reaction to a drug?",
+      "answers": [
+        "Anaphylaxis.",
+        "Toxic effect.",
+        "Side effect.",
+        "Idiosyncratic reaction."
+      ]
+    },
+    {
+      "q": "When administering medications to an elderly client, the LVN should be aware that they may have a decreased:",
+      "answers": [
+        "Metabolism and excretion of drugs.",
+        "Sensitivity to drug effects.",
+        "Risk of drug toxicity.",
+        "Absorption of oral medications."
+      ]
+    },
+    {
+      "q": "An LVN is giving an IM injection in the vastus lateralis site. This site is located in the:",
+      "answers": [
+        "Thigh.",
+        "Upper arm.",
+        "Hip.",
+        "Buttocks."
+      ]
+    },
+    {
+      "q": "A client is prescribed a medication that is 'nephrotoxic'. The LVN should monitor which of the following lab values closely?",
+      "answers": [
+        "Blood Urea Nitrogen (BUN) and Creatinine.",
+        "Alanine Aminotransferase (ALT) and Aspartate Aminotransferase (AST).",
+        "Hemoglobin and Hematocrit.",
+        "Potassium and Sodium."
+      ]
+    },
+    {
+      "q": "The order is for 'aspirin 81 mg PO daily'. This is an example of which type of medication order?",
+      "answers": [
+        "A standing order.",
+        "A stat order.",
+        "A single order.",
+        "A prn order."
+      ]
+    },
+    {
+      "q": "A client is receiving an IV infusion of a vesicant drug and complains of burning at the site. The LVN notes redness and blistering. This is known as:",
+      "answers": [
+        "Extravasation.",
+        "Infiltration.",
+        "Phlebitis.",
+        "A speed shock."
+      ]
+    },
+    {
+      "q": "What is the purpose of aspirating before giving an IM injection?",
+      "answers": [
+        "To ensure the needle is not in a blood vessel.",
+        "To reduce the pain of the injection.",
+        "To push the medication into the muscle faster.",
+        "This practice is no longer recommended for most IM injections."
+      ]
+    },
+    {
+      "q": "The order is for 1 L of fluid to be given over 10 hours. The nurse should set the infusion pump to what rate (mL/hr)?",
+      "answers": [
+        "100 mL/hr.",
+        "125 mL/hr.",
+        "75 mL/hr.",
+        "150 mL/hr."
+      ]
+    },
+    {
+      "q": "Which of the following is an example of a parenteral route?",
+      "answers": [
+        "Subcutaneous.",
+        "Oral.",
+        "Topical.",
+        "Inhalation."
+      ]
+    },
+    {
+      "q": "A client taking a benzodiazepine should be monitored for which major side effect?",
+      "answers": [
+        "Drowsiness and sedation.",
+        "Hypertension.",
+        "Insomnia.",
+        "Tachycardia."
+      ]
+    },
+    {
+      "q": "The 'half-life' of a drug refers to:",
+      "answers": [
+        "The time it takes for 50% of the drug to be eliminated from the body.",
+        "Half of the time it takes for the drug to start working.",
+        "The point at which the drug is 50% effective.",
+        "Half of the recommended dose for an adult."
+      ]
+    },
+    {
+      "q": "When documenting medication administration, which of the following is essential?",
+      "answers": [
+        "Documenting the medication immediately after it is given.",
+        "Documenting all medications for the shift at the end of the shift.",
+        "Asking another nurse to document for you if you are busy.",
+        "Documenting a medication before you have administered it."
+      ]
+    },
+    {
+      "q": "A client is prescribed a liquid medication. To ensure accurate measurement, the LVN should:",
+      "answers": [
+        "Read the volume at the bottom of the meniscus in a medication cup.",
+        "Pour the medication while holding the cup above eye level.",
+        "Estimate the dose without using a measuring device.",
+        "Pour the medication into a regular drinking cup."
+      ]
+    },
+    {
+      "q": "An LVN must flush a client's saline lock before and after administering an IV medication. This is done to:",
+      "answers": [
+        "Confirm patency and clear the line of any remaining medication.",
+        "Increase the client's daily fluid intake.",
+        "Prevent the client from getting an infection.",
+        "Dilute the medication before it enters the bloodstream."
+      ]
+    }
+  ]

@@ -1,0 +1,821 @@
+[
+    {
+      "q": "An LVN enters a client's room and finds a fire in a trash can. What is the LVN's first action?",
+      "answers": [
+        "Rescue the client by removing them from the room.",
+        "Activate the fire alarm.",
+        "Confine the fire by closing the door.",
+        "Extinguish the fire with the nearest fire extinguisher."
+      ]
+    },
+    {
+      "q": "Which of the following clients is at the highest risk for falls?",
+      "answers": [
+        "A 78-year-old client with a history of stroke and generalized weakness.",
+        "A 35-year-old client who is post-operative day 1 for an appendectomy.",
+        "A 50-year-old client with well-controlled diabetes.",
+        "A 25-year-old client admitted for a migraine headache."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with active pulmonary tuberculosis. Which type of isolation precaution is required?",
+      "answers": [
+        "Airborne precautions.",
+        "Droplet precautions.",
+        "Contact precautions.",
+        "Standard precautions."
+      ]
+    },
+    {
+      "q": "When performing hand hygiene with an alcohol-based hand rub, the LVN should continue to rub their hands together until when?",
+      "answers": [
+        "The hands are completely dry.",
+        "For at least 15 seconds.",
+        "The hands feel clean.",
+        "Until a lather has formed."
+      ]
+    },
+    {
+      "q": "A client is placed on contact precautions due to a C. difficile infection. The LVN is leaving the room. What is the most important action to take?",
+      "answers": [
+        "Wash hands with soap and water.",
+        "Use an alcohol-based hand sanitizer.",
+        "Remove the gown but keep the same gloves on.",
+        "Wear a surgical mask when exiting the room."
+      ]
+    },
+    {
+      "q": "The acronym RACE is used for fire safety. What does the 'A' stand for?",
+      "answers": [
+        "Alarm.",
+        "Assess.",
+        "Activate.",
+        "Alert."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to suction a client's tracheostomy. Which action demonstrates correct sterile technique?",
+      "answers": [
+        "Wearing sterile gloves to insert the suction catheter.",
+        "Using the same catheter for multiple suctioning passes.",
+        "Flushing the catheter with tap water between passes.",
+        "Applying suction while inserting the catheter."
+      ]
+    },
+    {
+      "q": "A client is in soft wrist restraints. What is the LVN's responsibility for this client's care?",
+      "answers": [
+        "Check circulation and skin integrity under the restraint every 2 hours.",
+        "Ensure the restraints are tied securely to the bed's side rails.",
+        "Remove the restraints only when the client is asleep.",
+        "Renew the physician's order for restraints every 72 hours."
+      ]
+    },
+    {
+      "q": "Which of the following is an example of a healthcare-associated infection (HAI)?",
+      "answers": [
+        "A client develops a catheter-associated urinary tract infection (CAUTI) 48 hours after admission.",
+        "A client is admitted with pneumonia from the community.",
+        "A client has a surgical site infection that was present on admission.",
+        "A client has influenza that they contracted from a family member."
+      ]
+    },
+    {
+      "q": "The single most important practice to reduce the transmission of microorganisms in healthcare settings is:",
+      "answers": [
+        "Proper hand hygiene.",
+        "Wearing gloves for all patient contact.",
+        "Administering prophylactic antibiotics.",
+        "Placing all patients in private rooms."
+      ]
+    },
+    {
+      "q": "A client is on droplet precautions. The LVN must wear a surgical mask when working within what distance of the client?",
+      "answers": [
+        "3 feet.",
+        "6 feet.",
+        "1 foot.",
+        "10 feet."
+      ]
+    },
+    {
+      "q": "To prevent needlestick injuries, what is the most important action for a nurse to take?",
+      "answers": [
+        "Never recap a used needle.",
+        "Use the smallest gauge needle possible.",
+        "Hand the used needle to a coworker for disposal.",
+        "Place the used needle in a regular trash can if a sharps container is full."
+      ]
+    },
+    {
+      "q": "A client who is confused and agitated is trying to pull out their IV line. Before applying restraints, what should the nurse do first?",
+      "answers": [
+        "Attempt less restrictive measures, such as reorientation or distraction.",
+        "Obtain a physician's order for restraints.",
+        "Apply the restraints and then notify the physician.",
+        "Ask a family member for permission to restrain the client."
+      ]
+    },
+    {
+      "q": "Standard precautions apply to which of the following?",
+      "answers": [
+        "All clients, regardless of their diagnosis or presumed infection status.",
+        "Only clients with a known infectious disease.",
+        "Only clients who are in isolation.",
+        "Only clients who have open wounds or sores."
+      ]
+    },
+    {
+      "q": "An LVN is disposing of a used syringe and needle. Where should it be placed?",
+      "answers": [
+        "A designated puncture-resistant sharps container.",
+        "The regular trash bin.",
+        "A biohazard bag.",
+        "The client's personal trash can."
+      ]
+    },
+    {
+      "q": "A client is diagnosed with influenza. Which type of transmission-based precaution is most appropriate?",
+      "answers": [
+        "Droplet precautions.",
+        "Airborne precautions.",
+        "Contact precautions.",
+        "Protective isolation."
+      ]
+    },
+    {
+      "q": "What is the correct sequence for donning (putting on) personal protective equipment (PPE)?",
+      "answers": [
+        "Gown, mask, goggles, gloves.",
+        "Gloves, gown, mask, goggles.",
+        "Mask, gloves, gown, goggles.",
+        "Goggles, mask, gloves, gown."
+      ]
+    },
+    {
+      "q": "A client is at risk for falls. Which intervention would be most effective in the hospital setting?",
+      "answers": [
+        "Placing the client's personal belongings and call light within easy reach.",
+        "Keeping the bed in the highest position.",
+        "Administering a sedative to ensure the client stays in bed.",
+        "Keeping the room dark and quiet at all times."
+      ]
+    },
+    {
+      "q": "The LVN is preparing a sterile field. Which action would contaminate the field?",
+      "answers": [
+        "Reaching over the sterile field to pour a solution.",
+        "Keeping the sterile field above waist level.",
+        "Opening a sterile package away from the body.",
+        "Pouring sterile solution into a basin from 6 inches above."
+      ]
+    },
+    {
+      "q": "A client has a latex allergy. The nurse should ensure that which of the following items are not used in the client's care?",
+      "answers": [
+        "Latex gloves.",
+        "Vinyl gloves.",
+        "Cloth tourniquets.",
+        "Plastic syringes."
+      ]
+    },
+    {
+      "q": "Which of the following is a key safety measure when using oxygen therapy?",
+      "answers": [
+        "Posting 'No Smoking' signs in the client's room.",
+        "Using wool blankets to keep the client warm.",
+        "Applying petroleum-based jelly to the client's nares.",
+        "Using electrical equipment with frayed cords."
+      ]
+    },
+    {
+      "q": "A client on airborne precautions must be transported to the radiology department. What is the correct procedure?",
+      "answers": [
+        "Place a surgical mask on the client during transport.",
+        "No special precautions are needed for transport.",
+        "The transporter should wear an N95 respirator.",
+        "Cover the client with a sheet during transport."
+      ]
+    },
+    {
+      "q": "What is the correct sequence for doffing (taking off) PPE for a client in isolation?",
+      "answers": [
+        "Gloves, goggles, gown, mask.",
+        "Gown, mask, goggles, gloves.",
+        "Mask, gown, gloves, goggles.",
+        "Gloves, gown, mask, goggles."
+      ]
+    },
+    {
+      "q": "A client has an order for restraints 'prn' (as needed). The LVN should recognize that this order is:",
+      "answers": [
+        "Invalid, as restraint orders cannot be 'prn'.",
+        "Valid for 24 hours.",
+        "Acceptable if the client is agitated.",
+        "Valid for the duration of the hospital stay."
+      ]
+    },
+    {
+      "q": "The LVN is educating a client about home safety to prevent falls. Which statement indicates the client understands the teaching?",
+      "answers": [
+        "'I will make sure all my area rugs are secured or removed.'",
+        "'I should walk around in my socks to have better grip.'",
+        "'It's best to keep the house dimly lit to save electricity.'",
+        "'I will keep my walker in the closet so it's out of the way.'"
+      ]
+    },
+    {
+      "q": "A client is infected with methicillin-resistant Staphylococcus aureus (MRSA) in a wound. What type of precaution is required?",
+      "answers": [
+        "Contact precautions.",
+        "Airborne precautions.",
+        "Droplet precautions.",
+        "Standard precautions only."
+      ]
+    },
+    {
+      "q": "When using a fire extinguisher, the acronym PASS is used. What does the 'S' at the end stand for?",
+      "answers": [
+        "Sweep.",
+        "Squeeze.",
+        "Secure.",
+        "Spray."
+      ]
+    },
+    {
+      "q": "Which of the following is considered medical asepsis?",
+      "answers": [
+        "Practicing hand hygiene between patients.",
+        "Sterilizing instruments for surgery.",
+        "Wearing a sterile gown and gloves for a procedure.",
+        "Creating a sterile field for a dressing change."
+      ]
+    },
+    {
+      "q": "An LVN is caring for a client with neutropenia (a low white blood cell count). Which precaution is necessary?",
+      "answers": [
+        "Protective (reverse) isolation.",
+        "Droplet precautions.",
+        "Airborne precautions.",
+        "Contact precautions."
+      ]
+    },
+    {
+      "q": "A restraint order must be renewed by the physician within what time frame for an adult?",
+      "answers": [
+        "Every 24 hours.",
+        "Every 8 hours.",
+        "Every 48 hours.",
+        "Once per week."
+      ]
+    },
+    {
+      "q": "What is the primary purpose of a 'time-out' before a surgical procedure?",
+      "answers": [
+        "To verify the correct patient, procedure, and site.",
+        "To allow the surgeon to take a short break.",
+        "To ensure all consent forms have been signed.",
+        "To count all surgical instruments."
+      ]
+    },
+    {
+      "q": "A client with an indwelling urinary catheter is at risk for infection. Which action helps to minimize this risk?",
+      "answers": [
+        "Keeping the drainage bag below the level of the bladder.",
+        "Disconnecting the catheter from the drainage tube to get a sample.",
+        "Routinely irrigating the catheter with sterile saline.",
+        "Changing the catheter every 24 hours."
+      ]
+    },
+    {
+      "q": "A liquid medication has spilled on the floor. What is the first step the LVN should take?",
+      "answers": [
+        "Consult the Safety Data Sheet (SDS) for cleaning instructions.",
+        "Wipe it up immediately with a paper towel.",
+        "Cover the spill with a blanket and call housekeeping.",
+        "Evacuate the room."
+      ]
+    },
+    {
+      "q": "Which personal protective equipment is required for a nurse caring for a patient with measles?",
+      "answers": [
+        "An N95 respirator mask.",
+        "A surgical mask.",
+        "A face shield only.",
+        "Gloves only."
+      ]
+    },
+    {
+      "q": "To ensure client safety, what should the LVN do immediately after a client falls?",
+      "answers": [
+        "Assess the client for injury before moving them.",
+        "Help the client get back into bed as quickly as possible.",
+        "Call the physician to report the fall.",
+        "Complete an incident report."
+      ]
+    },
+    {
+      "q": "Standard precautions are based on the principle that:",
+      "answers": [
+        "All blood, body fluids, secretions, and excretions may contain transmissible infectious agents.",
+        "Only patients with a confirmed diagnosis are infectious.",
+        "Infection is primarily spread through the airborne route.",
+        "Aseptic technique is only necessary for invasive procedures."
+      ]
+    },
+    {
+      "q": "A client is restrained. The LVN must be able to insert how many fingers between the restraint and the client's skin?",
+      "answers": [
+        "Two fingers.",
+        "One finger.",
+        "Three fingers.",
+        "Four fingers."
+      ]
+    },
+    {
+      "q": "A client is receiving an IV antibiotic and develops a rash and difficulty breathing. After stopping the infusion, what should the nurse do next?",
+      "answers": [
+        "Assess the client's airway and vital signs.",
+        "Administer a dose of epinephrine.",
+        "Call the pharmacy to report an adverse drug reaction.",
+        "Document the event in the client's chart."
+      ]
+    },
+    {
+      "q": "Which client should be placed in a private room?",
+      "answers": [
+        "A client with active tuberculosis.",
+        "A client with a fractured hip.",
+        "A client with well-controlled hypertension.",
+        "A client who is post-operative day 2 for a hernia repair."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to administer a medication. The order is written illegibly. What is the correct action?",
+      "answers": [
+        "Contact the prescriber to clarify the order.",
+        "Ask another nurse what they think the order says.",
+        "Ask the pharmacist to interpret the order.",
+        "Administer the medication based on their best guess."
+      ]
+    },
+    {
+      "q": "Which item of PPE should be removed last when leaving an isolation room?",
+      "answers": [
+        "The mask or respirator.",
+        "The gloves.",
+        "The gown.",
+        "The goggles."
+      ]
+    },
+    {
+      "q": "A client is at risk for aspiration. What precaution should the LVN take during meals?",
+      "answers": [
+        "Keep the head of the bed elevated at 90 degrees.",
+        "Provide thin liquids to make swallowing easier.",
+        "Encourage the client to eat quickly.",
+        "Allow the client to lie down immediately after eating."
+      ]
+    },
+    {
+      "q": "The term 'nosocomial infection' is another name for which type of infection?",
+      "answers": [
+        "A healthcare-associated infection.",
+        "A community-acquired infection.",
+        "A viral infection.",
+        "A fungal infection."
+      ]
+    },
+    {
+      "q": "When a client is in restraints, the order must be renewed how often for an adult?",
+      "answers": [
+        "Every 24 hours",
+        "Every 4 hours",
+        "Every 8 hours",
+        "Every shift"
+      ]
+    },
+    {
+      "q": "Which disease requires airborne precautions?",
+      "answers": [
+        "Varicella (chickenpox).",
+        "Influenza.",
+        "Pneumonia.",
+        "Scabies."
+      ]
+    },
+    {
+      "q": "What is the primary safety concern for a client with dysphagia?",
+      "answers": [
+        "Aspiration.",
+        "Dehydration.",
+        "Malnutrition.",
+        "Choking."
+      ]
+    },
+    {
+      "q": "When securing a restraint to the bed, it should be tied to what part?",
+      "answers": [
+        "A movable part of the bed frame.",
+        "The side rail.",
+        "The headboard.",
+        "The footboard."
+      ]
+    },
+    {
+      "q": "A client has a seizure while in bed. To protect the client, what is the nurse's priority action?",
+      "answers": [
+        "Turn the client to the side.",
+        "Insert a padded tongue blade into the client's mouth.",
+        "Restrain the client's limbs to prevent injury.",
+        "Go to the nursing station to call the physician."
+      ]
+    },
+    {
+      "q": "A sterile package has a small amount of clear liquid on it, but the inside appears dry. What should the nurse do?",
+      "answers": [
+        "Consider the package contaminated and obtain a new one.",
+        "Wipe the liquid off and use the contents.",
+        "Open the package carefully, avoiding the wet spot.",
+        "Use the contents as long as they do not touch the wet spot."
+      ]
+    },
+    {
+      "q": "Which of the following would require the nurse to implement droplet precautions?",
+      "answers": [
+        "Mumps.",
+        "Tuberculosis.",
+        "Measles.",
+        "C. difficile."
+      ]
+    },
+    {
+      "q": "A client is identified as a fall risk. Which of the following should be included in the care plan?",
+      "answers": [
+        "Ensuring the client has non-skid footwear.",
+        "Keeping the room dimly lit to promote rest.",
+        "Placing all four side rails in the 'up' position.",
+        "Avoiding the use of a bed alarm."
+      ]
+    },
+    {
+      "q": "An electrical outlet in a client's room is smoking. After rescuing the client, what should the nurse do next?",
+      "answers": [
+        "Activate the fire alarm.",
+        "Unplug the equipment from the outlet.",
+        "Close the door to the room.",
+        "Use a water-based fire extinguisher on the outlet."
+      ]
+    },
+    {
+      "q": "A nurse is teaching a client about electrical safety in the home. Which statement indicates a need for further teaching?",
+      "answers": [
+        "'It's okay to run extension cords under my rugs to keep them out of the way.'",
+        "'I should not use electrical appliances near water sources like the sink.'",
+        "'I need to make sure my outlets are not overloaded with too many plugs.'",
+        "'I should have frayed electrical cords repaired or replaced.'"
+      ]
+    },
+    {
+      "q": "What is the minimum time for a surgical hand scrub?",
+      "answers": [
+        "2 to 6 minutes.",
+        "30 seconds.",
+        "1 minute.",
+        "10 minutes."
+      ]
+    },
+    {
+      "q": "A client has an order for a vest restraint. The LVN should ensure the restraint is applied:",
+      "answers": [
+        "With the 'V' opening in the front.",
+        "As tightly as possible to prevent movement.",
+        "Over the client's bare skin.",
+        "To the bed's side rails."
+      ]
+    },
+    {
+      "q": "A client with a wound infection caused by vancomycin-resistant Enterococcus (VRE) requires which type of precautions?",
+      "answers": [
+        "Contact precautions.",
+        "Airborne precautions.",
+        "Droplet precautions.",
+        "Protective isolation."
+      ]
+    },
+    {
+      "q": "A client is receiving continuous oxygen therapy. What is a key safety intervention to prevent skin breakdown?",
+      "answers": [
+        "Padding the tubing over the ears and cheeks.",
+        "Applying a petroleum-based lubricant to the nares.",
+        "Securing the cannula tightly to the face.",
+        "Removing the cannula for 30 minutes every hour."
+      ]
+    },
+    {
+      "q": "When is it acceptable for a nurse to use an alcohol-based hand rub?",
+      "answers": [
+        "After removing gloves when hands are not visibly soiled.",
+        "After caring for a client with a C. difficile infection.",
+        "When hands are visibly soiled with blood or body fluids.",
+        "Before eating or after using the restroom."
+      ]
+    },
+    {
+      "q": "A nurse is ambulating a client who begins to feel dizzy and faint. What is the nurse's best action?",
+      "answers": [
+        "Gently lower the client to the floor.",
+        "Hold the client up and quickly walk them back to the bed.",
+        "Lean the client against the wall and call for help.",
+        "Have the client sit in a nearby chair."
+      ]
+    },
+    {
+      "q": "Which action by the LVN demonstrates a breach of medication safety?",
+      "answers": [
+        "Leaving a client's medications at the bedside for them to take later.",
+        "Checking the client's wristband before administering medication.",
+        "Documenting a medication immediately after giving it.",
+        "Clarifying an ambiguous medication order with the physician."
+      ]
+    },
+    {
+      "q": "A sterile solution is being poured into a sterile basin. The LVN should:",
+      "answers": [
+        "Pour the solution without splashing onto the sterile field.",
+        "Touch the bottle tip to the inside of the sterile basin.",
+        "Pour the entire contents of the bottle at once.",
+        "Place the bottle cap face down on the sterile field."
+      ]
+    },
+    {
+      "q": "A nurse is caring for a client with bacterial meningitis. Which type of precautions should be implemented?",
+      "answers": [
+        "Droplet precautions for at least 24 hours after antibiotic therapy begins.",
+        "Contact precautions for the duration of the illness.",
+        "Airborne precautions in a negative pressure room.",
+        "Standard precautions are sufficient."
+      ]
+    },
+    {
+      "q": "To prevent back injury, what is the best technique for a nurse to use when lifting a heavy object?",
+      "answers": [
+        "Bend at the knees and keep the back straight.",
+        "Bend at the waist and use the back muscles.",
+        "Keep the feet close together for better balance.",
+        "Twist at the waist while lifting."
+      ]
+    },
+    {
+      "q": "A client with scabies is admitted to the unit. What type of precaution is most appropriate?",
+      "answers": [
+        "Contact precautions.",
+        "Droplet precautions.",
+        "Airborne precautions.",
+        "Protective isolation."
+      ]
+    },
+    {
+      "q": "An LVN finds an unlabeled bottle of solution in a client's room. What is the correct action?",
+      "answers": [
+        "Discard the bottle and its contents.",
+        "Smell the solution to try and identify it.",
+        "Ask the client what is in the bottle.",
+        "Label the bottle with what they believe it to be."
+      ]
+    },
+    {
+      "q": "A client has a radiation implant (brachytherapy). What is a key safety principle for the nursing staff?",
+      "answers": [
+        "Limit the time spent in the client's room.",
+        "Stand as close to the client as possible to provide comfort.",
+        "Allow pregnant staff members to care for the client.",
+        "Do not use a lead apron as it is not necessary."
+      ]
+    },
+    {
+      "q": "A one-inch border around the edge of a sterile field is considered:",
+      "answers": [
+        "Contaminated.",
+        "Sterile.",
+        "Clean.",
+        "Aseptic."
+      ]
+    },
+    {
+      "q": "A client is placed on a clear liquid diet. Which of the following can the LVN safely offer the client?",
+      "answers": [
+        "Gelatin.",
+        "Orange juice with pulp.",
+        "Milk.",
+        "Cream of chicken soup."
+      ]
+    },
+    {
+      "q": "A nurse is assessing a client for fall risk. Which factor is NOT typically part of a fall risk assessment tool?",
+      "answers": [
+        "The client's food preferences.",
+        "The client's age.",
+        "The client's history of falls.",
+        "The client's use of multiple medications (polypharmacy)."
+      ]
+    },
+    {
+      "q": "Which of these clients requires a private, negative-pressure airflow room?",
+      "answers": [
+        "A client with Varicella (chickenpox).",
+        "A client with Influenza.",
+        "A client with MRSA.",
+        "A client with Pneumonia."
+      ]
+    },
+    {
+      "q": "A nurse is preparing to insert a urinary catheter. This procedure requires which type of technique?",
+      "answers": [
+        "Surgical asepsis (sterile technique).",
+        "Medical asepsis (clean technique).",
+        "Standard precautions only.",
+        "Contact precautions."
+      ]
+    },
+    {
+      "q": "To prevent an error, a nurse should never administer a medication that:",
+      "answers": [
+        "Was prepared by another nurse.",
+        "Has a generic name.",
+        "Is a different color than the last refill.",
+        "Is from a multi-dose vial."
+      ]
+    },
+    {
+      "q": "A client has a seizure. After turning the client to the side, what is the next priority?",
+      "answers": [
+        "Observe and document the time and characteristics of the seizure.",
+        "Administer an anti-seizure medication.",
+        "Insert an oral airway.",
+        "Hold the client's head firmly in place."
+      ]
+    },
+    {
+      "q": "Which action by a nursing student would require the supervising LVN to intervene?",
+      "answers": [
+        "Lowering the bed to the lowest position after providing care.",
+        "Placing a used needle in their pocket to dispose of later.",
+        "Answering a client's call light promptly.",
+        "Washing their hands before entering a client's room."
+      ]
+    },
+    {
+      "q": "What does 'vector-borne transmission' mean?",
+      "answers": [
+        "Transmission by an insect or animal.",
+        "Transmission through the air.",
+        "Transmission by direct contact.",
+        "Transmission through contaminated food."
+      ]
+    },
+    {
+      "q": "A client with a history of seizures should have which of the following safety measures in place?",
+      "answers": [
+        "Padded side rails and suction equipment at the bedside.",
+        "A padded tongue blade taped to the wall.",
+        "Four-point leather restraints attached to the bed.",
+        "A well-lit room at all times."
+      ]
+    },
+    {
+      "q": "The LVN is transferring a client from a bed to a stretcher. Which action is most important for safety?",
+      "answers": [
+        "Locking the wheels on both the bed and the stretcher.",
+        "Ensuring the stretcher is slightly higher than the bed.",
+        "Having the client move themselves over to the stretcher.",
+        "Placing a pillow on the stretcher for comfort."
+      ]
+    },
+    {
+      "q": "A nurse is teaching a parent about poison safety for a toddler. Which statement indicates effective teaching?",
+      "answers": [
+        "'I will store all cleaning supplies in a locked cabinet.'",
+        "'I will keep the poison control number written down somewhere.'",
+        "'I will induce vomiting immediately if I think my child has swallowed poison.'",
+        "'I will refer to candy as 'candy' and not as 'medicine'.'"
+      ]
+    },
+    {
+      "q": "Which part of a sterile glove is considered contaminated once it has been donned?",
+      "answers": [
+        "The inner cuff.",
+        "The fingers.",
+        "The palm.",
+        "The back of the hand."
+      ]
+    },
+    {
+      "q": "A hospital is experiencing a power outage and is on emergency generator power. Which outlets are typically powered by the generator?",
+      "answers": [
+        "Red-colored outlets.",
+        "Green-colored outlets.",
+        "All outlets in the room.",
+        "Only the outlets in the hallway."
+      ]
+    },
+    {
+      "q": "A client is at risk for skin breakdown. The LVN should delegate which task to the UAP?",
+      "answers": [
+        "Applying a barrier cream after performing perineal care.",
+        "Assessing the client's skin for non-blanchable redness.",
+        "Developing a turning and repositioning schedule.",
+        "Teaching the client's family how to prevent pressure ulcers."
+      ]
+    },
+    {
+      "q": "A client has an order for 'restraints as needed'. What is the nurse's first action?",
+      "answers": [
+        "Contact the physician to get a specific, time-limited order.",
+        "Apply the restraints whenever the client becomes agitated.",
+        "Document the 'as needed' order in the care plan.",
+        "Tell the client that if they don't cooperate, they will be restrained."
+      ]
+    },
+    {
+      "q": "Which piece of information is most important when using a gait belt to assist a client with ambulation?",
+      "answers": [
+        "The belt should be snug enough to fit only one or two fingers underneath.",
+        "The belt should be placed loosely around the client's waist.",
+        "The nurse should hold the belt from the top.",
+        "The belt should be applied over the client's bare skin."
+      ]
+    },
+    {
+      "q": "An LVN is performing a sterile dressing change. A sterile swab falls off the edge of the sterile field. What is the correct action?",
+      "answers": [
+        "Discard the swab and obtain a new sterile one.",
+        "Use the swab as long as it did not touch the floor.",
+        "Quickly pick up the swab and place it back in the center of the field.",
+        "Rinse the swab with sterile saline before using it."
+      ]
+    },
+    {
+      "q": "What is the primary mode of transmission for Hepatitis A?",
+      "answers": [
+        "Fecal-oral route.",
+        "Bloodborne route.",
+        "Airborne route.",
+        "Sexual contact."
+      ]
+    },
+    {
+      "q": "A client is scheduled for a procedure and has a metal implant. Which diagnostic test is contraindicated?",
+      "answers": [
+        "Magnetic Resonance Imaging (MRI).",
+        "Computed Tomography (CT) scan.",
+        "X-ray.",
+        "Ultrasound."
+      ]
+    },
+    {
+      "q": "What is the correct way to identify a client before a procedure?",
+      "answers": [
+        "Ask the client to state their full name and date of birth.",
+        "Call the client by name and wait for a response.",
+        "Check the name on the door of the client's room.",
+        "Ask a visiting family member to identify the client."
+      ]
+    },
+    {
+      "q": "The LVN is providing care to a client with an internal radiation implant. The principle of 'time, distance, and shielding' is crucial. 'Distance' refers to:",
+      "answers": [
+        "Maintaining the greatest possible space between the nurse and the client.",
+        "Limiting the duration of direct care.",
+        "Wearing a lead apron when providing care.",
+        "The distance the radiation travels outside the room."
+      ]
+    },
+    {
+      "q": "A client is on aspiration precautions. Which is an appropriate delegated task for the UAP?",
+      "answers": [
+        "Reminding the client to tuck their chin when swallowing.",
+        "Assessing the client's gag reflex before the meal.",
+        "Teaching the client about the signs of aspiration.",
+        "Adding a thickening agent to the client's liquids."
+      ]
+    },
+    {
+      "q": "An LVN is preparing to administer a medication from a multi-dose vial. What is the correct procedure after opening the vial?",
+      "answers": [
+        "Date, time, and initial the vial.",
+        "Leave the vial open on the counter for the next dose.",
+        "Use the same needle to draw from the vial multiple times.",
+        "Wipe the top of the vial with a dry gauze pad."
+      ]
+    },
+    {
+      "q": "A tornado warning has been issued for the area around the hospital. What is the nurse's priority action?",
+      "answers": [
+        "Move clients away from windows and into the hallway.",
+        "Evacuate the building immediately.",
+        "Close the curtains and tell everyone to remain calm.",
+        "Move clients to the highest floor of the building."
+      ]
+    }
+  ]

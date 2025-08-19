@@ -1,0 +1,794 @@
+[
+    {
+      "q": "An LVN is caring for a client with chronic obstructive pulmonary disease (COPD). The client is experiencing respiratory acidosis. Which of the following is the most likely cause?",
+      "answers": [
+        "Retention of carbon dioxide (CO2).",
+        "Excessive loss of bicarbonate.",
+        "Hyperventilation.",
+        "Increased oxygen levels."
+      ]
+    },
+    {
+      "q": "A client with a history of heart failure is admitted with shortness of breath and crackles in the lungs. The LVN recognizes these as signs of which condition?",
+      "answers": [
+        "Fluid volume excess.",
+        "Fluid volume deficit.",
+        "Anemia.",
+        "Pneumonia."
+      ]
+    },
+    {
+      "q": "Which of the following is a classic sign of hypoglycemia in a client with diabetes?",
+      "answers": [
+        "Diaphoresis (sweating) and tremors.",
+        "Fruity-scented breath and Kussmaul respirations.",
+        "Increased thirst and frequent urination.",
+        "Dry, flushed skin and blurred vision."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with end-stage renal disease (ESRD). The nurse should expect the client's laboratory results to show which of the following?",
+      "answers": [
+        "Elevated BUN and creatinine levels.",
+        "Low potassium and phosphorus levels.",
+        "High hemoglobin and hematocrit.",
+        "Low blood pressure."
+      ]
+    },
+    {
+      "q": "A client is experiencing an acute asthma attack. The LVN should expect to hear which type of breath sound upon auscultation?",
+      "answers": [
+        "Wheezing.",
+        "Crackles.",
+        "Rhonchi.",
+        "Stridor."
+      ]
+    },
+    {
+      "q": "A client has a potassium level of 6.2 mEq/L. This is known as hyperkalemia. The LVN should monitor the client for what potential complication?",
+      "answers": [
+        "Cardiac arrest.",
+        "Dehydration.",
+        "Seizures.",
+        "Severe hypertension."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with liver cirrhosis and ascites. Which of the following dietary modifications is most important?",
+      "answers": [
+        "Restricting sodium intake.",
+        "Increasing protein intake.",
+        "Restricting carbohydrate intake.",
+        "Increasing potassium intake."
+      ]
+    },
+    {
+      "q": "A client with a new diagnosis of type 1 diabetes asks the LVN why they need to take insulin instead of pills. What is the best response?",
+      "answers": [
+        "'In type 1 diabetes, your pancreas does not produce any insulin, so you need to inject it.'",
+        "'The pills are not as strong as insulin injections.'",
+        "'It's just the standard treatment for all types of diabetes.'",
+        "'Your body has become resistant to the pills.'"
+      ]
+    },
+    {
+      "q": "A client is admitted with diabetic ketoacidosis (DKA). The LVN should expect to see which of the following laboratory findings?",
+      "answers": [
+        "High blood glucose and ketones in the urine.",
+        "Low blood glucose and no ketones in the urine.",
+        "High blood pH and low CO2.",
+        "Low potassium and low sodium."
+      ]
+    },
+    {
+      "q": "A client is in hypovolemic shock. The LVN should expect which of the following assessment findings?",
+      "answers": [
+        "Tachycardia and hypotension.",
+        "Bradycardia and hypertension.",
+        "A slow, bounding pulse.",
+        "Warm, flushed skin."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with chronic renal failure. The client has a low red blood cell count. The nurse understands this is due to a deficiency of which hormone?",
+      "answers": [
+        "Erythropoietin.",
+        "Renin.",
+        "Aldosterone.",
+        "Thyroxine."
+      ]
+    },
+    {
+      "q": "Which of the following is a symptom of right-sided heart failure?",
+      "answers": [
+        "Peripheral edema and jugular vein distention.",
+        "Pulmonary crackles and dyspnea.",
+        "A dry, hacking cough.",
+        "Orthopnea."
+      ]
+    },
+    {
+      "q": "A client is experiencing Cushing's syndrome. The LVN would expect to see which physical characteristic?",
+      "answers": [
+        "A 'moon face' and a buffalo hump.",
+        "Weight loss and exophthalmos.",
+        "Bronze pigmentation of the skin.",
+        "Extreme thinness and muscle wasting."
+      ]
+    },
+    {
+      "q": "A client's arterial blood gas (ABG) results are: pH 7.30, PaCO2 38 mmHg, HCO3 18 mEq/L. The LVN should interpret this as:",
+      "answers": [
+        "Metabolic acidosis.",
+        "Metabolic alkalosis.",
+        "Respiratory acidosis.",
+        "Respiratory alkalosis."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with Addison's disease. The nurse should monitor for which of the following?",
+      "answers": [
+        "Hypotension and hyponatremia.",
+        "Hypertension and hyperglycemia.",
+        "Weight gain and edema.",
+        "Bounding pulse and flushed skin."
+      ]
+    },
+    {
+      "q": "A client with a history of peptic ulcer disease suddenly complains of severe, sharp abdominal pain and has a rigid abdomen. The LVN should suspect what complication?",
+      "answers": [
+        "Perforation.",
+        "Hemorrhage.",
+        "Obstruction.",
+        "Gastritis."
+      ]
+    },
+    {
+      "q": "Which of the following is a classic symptom of left-sided heart failure?",
+      "answers": [
+        "Crackles in the lungs.",
+        "Dependent edema.",
+        "Ascites.",
+        "Jugular vein distention."
+      ]
+    },
+    {
+      "q": "A client has a sodium level of 125 mEq/L. The LVN should monitor the client for which of the following?",
+      "answers": [
+        "Confusion and seizures.",
+        "Thirst and dry mucous membranes.",
+        "Muscle rigidity and hyperreflexia.",
+        "Bradycardia and hypotension."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with Graves' disease (hyperthyroidism). The nurse should expect the client to report:",
+      "answers": [
+        "Heat intolerance and palpitations.",
+        "Cold intolerance and weight gain.",
+        "Constipation and fatigue.",
+        "Bradycardia and lethargy."
+      ]
+    },
+    {
+      "q": "A client is in septic shock. Which of the following is a key intervention?",
+      "answers": [
+        "Administering broad-spectrum antibiotics and fluid resuscitation.",
+        "Applying warm compresses and elevating the legs.",
+        "Administering a diuretic to reduce fluid overload.",
+        "Placing the client in a Trendelenburg position."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client with a brain injury. A late sign of increased intracranial pressure (ICP) is:",
+      "answers": [
+        "Cushing's triad (bradycardia, hypertension with a widening pulse pressure, irregular respirations).",
+        "Headache and vomiting.",
+        "Restlessness and agitation.",
+        "A change in level of consciousness."
+      ]
+    },
+    {
+      "q": "A client with chronic kidney disease is taught to limit their intake of protein. This is because protein metabolism results in what waste product?",
+      "answers": [
+        "Urea.",
+        "Ketones.",
+        "Glucose.",
+        "Ammonia."
+      ]
+    },
+    {
+      "q": "A client has a calcium level of 7.5 mg/dL. The LVN should assess for which of the following signs?",
+      "answers": [
+        "A positive Trousseau's sign.",
+        "Muscle weakness and hypoactive reflexes.",
+        "Constipation.",
+        "Kidney stones."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with pancreatitis. The client should be kept NPO (nothing by mouth) for what reason?",
+      "answers": [
+        "To reduce the secretion of pancreatic enzymes.",
+        "To prevent aspiration.",
+        "To prepare for emergency surgery.",
+        "To decrease nausea and vomiting."
+      ]
+    },
+    {
+      "q": "A client is experiencing anaphylactic shock. The primary physiological response is:",
+      "answers": [
+        "Widespread vasodilation and increased capillary permeability.",
+        "Systemic vasoconstriction and hypertension.",
+        "Decreased heart rate and cardiac output.",
+        "Bronchoconstriction and respiratory alkalosis."
+      ]
+    },
+    {
+      "q": "A client with myxedema coma, a complication of hypothyroidism, would exhibit which of the following?",
+      "answers": [
+        "Severe hypothermia, hypoventilation, and hypotension.",
+        "Extreme fever, tachycardia, and hypertension.",
+        "Agitation, seizures, and delirium.",
+        "Hyperglycemia and ketoacidosis."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with Guillain-Barré syndrome. What is the priority nursing assessment?",
+      "answers": [
+        "Monitoring respiratory status and vital capacity.",
+        "Assessing for changes in level of consciousness.",
+        "Checking for signs of deep vein thrombosis.",
+        "Evaluating the client's ability to perform activities of daily living."
+      ]
+    },
+    {
+      "q": "A client has a diagnosis of syndrome of inappropriate antidiuretic hormone (SIADH). The LVN should expect the client to have:",
+      "answers": [
+        "Fluid retention and dilutional hyponatremia.",
+        "Excessive urine output and hypernatremia.",
+        "Dehydration and increased serum osmolality.",
+        "Low urine specific gravity."
+      ]
+    },
+    {
+      "q": "Which of the following describes Kussmaul respirations?",
+      "answers": [
+        "Deep, rapid respirations seen in metabolic acidosis.",
+        "Slow, shallow respirations.",
+        "Periods of apnea followed by rapid breathing.",
+        "A high-pitched sound on inspiration."
+      ]
+    },
+    {
+      "q": "A client with liver failure develops asterixis, a 'flapping tremor'. This is a sign of what complication?",
+      "answers": [
+        "Hepatic encephalopathy.",
+        "Portal hypertension.",
+        "Ascites.",
+        "Jaundice."
+      ]
+    },
+    {
+      "q": "A client has a magnesium level of 1.0 mEq/L. The LVN should monitor for which of the following?",
+      "answers": [
+        "Cardiac arrhythmias and neuromuscular irritability.",
+        "Respiratory depression and lethargy.",
+        "Hypoactive deep tendon reflexes.",
+        "Bradycardia and hypotension."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with an acute myocardial infarction (MI). The primary goal of medical management is to:",
+      "answers": [
+        "Restore blood flow to the heart muscle (reperfusion).",
+        "Lower the client's blood pressure.",
+        "Decrease the client's cholesterol level.",
+        "Increase the client's physical activity."
+      ]
+    },
+    {
+      "q": "A client with diabetes insipidus will exhibit which of the following symptoms?",
+      "answers": [
+        "Polyuria (excessive urination) and extreme thirst.",
+        "Decreased urine output and fluid retention.",
+        "Hyperglycemia and glucosuria.",
+        "Hyponatremia and weight gain."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client's arterial blood gas results. A normal pH is:",
+      "answers": [
+        "7.35 to 7.45.",
+        "7.25 to 7.35.",
+        "7.45 to 7.55.",
+        "7.00 to 7.20."
+      ]
+    },
+    {
+      "q": "A client is in cardiogenic shock. The underlying problem is:",
+      "answers": [
+        "The heart's inability to pump effectively.",
+        "A loss of circulating blood volume.",
+        "A severe allergic reaction.",
+        "A systemic infection."
+      ]
+    },
+    {
+      "q": "A client with emphysema is likely to have which of the following physical characteristics?",
+      "answers": [
+        "A barrel chest.",
+        "Peripheral edema.",
+        "A productive cough with thick sputum.",
+        "Clubbing of the fingers."
+      ]
+    },
+    {
+      "q": "A client's arterial blood gas shows a PaCO2 of 55 mmHg. This indicates what?",
+      "answers": [
+        "The client is retaining carbon dioxide.",
+        "The client is blowing off too much carbon dioxide.",
+        "The client's oxygen levels are low.",
+        "The client has metabolic acidosis."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with pernicious anemia. The nurse knows this is caused by a deficiency in:",
+      "answers": [
+        "Vitamin B12.",
+        "Iron.",
+        "Folic acid.",
+        "Vitamin C."
+      ]
+    },
+    {
+      "q": "A client has a diagnosis of ulcerative colitis. The LVN should expect the client to report which of the following?",
+      "answers": [
+        "Frequent, bloody diarrhea and abdominal cramping.",
+        "Steatorrhea (fatty stools) and right upper quadrant pain.",
+        "Chronic constipation alternating with diarrhea.",
+        "'Cobblestone' appearance of the colon on imaging."
+      ]
+    },
+    {
+      "q": "A client is experiencing a thyroid storm, a complication of hyperthyroidism. The LVN should expect to see:",
+      "answers": [
+        "Extreme fever, tachycardia, and delirium.",
+        "Severe bradycardia, hypotension, and lethargy.",
+        "Hypoglycemia and seizures.",
+        "Respiratory acidosis and coma."
+      ]
+    },
+    {
+      "q": "The 'three P's' of hyperglycemia are:",
+      "answers": [
+        "Polyuria, polydipsia, and polyphagia.",
+        "Pallor, palpitations, and perspiration.",
+        "Pain, paresthesia, and paralysis.",
+        "Proteinuria, pyuria, and polydipsia."
+      ]
+    },
+    {
+      "q": "A client with a spinal cord injury at the T6 level is experiencing autonomic dysreflexia. What is the LVN's first action?",
+      "answers": [
+        "Place the client in a high-Fowler's position.",
+        "Administer an antihypertensive medication.",
+        "Check for a full bladder or bowel impaction.",
+        "Lower the head of the bed."
+      ]
+    },
+    {
+      "q": "A client has a sodium level of 150 mEq/L. The nurse should assess the client for:",
+      "answers": [
+        "Thirst and dry, sticky mucous membranes.",
+        "Muscle cramps and confusion.",
+        "Abdominal cramping and diarrhea.",
+        "Increased urine output."
+      ]
+    },
+    {
+      "q": "A client is admitted with an exacerbation of Crohn's disease. The nurse should monitor the client for which potential complication?",
+      "answers": [
+        "Fistula formation.",
+        "Hemorrhoids.",
+        "Gastroesophageal reflux.",
+        "Diverticulosis."
+      ]
+    },
+    {
+      "q": "Which of the following is a key feature of nephrotic syndrome?",
+      "answers": [
+        "Massive proteinuria and generalized edema.",
+        "Hematuria and hypertension.",
+        "Polyuria and dehydration.",
+        "Kidney stones and flank pain."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a closed head injury. Which of the following is contraindicated?",
+      "answers": [
+        "Performing a nasotracheal suctioning.",
+        "Keeping the head of the bed elevated at 30 degrees.",
+        "Maintaining a quiet, low-stimulation environment.",
+        "Monitoring neurologic status every hour."
+      ]
+    },
+    {
+      "q": "A client has a low serum albumin level. This can lead to a decrease in:",
+      "answers": [
+        "Oncotic pressure, causing edema.",
+        "Blood glucose levels.",
+        "The inflammatory response.",
+        "The ability of blood to clot."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with thrombocytopenia. The nurse should avoid which action?",
+      "answers": [
+        "Administering an intramuscular injection.",
+        "Using a soft-bristled toothbrush for oral care.",
+        "Applying pressure to a venipuncture site for 5 minutes.",
+        "Using an electric razor for shaving."
+      ]
+    },
+    {
+      "q": "A client with asthma uses a short-acting beta-agonist (SABA) inhaler, such as albuterol, for what purpose?",
+      "answers": [
+        "To provide rapid relief of acute bronchospasm.",
+        "For long-term control of inflammation.",
+        "To prevent exercise-induced asthma.",
+        "As a daily maintenance medication."
+      ]
+    },
+    {
+      "q": "A client with Parkinson's disease is likely to exhibit which of the following symptoms?",
+      "answers": [
+        "A shuffling gait and resting tremors.",
+        "Ascending paralysis and muscle weakness.",
+        "Spasticity and hyperreflexia.",
+        "Diplopia and ptosis."
+      ]
+    },
+    {
+      "q": "A client's arterial blood gas shows a HCO3 (bicarbonate) level of 16 mEq/L. This indicates:",
+      "answers": [
+        "A deficit of base in the body.",
+        "An excess of base in the body.",
+        "The client is retaining CO2.",
+        "The client is blowing off CO2."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with deep vein thrombosis (DVT). The nurse should:",
+      "answers": [
+        "Elevate the affected extremity.",
+        "Apply a heating pad to the affected leg.",
+        "Massage the calf to relieve pain.",
+        "Encourage active range-of-motion exercises."
+      ]
+    },
+    {
+      "q": "A client with myasthenia gravis is at high risk for what life-threatening complication?",
+      "answers": [
+        "Respiratory failure.",
+        "Hypertensive crisis.",
+        "Renal failure.",
+        "Cardiac arrest."
+      ]
+    },
+    {
+      "q": "A client has a calcium level of 11.5 mg/dL. The LVN should assess for which of the following?",
+      "answers": [
+        "Constipation and muscle weakness.",
+        "Numbness and tingling in the fingers.",
+        "A positive Chvostek's sign.",
+        "Muscle spasms and tetany."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a history of seizures. What is the priority during a seizure?",
+      "answers": [
+        "Protecting the client from injury.",
+        "Inserting an oral airway.",
+        "Restraining the client.",
+        "Administering medication."
+      ]
+    },
+    {
+      "q": "A client with a new diagnosis of hypertension is being taught about lifestyle modifications. Which statement indicates the client understands?",
+      "answers": [
+        "'I will need to reduce my salt intake and exercise regularly.'",
+        "'I can stop taking my medication once my blood pressure is normal.'",
+        "'My hypertension is cured, so I don't need to change my diet.'",
+        "'I should only check my blood pressure when I feel dizzy.'"
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with compartment syndrome. Which of the following is a classic sign?",
+      "answers": [
+        "Pain that is unrelieved by opioid analgesics.",
+        "A bounding pulse in the affected extremity.",
+        "Warm, red skin over the affected area.",
+        "Significant edema that improves with elevation."
+      ]
+    },
+    {
+      "q": "A client with a history of alcohol abuse is admitted with pancreatitis. The LVN should expect the client's lab results to show elevated levels of:",
+      "answers": [
+        "Amylase and lipase.",
+        "Hemoglobin and hematocrit.",
+        "Platelets.",
+        "Calcium."
+      ]
+    },
+    {
+      "q": "A client with a pneumothorax has a chest tube. The purpose of the chest tube is to:",
+      "answers": [
+        "Remove air from the pleural space and allow the lung to re-expand.",
+        "Drain blood from the pericardial sac.",
+        "Instill antibiotics into the lung.",
+        "Provide a route for mechanical ventilation."
+      ]
+    },
+    {
+      "q": "A client is experiencing an addisonian crisis. The LVN should anticipate administering which of the following?",
+      "answers": [
+        "Intravenous corticosteroids and fluids.",
+        "Insulin and potassium.",
+        "Diuretics and beta-blockers.",
+        "Antithyroid medications."
+      ]
+    },
+    {
+      "q": "Which of the following is a compensatory mechanism for metabolic acidosis?",
+      "answers": [
+        "An increased respiratory rate and depth (Kussmaul respirations).",
+        "A decreased respiratory rate.",
+        "The kidneys retaining bicarbonate.",
+        "The kidneys excreting hydrogen ions."
+      ]
+    },
+    {
+      "q": "A client with an ischemic stroke is a candidate for thrombolytic therapy (tPA). This medication must be given within what time frame from the onset of symptoms?",
+      "answers": [
+        "3 to 4.5 hours.",
+        "12 hours.",
+        "24 hours.",
+        "6 hours."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client's fluid balance. The client's urine specific gravity is 1.035. This indicates:",
+      "answers": [
+        "Dehydration.",
+        "Fluid overload.",
+        "A normal finding.",
+        "Renal failure."
+      ]
+    },
+    {
+      "q": "A client with angina pectoris is prescribed sublingual nitroglycerin. What is a key instruction for the client?",
+      "answers": [
+        "Sit down before taking the medication.",
+        "Swallow the tablet whole.",
+        "Take one tablet every 15 minutes until the pain is gone.",
+        "Store the tablets in a sunny place."
+      ]
+    },
+    {
+      "q": "A client is in neurogenic shock. The nurse would expect to see:",
+      "answers": [
+        "Bradycardia and hypotension.",
+        "Tachycardia and hypertension.",
+        "Cool, clammy skin.",
+        "A narrow pulse pressure."
+      ]
+    },
+    {
+      "q": "A client with a history of gout should be taught to avoid which types of foods?",
+      "answers": [
+        "Foods high in purines, such as organ meats and shellfish.",
+        "Foods high in calcium, such as dairy products.",
+        "Foods high in potassium, such as bananas and oranges.",
+        "Foods high in vitamin C."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a full-thickness burn. The client is in the emergent phase. What is the priority concern?",
+      "answers": [
+        "Fluid and electrolyte balance.",
+        "Pain management.",
+        "Infection control.",
+        "Body image disturbance."
+      ]
+    },
+    {
+      "q": "Which of the following is a sign of autonomic dysreflexia?",
+      "answers": [
+        "Severe pounding headache and profuse sweating above the level of injury.",
+        "Hypotension and bradycardia.",
+        "Flaccid paralysis below the level of injury.",
+        "A sudden drop in body temperature."
+      ]
+    },
+    {
+      "q": "A client has a phosphorus level of 5.0 mg/dL. The LVN would expect the client to also have a low level of which electrolyte?",
+      "answers": [
+        "Calcium.",
+        "Potassium.",
+        "Sodium.",
+        "Magnesium."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with multiple sclerosis (MS). The nurse should instruct the client to:",
+      "answers": [
+        "Avoid hot baths and showers.",
+        "Perform strenuous exercise daily.",
+        "Follow a low-fat, high-carbohydrate diet.",
+        "Limit fluid intake to prevent incontinence."
+      ]
+    },
+    {
+      "q": "A client has a Glasgow Coma Scale (GCS) score of 8. This indicates:",
+      "answers": [
+        "A severe head injury.",
+        "A mild head injury.",
+        "A moderate head injury.",
+        "The client is fully alert and oriented."
+      ]
+    },
+    {
+      "q": "Which of the following is a common complication of immobility?",
+      "answers": [
+        "The formation of a deep vein thrombosis (DVT).",
+        "Increased muscle mass.",
+        "Hypertension.",
+        "Improved respiratory function."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a hiatal hernia. To reduce symptoms, the nurse should recommend that the client:",
+      "answers": [
+        "Eat small, frequent meals and remain upright after eating.",
+        "Lie down immediately after meals.",
+        "Drink large amounts of fluid with meals.",
+        "Wear tight-fitting clothing around the abdomen."
+      ]
+    },
+    {
+      "q": "A client is in atrial fibrillation. The LVN should be aware that this puts the client at a high risk for what?",
+      "answers": [
+        "Stroke.",
+        "Myocardial infarction.",
+        "Heart failure.",
+        "Ventricular tachycardia."
+      ]
+    },
+    {
+      "q": "A client with end-stage renal disease chooses to stop dialysis. The LVN should recognize this as an issue related to:",
+      "answers": [
+        "The client's right to refuse treatment.",
+        "Medical negligence.",
+        "A failure of the healthcare team.",
+        "A sign of depression."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client who is actively dying. The client has periods of apnea. The nurse should:",
+      "answers": [
+        "Document the finding as an expected part of the dying process.",
+        "Apply oxygen via a non-rebreather mask.",
+        "Stimulate the client by shaking them gently.",
+        "Immediately call a code blue."
+      ]
+    },
+    {
+      "q": "A client with a history of asthma is prescribed a beta-blocker for hypertension. The LVN should question this order because beta-blockers can cause:",
+      "answers": [
+        "Bronchospasm.",
+        "Tachycardia.",
+        "Hypotension.",
+        "Dry mouth."
+      ]
+    },
+    {
+      "q": "The Romberg test is used to assess:",
+      "answers": [
+        "Balance and proprioception.",
+        "Visual acuity.",
+        "Hearing.",
+        "Cranial nerve function."
+      ]
+    },
+    {
+      "q": "A client is receiving peritoneal dialysis. The dialysate outflow is cloudy. The LVN should suspect what complication?",
+      "answers": [
+        "Peritonitis.",
+        "Bowel perforation.",
+        "Dehydration.",
+        "A catheter obstruction."
+      ]
+    },
+    {
+      "q": "What is the hallmark sign of acute respiratory distress syndrome (ARDS)?",
+      "answers": [
+        "Refractory hypoxemia (hypoxemia that does not respond to oxygen therapy).",
+        "A productive cough with green sputum.",
+        "Wheezing in all lung fields.",
+        "A barrel chest."
+      ]
+    },
+    {
+      "q": "A client is experiencing septic shock. The LVN should prioritize which of the following?",
+      "answers": [
+        "Obtaining blood cultures before administering antibiotics.",
+        "Administering an antipyretic for the fever.",
+        "Placing the client in a Trendelenburg position.",
+        "Providing a warm blanket for comfort."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with diverticulitis. During the acute phase, the client's diet should be:",
+      "answers": [
+        "Clear liquids.",
+        "High-fiber.",
+        "Regular, as tolerated.",
+        "Low-protein."
+      ]
+    },
+    {
+      "q": "Which of the following is a sign of fluid volume deficit (dehydration)?",
+      "answers": [
+        "Increased heart rate and decreased blood pressure.",
+        "A bounding pulse and peripheral edema.",
+        "Crackles in the lungs and jugular vein distention.",
+        "A low urine specific gravity."
+      ]
+    },
+    {
+      "q": "A client has a diagnosis of benign prostatic hyperplasia (BPH). The LVN should expect the client to report:",
+      "answers": [
+        "Difficulty starting the stream of urine.",
+        "Flank pain and hematuria.",
+        "Painful urination with a fever.",
+        "A history of sexually transmitted infections."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with sickle cell crisis. What is the priority nursing intervention?",
+      "answers": [
+        "Administering oxygen and providing hydration.",
+        "Applying cold compresses to the painful joints.",
+        "Restricting fluid intake.",
+        "Encouraging strenuous exercise."
+      ]
+    },
+    {
+      "q": "A client has a chest tube that has become dislodged from the chest wall. What is the LVN's immediate action?",
+      "answers": [
+        "Cover the insertion site with a sterile occlusive dressing, taped on three sides.",
+        "Attempt to reinsert the tube.",
+        "Place the client in a Trendelenburg position.",
+        "Obtain a new chest tube drainage system."
+      ]
+    },
+    {
+      "q": "A client is at risk for atelectasis. This condition involves:",
+      "answers": [
+        "Collapse of the alveoli.",
+        "Inflammation of the bronchi.",
+        "Fluid in the pleural space.",
+        "A blood clot in the lung."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a femur fracture who suddenly develops shortness of breath, confusion, and a petechial rash on the chest. The LVN should suspect what complication?",
+      "answers": [
+        "A fat embolism.",
+        "A pulmonary embolism.",
+        "Pneumonia.",
+        "An allergic reaction."
+      ]
+    }
+  ]

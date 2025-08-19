@@ -1,0 +1,767 @@
+[
+    {
+      "q": "An LVN is caring for a client who just had a cast applied to their left leg. Which assessment finding should be reported to the RN or physician immediately?",
+      "answers": [
+        "The client reports a tingling sensation in their left toes.",
+        "The cast is still damp to the touch after 2 hours.",
+        "The client's toes are warm and pink.",
+        "The client reports mild itching under the cast."
+      ]
+    },
+    {
+      "q": "A client is 1 day post-operative from abdominal surgery. Which finding is the best indicator of a developing complication?",
+      "answers": [
+        "A rigid, board-like abdomen.",
+        "The client reporting 5/10 incisional pain.",
+        "Absent bowel sounds.",
+        "A small amount of serosanguineous drainage on the dressing."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client's chest tube drainage system and notices continuous bubbling in the water-seal chamber. What does this indicate?",
+      "answers": [
+        "An air leak in the system.",
+        "The system is functioning properly.",
+        "The client's lung has re-expanded.",
+        "The suction is set too high."
+      ]
+    },
+    {
+      "q": "A client's potassium level is 2.8 mEq/L. The LVN should monitor the client for which potential complication?",
+      "answers": [
+        "Cardiac dysrhythmias.",
+        "Seizures.",
+        "Increased muscle tone.",
+        "Hypertension."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a nasogastric (NG) tube. To prevent aspiration, the head of the bed should be maintained at what minimum elevation?",
+      "answers": [
+        "30 degrees.",
+        "10 degrees.",
+        "45 degrees.",
+        "90 degrees."
+      ]
+    },
+    {
+      "q": "A client is receiving a tube feeding. The LVN checks the gastric residual volume before the next feeding and obtains 150 mL. What is the most appropriate action?",
+      "answers": [
+        "Hold the feeding and notify the physician.",
+        "Administer the feeding as scheduled.",
+        "Discard the residual and continue the feeding.",
+        "Re-instill the residual and start the feeding at a slower rate."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client's lab results. Which value indicates an abnormal finding?",
+      "answers": [
+        "White blood cell (WBC) count of 15,000/mm³.",
+        "Hemoglobin of 14 g/dL.",
+        "Platelet count of 250,000/mm³.",
+        "Sodium level of 140 mEq/L."
+      ]
+    },
+    {
+      "q": "A client is 2 days post-operative and has not had a bowel movement. The client is passing gas. What is the LVN's interpretation of this finding?",
+      "answers": [
+        "This is a normal finding as peristalsis is returning.",
+        "The client is developing a paralytic ileus.",
+        "The client requires an immediate enema.",
+        "This indicates a possible bowel obstruction."
+      ]
+    },
+    {
+      "q": "The LVN is assessing a client's surgical incision and notes purulent drainage. What is the LVN's priority action?",
+      "answers": [
+        "Notify the charge nurse or physician of a possible infection.",
+        "Clean the incision and apply a new dressing.",
+        "Document the finding in the client's chart.",
+        "Obtain a culture of the drainage."
+      ]
+    },
+    {
+      "q": "A client with diabetes reports feeling shaky and dizzy. A fingerstick blood glucose is 65 mg/dL. What should the LVN provide to the client first?",
+      "answers": [
+        "4 ounces of orange juice.",
+        "A slice of whole wheat bread.",
+        "A glass of milk.",
+        "A serving of crackers with peanut butter."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client after a cardiac catheterization. Which post-procedure intervention is a priority to prevent complications?",
+      "answers": [
+        "Keeping the affected extremity straight and immobilized.",
+        "Encouraging early and frequent ambulation.",
+        "Applying a warm compress to the insertion site.",
+        "Administering anticoagulants as ordered."
+      ]
+    },
+    {
+      "q": "A client has a platelet count of 40,000/mm³. The LVN should implement precautions for which condition?",
+      "answers": [
+        "Bleeding.",
+        "Infection.",
+        "Seizures.",
+        "Dehydration."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a new colostomy. The stoma appears dark and dusky. What is the most appropriate action?",
+      "answers": [
+        "Notify the physician immediately, as this indicates ischemia.",
+        "Document the finding as normal for a new stoma.",
+        "Apply a warm compress to the stoma to improve circulation.",
+        "Wash the stoma with soap and water."
+      ]
+    },
+    {
+      "q": "A client's hemoglobin A1c level is 8.5%. The LVN should interpret this as:",
+      "answers": [
+        "Poor long-term glucose control.",
+        "Good long-term glucose control.",
+        "An indication of recent hypoglycemia.",
+        "A normal finding for a non-diabetic client."
+      ]
+    },
+    {
+      "q": "Which of the following is an early sign of a pressure ulcer (stage 1)?",
+      "answers": [
+        "Non-blanchable erythema of intact skin.",
+        "A partial-thickness skin loss involving the dermis.",
+        "A shallow open crater.",
+        "Full-thickness tissue loss with exposed bone."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client with a history of heart failure. Which finding suggests a worsening of their condition?",
+      "answers": [
+        "The client has 3+ pitting edema in their lower extremities.",
+        "The client's blood pressure is 130/80 mmHg.",
+        "The client's urine output is 50 mL/hr.",
+        "The client has a respiratory rate of 18 breaths per minute."
+      ]
+    },
+    {
+      "q": "A client is on a fluid restriction. What is the best way for the LVN to monitor their fluid status?",
+      "answers": [
+        "Obtaining daily weights.",
+        "Asking the client if they are thirsty.",
+        "Checking skin turgor.",
+        "Monitoring blood pressure every shift."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a Jackson-Pratt (JP) drain. Which action is part of routine care for this drain?",
+      "answers": [
+        "Compressing the bulb after emptying it to create suction.",
+        "Irrigating the drain with sterile saline every 4 hours.",
+        "Keeping the drain unclamped and open to air.",
+        "Pinning the drain to the client's bedsheets."
+      ]
+    },
+    {
+      "q": "A client has a potassium level of 5.8 mEq/L. This client is at risk for:",
+      "answers": [
+        "Life-threatening cardiac arrhythmias.",
+        "Severe dehydration.",
+        "Hypoglycemia.",
+        "Neurological impairment."
+      ]
+    },
+    {
+      "q": "A client is undergoing a procedure that requires conscious sedation. What is the priority piece of equipment to have at the bedside?",
+      "answers": [
+        "Resuscitation equipment, including a bag-valve mask.",
+        "A supply of warm blankets.",
+        "An indwelling urinary catheter kit.",
+        "A blood glucose monitor."
+      ]
+    },
+    {
+      "q": "The LVN is instructing a client on how to use an incentive spirometer. What is the correct instruction?",
+      "answers": [
+        "Inhale slowly and deeply through the mouthpiece.",
+        "Exhale forcefully into the mouthpiece.",
+        "Use the device every 4 hours while awake.",
+        "Blow into the device as if blowing up a balloon."
+      ]
+    },
+    {
+      "q": "A client is 4 hours post-thyroidectomy. The client is complaining of tingling around their mouth and fingers. The LVN should suspect which electrolyte imbalance?",
+      "answers": [
+        "Hypocalcemia.",
+        "Hyperkalemia.",
+        "Hyponatremia.",
+        "Hypermagnesemia."
+      ]
+    },
+    {
+      "q": "The LVN is performing a wound irrigation. The stream of irrigating solution should be directed from:",
+      "answers": [
+        "The least contaminated area to the most contaminated area.",
+        "The most contaminated area to the least contaminated area.",
+        "The outer edge of the wound toward the center.",
+        "The bottom of the wound toward the top."
+      ]
+    },
+    {
+      "q": "A client is at risk for deep vein thrombosis (DVT). Which intervention is most important for the LVN to implement?",
+      "answers": [
+        "Encouraging early and frequent ambulation.",
+        "Massaging the client's lower legs.",
+        "Keeping the client on strict bed rest.",
+        "Applying warm compresses to the calves."
+      ]
+    },
+    {
+      "q": "The LVN is assessing a client with a history of seizures. Which question is most important to ask during the health history?",
+      "answers": [
+        "'Do you experience an aura or any warning signs before a seizure?'",
+        "'What is your favorite food?'",
+        "'Do you enjoy watching television?'",
+        "'How many siblings do you have?'"
+      ]
+    },
+    {
+      "q": "A client's lab results show a low hemoglobin and hematocrit. The LVN should monitor the client for what signs and symptoms?",
+      "answers": [
+        "Fatigue and shortness of breath.",
+        "Jaundice and itching.",
+        "Flank pain and hematuria.",
+        "Nausea and vomiting."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a Penrose drain. This type of drain works by:",
+      "answers": [
+        "Gravity.",
+        "Suction.",
+        "Pressure.",
+        "Capillary action."
+      ]
+    },
+    {
+      "q": "A client on bed rest is at risk for developing atelectasis. To prevent this, the LVN should instruct the client to:",
+      "answers": [
+        "Cough and deep breathe every 1-2 hours.",
+        "Limit their fluid intake.",
+        "Remain in a supine position.",
+        "Avoid using an incentive spirometer."
+      ]
+    },
+    {
+      "q": "The normal range for serum potassium is:",
+      "answers": [
+        "3.5 to 5.0 mEq/L.",
+        "135 to 145 mEq/L.",
+        "8.5 to 10.5 mg/dL.",
+        "1.5 to 2.5 mEq/L."
+      ]
+    },
+    {
+      "q": "A client has just had a central venous catheter inserted. What is the priority action before starting an infusion?",
+      "answers": [
+        "Confirm placement with a chest x-ray.",
+        "Flush the line with 10 mL of heparin.",
+        "Start the infusion at a very slow rate.",
+        "Assess the insertion site for bleeding."
+      ]
+    },
+    {
+      "q": "A client's BUN and creatinine levels are elevated. This is an indication of a problem with which organ?",
+      "answers": [
+        "Kidneys.",
+        "Liver.",
+        "Heart.",
+        "Lungs."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a casted arm. The client's fingers are pale, cold, and the nail beds have slow capillary refill. This indicates:",
+      "answers": [
+        "Impaired circulation.",
+        "A normal healing process.",
+        "An infection under the cast.",
+        "The cast is too loose."
+      ]
+    },
+    {
+      "q": "Which of these clients is at the highest risk for developing a pressure ulcer?",
+      "answers": [
+        "A 75-year-old client with incontinence who is on bed rest.",
+        "A 40-year-old client who is ambulatory after surgery.",
+        "A 25-year-old client with a fractured arm.",
+        "A 60-year-old client who is well-nourished and hydrated."
+      ]
+    },
+    {
+      "q": "The LVN is monitoring a client's continuous bladder irrigation (CBI) after a TURP procedure. The drainage is bright red with clots. What is the appropriate action?",
+      "answers": [
+        "Increase the irrigation rate and notify the RN.",
+        "Stop the irrigation immediately.",
+        "Decrease the irrigation rate.",
+        "Document the finding as normal."
+      ]
+    },
+    {
+      "q": "A client is prescribed a clear liquid diet. Which food item is acceptable?",
+      "answers": [
+        "Apple juice.",
+        "Orange juice.",
+        "Milk.",
+        "Ice cream."
+      ]
+    },
+    {
+      "q": "A client with a new tracheostomy is at risk for which complication in the first 24 hours?",
+      "answers": [
+        "Hemorrhage and airway obstruction.",
+        "Infection and skin breakdown.",
+        "Dehydration and electrolyte imbalance.",
+        "Tracheal stenosis."
+      ]
+    },
+    {
+      "q": "The normal range for serum sodium is:",
+      "answers": [
+        "135 to 145 mEq/L.",
+        "3.5 to 5.0 mEq/L.",
+        "120 to 130 mEq/L.",
+        "150 to 160 mEq/L."
+      ]
+    },
+    {
+      "q": "A client is NPO (nothing by mouth) before a procedure. The LVN should perform which action to promote comfort?",
+      "answers": [
+        "Provide frequent oral hygiene.",
+        "Offer the client small sips of water.",
+        "Give the client hard candy to suck on.",
+        "Encourage the client to sleep."
+      ]
+    },
+    {
+      "q": "The LVN is assessing a client's IV site and suspects infiltration. Which of the following is a key sign?",
+      "answers": [
+        "Coolness and swelling at the site.",
+        "Redness and warmth along the vein.",
+        "A palpable venous cord.",
+        "Purulent drainage from the insertion site."
+      ]
+    },
+    {
+      "q": "A client is taking a diuretic and has a low potassium level. The LVN should encourage the client to eat which food?",
+      "answers": [
+        "Bananas.",
+        "Apples.",
+        "Rice.",
+        "Bread."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to remove an indwelling urinary catheter. What is the first step?",
+      "answers": [
+        "Deflate the balloon completely.",
+        "Wash hands and don gloves.",
+        "Explain the procedure to the client.",
+        "Empty the drainage bag."
+      ]
+    },
+    {
+      "q": "A client's blood glucose log shows a pattern of high readings in the morning (Somogyi effect). The LVN should anticipate which intervention?",
+      "answers": [
+        "Checking the blood glucose level between 2 and 4 AM.",
+        "Increasing the evening insulin dose.",
+        "Increasing the bedtime snack.",
+        "Withholding the morning insulin dose."
+      ]
+    },
+    {
+      "q": "Which diagnostic test requires the client to have an empty stomach?",
+      "answers": [
+        "An esophagogastroduodenoscopy (EGD).",
+        "A computed tomography (CT) scan of the head.",
+        "A chest x-ray.",
+        "An electrocardiogram (ECG)."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a chest tube. The tubing accidentally becomes disconnected from the drainage system. What is the immediate action?",
+      "answers": [
+        "Place the end of the tubing in a bottle of sterile water.",
+        "Clamp the chest tube close to the client's chest.",
+        "Immediately reconnect the tubing to the system.",
+        "Call for help and wait for the physician."
+      ]
+    },
+    {
+      "q": "A client has a low serum albumin level. The LVN should monitor for which of the following?",
+      "answers": [
+        "Edema.",
+        "Bleeding.",
+        "Infection.",
+        "Dehydration."
+      ]
+    },
+    {
+      "q": "A client is on a full liquid diet. Which of the following is allowed?",
+      "answers": [
+        "Ice cream.",
+        "Mashed potatoes.",
+        "Scrambled eggs.",
+        "Toast."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client who is post-operative. To reduce the risk of a pulmonary embolism, the nurse should:",
+      "answers": [
+        "Apply sequential compression devices (SCDs) as ordered.",
+        "Encourage the client to cross their legs for comfort.",
+        "Administer aspirin daily.",
+        "Keep the client on strict bed rest for 3 days."
+      ]
+    },
+    {
+      "q": "A client's PTT (Partial Thromboplastin Time) is prolonged. This puts the client at risk for:",
+      "answers": [
+        "Bleeding.",
+        "Clotting.",
+        "Infection.",
+        "Hypoxia."
+      ]
+    },
+    {
+      "q": "The LVN is changing the dressing on a client's central line. The client should be instructed to:",
+      "answers": [
+        "Turn their head away from the insertion site.",
+        "Take a deep breath and hold it during the dressing change.",
+        "Cough forcefully as the old dressing is removed.",
+        "Sit in a high Fowler's position."
+      ]
+    },
+    {
+      "q": "A client with chronic kidney disease has a high phosphorus level. The LVN should instruct the client to avoid which foods?",
+      "answers": [
+        "Milk, cheese, and dark sodas.",
+        "Apples, grapes, and carrots.",
+        "White bread, pasta, and rice.",
+        "Chicken breast, turkey, and fish."
+      ]
+    },
+    {
+      "q": "A client is at risk for skin tears. Which of the following is a preventative measure?",
+      "answers": [
+        "Applying moisturizer to the skin twice daily.",
+        "Using adhesive tape to secure dressings.",
+        "Dressing the client in clothing with long zippers.",
+        "Keeping the client's skin dry and uncovered."
+      ]
+    },
+    {
+      "q": "The LVN is assessing a client's stoma. Which of the following is a normal finding?",
+      "answers": [
+        "Moist and reddish-pink.",
+        "Dry and pale.",
+        "Dark purple and swollen.",
+        "Bleeding profusely."
+      ]
+    },
+    {
+      "q": "Which lab value is most important to check before administering furosemide (Lasix)?",
+      "answers": [
+        "Potassium.",
+        "Sodium.",
+        "Calcium.",
+        "Hemoglobin."
+      ]
+    },
+    {
+      "q": "A client is being weaned from a ventilator. What is a sign that the client is not tolerating the weaning process?",
+      "answers": [
+        "An increase in respiratory rate and dyspnea.",
+        "An oxygen saturation of 95%.",
+        "A heart rate of 80 beats per minute.",
+        "The client being able to follow commands."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a history of liver failure. The LVN should monitor for an elevated level of which lab test?",
+      "answers": [
+        "Ammonia.",
+        "Creatinine.",
+        "Hemoglobin.",
+        "Potassium."
+      ]
+    },
+    {
+      "q": "A client has a urinary catheter removed. The client has not voided for 8 hours. What is the LVN's first action?",
+      "answers": [
+        "Assess the client's bladder for distention.",
+        "Offer the client a large glass of water.",
+        "Re-insert the urinary catheter immediately.",
+        "Notify the physician."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to suction a client. The suction should be set to what pressure for an adult?",
+      "answers": [
+        "80 to 120 mmHg.",
+        "40 to 60 mmHg.",
+        "150 to 200 mmHg.",
+        "200 to 250 mmHg."
+      ]
+    },
+    {
+      "q": "A client has a positive Chvostek's sign. This is an indication of:",
+      "answers": [
+        "Hypocalcemia.",
+        "Hypercalcemia.",
+        "Hypokalemia.",
+        "Hyperkalemia."
+      ]
+    },
+    {
+      "q": "To prevent ventilator-associated pneumonia (VAP), which intervention is crucial?",
+      "answers": [
+        "Providing frequent oral care.",
+        "Keeping the client in a supine position.",
+        "Administering antibiotics prophylactically.",
+        "Changing the ventilator tubing every 8 hours."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with an ileostomy. The LVN should instruct the client to avoid which type of food?",
+      "answers": [
+        "High-fiber foods like corn and nuts.",
+        "Low-fiber foods like white rice.",
+        "Lean proteins like chicken.",
+        "Hydrating fluids like water."
+      ]
+    },
+    {
+      "q": "A client's arterial blood gas (ABG) results show a pH of 7.25, PaCO2 of 50 mmHg, and HCO3 of 24 mEq/L. The LVN should interpret this as:",
+      "answers": [
+        "Respiratory acidosis.",
+        "Respiratory alkalosis.",
+        "Metabolic acidosis.",
+        "Metabolic alkalosis."
+      ]
+    },
+    {
+      "q": "A client is at risk for foot drop. Which device can help prevent this?",
+      "answers": [
+        "High-top sneakers or footboards.",
+        "Pillows placed under the knees.",
+        "Sequential compression devices.",
+        "A trapeze bar."
+      ]
+    },
+    {
+      "q": "The LVN is checking the function of a chest tube system. Intermittent bubbling in the water-seal chamber that corresponds with the client's breathing is:",
+      "answers": [
+        "A normal finding.",
+        "A sign of a leak in the system.",
+        "An indication that the lung has collapsed.",
+        "A sign that the suction is too low."
+      ]
+    },
+    {
+      "q": "A client's international normalized ratio (INR) is 4.0. The client is taking warfarin. What is the LVN's priority?",
+      "answers": [
+        "Implement bleeding precautions.",
+        "Administer the next dose of warfarin as scheduled.",
+        "Encourage the client to eat more green leafy vegetables.",
+        "Request an order for a heparin infusion."
+      ]
+    },
+    {
+      "q": "Which of the following is a sign of a wound dehiscence?",
+      "answers": [
+        "The client reports feeling a 'pop' and the wound edges have separated.",
+        "There is clear, pinkish drainage from the wound.",
+        "The wound is red, warm, and swollen.",
+        "The client has a low-grade fever."
+      ]
+    },
+    {
+      "q": "A client is receiving total parenteral nutrition (TPN). The LVN must monitor which of the following most closely?",
+      "answers": [
+        "Blood glucose levels.",
+        "Urine specific gravity.",
+        "Red blood cell count.",
+        "Serum protein levels."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a history of seizures. What equipment should be readily available at the bedside?",
+      "answers": [
+        "Suction equipment and an oral airway.",
+        "A padded tongue blade and restraints.",
+        "A defibrillator and a code cart.",
+        "A tracheostomy insertion kit."
+      ]
+    },
+    {
+      "q": "The normal range for platelets is:",
+      "answers": [
+        "150,000 to 450,000/mm³.",
+        "5,000 to 10,000/mm³.",
+        "12 to 16 g/dL.",
+        "3.5 to 5.0 mEq/L."
+      ]
+    },
+    {
+      "q": "A client with a head injury is at risk for increased intracranial pressure (ICP). Which of the following is an early sign of increased ICP?",
+      "answers": [
+        "Decreased level of consciousness.",
+        "A widening pulse pressure.",
+        "Bradycardia.",
+        "Fixed and dilated pupils."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to perform a bladder scan. The client should be in which position?",
+      "answers": [
+        "Supine.",
+        "Prone.",
+        "Side-lying.",
+        "High Fowler's."
+      ]
+    },
+    {
+      "q": "A client has a T-tube in place after a cholecystectomy. The LVN should expect the drainage to be what color?",
+      "answers": [
+        "Yellowish-green.",
+        "Bright red.",
+        "Clear and watery.",
+        "Purulent and thick."
+      ]
+    },
+    {
+      "q": "A client is placed on a sodium-restricted diet. Which food should the client avoid?",
+      "answers": [
+        "Canned soups and processed meats.",
+        "Fresh fruits and vegetables.",
+        "Grilled chicken and brown rice.",
+        "Baked potatoes and steamed broccoli."
+      ]
+    },
+    {
+      "q": "The LVN is assessing a client for dehydration. Which finding is a late sign?",
+      "answers": [
+        "Hypotension.",
+        "Tachycardia.",
+        "Dry mucous membranes.",
+        "Thirst."
+      ]
+    },
+    {
+      "q": "A client has a wound evisceration. After calling for help, what is the LVN's immediate action?",
+      "answers": [
+        "Cover the protruding organs with sterile saline-soaked gauze.",
+        "Attempt to gently push the organs back into the abdominal cavity.",
+        "Place the client in a high Fowler's position.",
+        "Administer pain medication."
+      ]
+    },
+    {
+      "q": "Which lab result would the LVN expect to be elevated in a client with an acute infection?",
+      "answers": [
+        "White blood cell (WBC) count.",
+        "Red blood cell (RBC) count.",
+        "Platelet count.",
+        "Serum iron level."
+      ]
+    },
+    {
+      "q": "A client is on a neutropenic diet. Which food item is contraindicated?",
+      "answers": [
+        "A fresh green salad.",
+        "A well-cooked hamburger.",
+        "A baked potato.",
+        "Pasteurized milk."
+      ]
+    },
+    {
+      "q": "The LVN is providing tracheostomy care. What is the maximum amount of time suction should be applied during any one pass?",
+      "answers": [
+        "10-15 seconds.",
+        "30 seconds.",
+        "5 seconds.",
+        "20 seconds."
+      ]
+    },
+    {
+      "q": "A client has a Hemovac drain. The purpose of this drain is to:",
+      "answers": [
+        "Provide closed-wound suction to remove drainage.",
+        "Allow drainage to flow freely onto a dressing.",
+        "Irrigate the wound with a sterile solution.",
+        "Instill medication directly into the wound bed."
+      ]
+    },
+    {
+      "q": "A client's arterial blood gas (ABG) results are: pH 7.50, PaCO2 30 mmHg, HCO3 22 mEq/L. This indicates:",
+      "answers": [
+        "Respiratory alkalosis.",
+        "Respiratory acidosis.",
+        "Metabolic alkalosis.",
+        "Metabolic acidosis."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client with a new skin graft. Which intervention is important to prevent disruption of the graft?",
+      "answers": [
+        "Immobilizing the affected area.",
+        "Encouraging active range-of-motion exercises.",
+        "Applying a wet-to-dry dressing over the graft.",
+        "Massaging the graft site to promote circulation."
+      ]
+    },
+    {
+      "q": "The normal range for fasting blood glucose is:",
+      "answers": [
+        "70 to 110 mg/dL.",
+        "120 to 160 mg/dL.",
+        "50 to 90 mg/dL.",
+        "140 to 180 mg/dL."
+      ]
+    },
+    {
+      "q": "A client has a positive Trousseau's sign, which is elicited by inflating a blood pressure cuff. This indicates which electrolyte imbalance?",
+      "answers": [
+        "Hypocalcemia.",
+        "Hypernatremia.",
+        "Hypokalemia.",
+        "Hypermagnesemia."
+      ]
+    },
+    {
+      "q": "What is the primary risk associated with a peripherally inserted central catheter (PICC) line?",
+      "answers": [
+        "Infection.",
+        "Bleeding.",
+        "Nerve damage.",
+        "Air embolism."
+      ]
+    },
+    {
+      "q": "The LVN is assessing a client's peripheral pulses. A pulse that is easily obliterated by slight pressure would be documented as:",
+      "answers": [
+        "1+ (thready).",
+        "2+ (normal).",
+        "3+ (full).",
+        "4+ (bounding)."
+      ]
+    },
+    {
+      "q": "A client is experiencing an allergic reaction to a blood transfusion. The LVN should expect to see which symptom first?",
+      "answers": [
+        "Urticaria (hives) and itching.",
+        "Fever and chills.",
+        "Hypotension and tachycardia.",
+        "Lower back pain."
+      ]
+    }
+  ]

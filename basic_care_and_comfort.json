@@ -1,0 +1,776 @@
+[
+    {
+      "q": "An elderly client with dry skin is at risk for breakdown. Which action by the LVN is most appropriate?",
+      "answers": [
+        "Applying a moisturizing lotion to the client's skin after bathing.",
+        "Bathing the client with hot water to improve circulation.",
+        "Using a rough towel to vigorously dry the client's skin.",
+        "Encouraging the client to bathe twice a day."
+      ]
+    },
+    {
+      "q": "The LVN is assisting a client with a meal who has dysphagia (difficulty swallowing). What is a key safety intervention?",
+      "answers": [
+        "Positioning the client in a high-Fowler's position.",
+        "Offering thin liquids like water to help wash down food.",
+        "Encouraging the client to eat as quickly as possible.",
+        "Distracting the client with television during the meal."
+      ]
+    },
+    {
+      "q": "A client is complaining of gas pain after abdominal surgery. Which non-pharmacological intervention should the LVN try first?",
+      "answers": [
+        "Assist the client to ambulate in the hallway.",
+        "Offer the client a cold carbonated beverage.",
+        "Place the client in a supine position with legs flat.",
+        "Apply a cold compress to the abdomen."
+      ]
+    },
+    {
+      "q": "The LVN is providing oral care to an unconscious client. What is the most important action to prevent aspiration?",
+      "answers": [
+        "Positioning the client on their side with the head of the bed lowered.",
+        "Using a large amount of water to rinse the mouth.",
+        "Placing fingers in the client's mouth to keep it open.",
+        "Using a standard toothbrush with a small amount of toothpaste."
+      ]
+    },
+    {
+      "q": "A client on bed rest is at risk for developing contractures. To prevent this, the LVN should perform which action?",
+      "answers": [
+        "Lead the client through passive range-of-motion (ROM) exercises.",
+        "Keep the client's limbs in a flexed position with pillows.",
+        "Tuck the top sheets in tightly over the client's feet.",
+        "Encourage the client to remain as still as possible."
+      ]
+    },
+    {
+      "q": "A client is prescribed a clear liquid diet. Which of the following can be included on the meal tray?",
+      "answers": [
+        "Chicken broth.",
+        "Orange juice with pulp.",
+        "Milkshake.",
+        "Cream of wheat."
+      ]
+    },
+    {
+      "q": "To promote sleep and comfort for a hospitalized client, which intervention is most appropriate?",
+      "answers": [
+        "Offering a back massage and ensuring a quiet environment.",
+        "Keeping the room lights on for safety.",
+        "Administering a sleeping pill every night as ordered.",
+        "Waking the client every 2 hours for vital signs."
+      ]
+    },
+    {
+      "q": "The LVN is making an occupied bed. To ensure client safety, what is the most important action?",
+      "answers": [
+        "Raise the side rail on the side of the bed opposite from where the nurse is working.",
+        "Place the client in a prone position while changing the linens.",
+        "Lower the bed to its lowest position.",
+        "Ask the client to hold on to the mattress."
+      ]
+    },
+    {
+      "q": "A client complains of feeling cold. What is the most appropriate initial nursing action?",
+      "answers": [
+        "Offer the client an extra blanket.",
+        "Take the client's temperature.",
+        "Increase the temperature of the room.",
+        "Tell the client to put on a sweater."
+      ]
+    },
+    {
+      "q": "A client needs assistance with personal hygiene. The LVN should perform which action to promote the client's dignity?",
+      "answers": [
+        "Provide privacy by pulling the curtain and closing the door.",
+        "Bathe the client quickly without talking to them.",
+        "Leave the client completely uncovered during the bath.",
+        "Allow a nursing student to watch without asking the client's permission."
+      ]
+    },
+    {
+      "q": "A client is on a fluid restriction of 1500 mL per 24 hours. The LVN should:",
+      "answers": [
+        "Plan a schedule for fluid intake throughout the day and evening.",
+        "Allow the client to drink all their fluids in the morning.",
+        "Only offer fluids when the client reports being thirsty.",
+        "Remove the water pitcher from the room without explanation."
+      ]
+    },
+    {
+      "q": "Which of the following is an example of a non-pharmacological comfort measure for a client with nausea?",
+      "answers": [
+        "Providing cool, clear liquids and crackers.",
+        "Offering a large, high-fat meal.",
+        "Positioning the client flat on their back.",
+        "Encouraging the client to drink hot coffee or tea."
+      ]
+    },
+    {
+      "q": "The LVN is assisting a client with moving up in bed. What is the best technique to reduce the risk of injury to the nurse?",
+      "answers": [
+        "Use a draw sheet and ask another staff member for assistance.",
+        "Place the bed in the highest position.",
+        "Bend at the waist and pull the client up.",
+        "Have the client hook their arms around the nurse's neck."
+      ]
+    },
+    {
+      "q": "A client who is post-operative is reporting pain. Which action demonstrates the application of the gate-control theory of pain?",
+      "answers": [
+        "Giving the client a back rub.",
+        "Administering an opioid analgesic.",
+        "Telling the client the pain is expected.",
+        "Asking the client to rate their pain on a scale."
+      ]
+    },
+    {
+      "q": "An elderly client has poor appetite. Which intervention might help improve their nutritional intake?",
+      "answers": [
+        "Offering small, frequent meals and snacks.",
+        "Providing a large tray with many food choices.",
+        "Insisting the client eat everything on their tray.",
+        "Allowing the client to eat alone in a quiet room."
+      ]
+    },
+    {
+      "q": "When providing perineal care for a female client, the LVN should cleanse the area in which direction?",
+      "answers": [
+        "From front to back (urethra to anus).",
+        "From back to front (anus to urethra).",
+        "In a circular motion.",
+        "From the outer labia to the inner labia."
+      ]
+    },
+    {
+      "q": "A client is prescribed a full liquid diet. Which of the following is permitted?",
+      "answers": [
+        "Plain yogurt.",
+        "Toast with butter.",
+        "A green salad.",
+        "A grilled chicken sandwich."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to give a bed bath to a client. What is the first area the nurse should wash?",
+      "answers": [
+        "The eyes and face.",
+        "The hands and arms.",
+        "The chest and abdomen.",
+        "The perineal area."
+      ]
+    },
+    {
+      "q": "A client is at risk for skin breakdown on their heels. What is an effective intervention?",
+      "answers": [
+        "Elevate the heels off the mattress using a pillow.",
+        "Massage the heels vigorously every shift.",
+        "Apply a heating pad to the heels.",
+        "Have the client wear tight-fitting socks."
+      ]
+    },
+    {
+      "q": "Which of the following is an example of a subjective report of pain?",
+      "answers": [
+        "The client states, 'I have a sharp pain in my stomach.'",
+        "The client is grimacing and guarding their abdomen.",
+        "The client's blood pressure is elevated.",
+        "The client is restless and moaning."
+      ]
+    },
+    {
+      "q": "To help a client ambulate, the LVN should stand on which side?",
+      "answers": [
+        "On the client's weaker side.",
+        "On the client's stronger side.",
+        "Directly in front of the client.",
+        "Directly behind the client."
+      ]
+    },
+    {
+      "q": "A client is experiencing discomfort from a distended bladder. What is the LVN's most appropriate first action?",
+      "answers": [
+        "Assist the client to the bathroom or onto a bedpan.",
+        "Perform a bladder scan.",
+        "Offer the client a drink of water.",
+        "Notify the physician for a catheterization order."
+      ]
+    },
+    {
+      "q": "A client is prescribed a sodium-restricted diet. The LVN should recommend which of the following foods?",
+      "answers": [
+        "A baked chicken breast with a baked potato.",
+        "A canned chicken noodle soup.",
+        "A frozen pizza.",
+        "A fast-food hamburger and fries."
+      ]
+    },
+    {
+      "q": "The LVN is performing passive range-of-motion exercises on a client's arm. The nurse should move the joint until when?",
+      "answers": [
+        "Until there is resistance or the client reports pain.",
+        "Until the joint makes a popping sound.",
+        "As far as the joint can possibly be moved.",
+        "For a specific count of 20 repetitions."
+      ]
+    },
+    {
+      "q": "A client has an order for 'encourage fluids'. What is the best way for the LVN to implement this?",
+      "answers": [
+        "Offer the client a variety of preferred fluids every 1-2 hours.",
+        "Place a large pitcher of water at the bedside.",
+        "Document that the client was encouraged to drink.",
+        "Tell the client's family to make sure the client drinks more."
+      ]
+    },
+    {
+      "q": "When providing denture care, the LVN should:",
+      "answers": [
+        "Place a towel in the sink to prevent breakage if they are dropped.",
+        "Use hot water to effectively clean and sterilize the dentures.",
+        "Store the dentures in a dry cup at the bedside.",
+        "Use regular toothpaste to brush the dentures."
+      ]
+    },
+    {
+      "q": "Which non-pharmacological method is often effective for managing phantom limb pain?",
+      "answers": [
+        "Mirror therapy.",
+        "Application of a cold pack to the residual limb.",
+        "Keeping the residual limb completely still.",
+        "Administering a placebo."
+      ]
+    },
+    {
+      "q": "A client is at risk for constipation. Which dietary instruction is most helpful?",
+      "answers": [
+        "Increase your intake of high-fiber foods and fluids.",
+        "Eat more cheese and other dairy products.",
+        "Limit your physical activity.",
+        "Take a laxative every day."
+      ]
+    },
+    {
+      "q": "An LVN is transferring a client using a mechanical lift. The straps should be positioned where?",
+      "answers": [
+        "According to the manufacturer's instructions for the specific lift and sling.",
+        "As high up under the client's arms as possible.",
+        "Crossed over the client's chest.",
+        "Primarily under the client's lower back."
+      ]
+    },
+    {
+      "q": "A client is experiencing pruritus (itching). Which comfort measure is most appropriate?",
+      "answers": [
+        "Applying a cool compress and colloid oatmeal bath.",
+        "Encouraging the client to take a hot shower.",
+        "Advising the client to scratch the area with short nails.",
+        "Applying an alcohol-based lotion to the skin."
+      ]
+    },
+    {
+      "q": "A client on a pureed diet should be given foods of what consistency?",
+      "answers": [
+        "Smooth and pudding-like.",
+        "Soft and requiring some chewing.",
+        "Finely chopped.",
+        "Liquid only."
+      ]
+    },
+    {
+      "q": "When assisting a client with a weak left side to get out of bed, the LVN should position the chair on which side?",
+      "answers": [
+        "On the client's strong (right) side.",
+        "On the client's weak (left) side.",
+        "Directly in front of the bed.",
+        "It does not matter."
+      ]
+    },
+    {
+      "q": "Which action is most important when providing hair care for a client of a different ethnic background?",
+      "answers": [
+        "Ask the client about their usual hair care practices and preferences.",
+        "Use the standard hospital-supplied shampoo and conditioner.",
+        "Wash the client's hair daily.",
+        "Assume that all hair types are cared for in the same way."
+      ]
+    },
+    {
+      "q": "A client is complaining of a headache. A non-pharmacological intervention the LVN could try is:",
+      "answers": [
+        "Dimming the lights and reducing noise in the room.",
+        "Encouraging the client to watch television.",
+        "Offering the client a cup of coffee.",
+        "Raising the head of the bed to 90 degrees."
+      ]
+    },
+    {
+      "q": "A client's intake for the shift is 240 mL of juice, 180 mL of water, and one 8-oz cup of coffee. What is the total intake in mL? (1 oz = 30 mL)",
+      "answers": [
+        "660 mL.",
+        "420 mL.",
+        "450 mL.",
+        "540 mL."
+      ]
+    },
+    {
+      "q": "When using a gait belt to assist a client with ambulation, where should the LVN grasp the belt?",
+      "answers": [
+        "At the back, with an underhand grip.",
+        "At the front, with an overhand grip.",
+        "At the sides.",
+        "With one hand on the belt and one on the client's shoulder."
+      ]
+    },
+    {
+      "q": "A client with a 'Do Not Resuscitate' (DNR) order is complaining of severe pain. The LVN should:",
+      "answers": [
+        "Administer pain medication as ordered to provide comfort.",
+        "Withhold pain medication as it may hasten death.",
+        "Understand that the DNR order means no medications should be given.",
+        "Contact the ethics committee before giving the medication."
+      ]
+    },
+    {
+      "q": "How often should routine oral care be provided for a client who is NPO?",
+      "answers": [
+        "Every 2 hours.",
+        "Once a day.",
+        "Every 8 hours.",
+        "Only when the client requests it."
+      ]
+    },
+    {
+      "q": "A client is on a low-residue diet. Which of the following foods should be avoided?",
+      "answers": [
+        "Raw vegetables and nuts.",
+        "White bread and plain pasta.",
+        "Cooked chicken and fish.",
+        "Peeled apples and bananas."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to logroll a client. This procedure requires how many people?",
+      "answers": [
+        "At least two, and often three people.",
+        "One person, if they are strong.",
+        "Four people.",
+        "One person with a mechanical lift."
+      ]
+    },
+    {
+      "q": "A client is anxious about a painful procedure. What is the best strategy for the nurse to use?",
+      "answers": [
+        "Teach the client guided imagery or relaxation breathing techniques.",
+        "Tell the client not to worry and that it will be over quickly.",
+        "Provide a detailed, technical explanation of the procedure.",
+        "Have a family member stay to provide support."
+      ]
+    },
+    {
+      "q": "What is the primary purpose of postmortem care?",
+      "answers": [
+        "To prepare the body with dignity for family viewing and transport.",
+        "To determine the cause of death.",
+        "To complete the death certificate.",
+        "To notify the family of the client's death."
+      ]
+    },
+    {
+      "q": "A client has a pressure ulcer with full-thickness skin loss and visible subcutaneous fat, but no exposed bone or muscle. The LVN would document this as what stage?",
+      "answers": [
+        "Stage 3.",
+        "Stage 1.",
+        "Stage 2.",
+        "Stage 4."
+      ]
+    },
+    {
+      "q": "Which action best promotes venous return in a client on bed rest?",
+      "answers": [
+        "Performing ankle pumps and foot circles.",
+        "Placing pillows under the client's knees.",
+        "Massaging the calves vigorously.",
+        "Keeping the client's legs in a dependent position."
+      ]
+    },
+    {
+      "q": "A client is having difficulty sleeping. Which of the following is an appropriate nursing intervention?",
+      "answers": [
+        "Offer a warm, non-caffeinated beverage like milk.",
+        "Encourage a vigorous workout right before bedtime.",
+        "Suggest a large meal before sleeping.",
+        "Provide a cup of coffee."
+      ]
+    },
+    {
+      "q": "When providing foot care for a client with diabetes, the LVN should:",
+      "answers": [
+        "Wash the feet with lukewarm water and dry thoroughly, especially between the toes.",
+        "Soak the feet in hot water for at least 20 minutes.",
+        "Use scissors to cut the toenails in a rounded shape.",
+        "Apply lotion generously between the toes."
+      ]
+    },
+    {
+      "q": "The LVN is caring for a client who is dying. The client's family is at the bedside. Which of the following is a therapeutic action?",
+      "answers": [
+        "Providing chairs for the family and offering them water or coffee.",
+        "Asking the family to leave the room during nursing procedures.",
+        "Encouraging the family to be quiet and not touch the client.",
+        "Sharing personal stories of loss with the family."
+      ]
+    },
+    {
+      "q": "A client reports pain. What is the most reliable indicator of the intensity of the pain?",
+      "answers": [
+        "The client's self-report of their pain.",
+        "The client's vital signs.",
+        "The client's facial expressions and body language.",
+        "The nature of the client's injury or illness."
+      ]
+    },
+    {
+      "q": "Which type of diet is most appropriate for a client with a new ileostomy?",
+      "answers": [
+        "A low-residue, low-fiber diet.",
+        "A high-fiber, high-residue diet.",
+        "A clear liquid diet.",
+        "A regular diet with no restrictions."
+      ]
+    },
+    {
+      "q": "The LVN is repositioning a client. To reduce shearing forces, the nurse should:",
+      "answers": [
+        "Use a lift sheet to move the client.",
+        "Slide the client across the bed linens.",
+        "Raise the head of the bed to a high-Fowler's position.",
+        "Pull the client up by their arms."
+      ]
+    },
+    {
+      "q": "A client is experiencing dyspnea (shortness of breath). Which position would provide the most comfort?",
+      "answers": [
+        "High-Fowler's or orthopneic position.",
+        "Supine.",
+        "Prone.",
+        "Trendelenburg."
+      ]
+    },
+    {
+      "q": "An LVN is caring for a client from a different culture. What is the best way to provide culturally competent care?",
+      "answers": [
+        "Ask the client about their cultural beliefs and practices related to health and illness.",
+        "Assume that all clients from a particular culture have the same beliefs.",
+        "Treat all clients exactly the same, regardless of their cultural background.",
+        "Follow the nurse's own cultural beliefs when providing care."
+      ]
+    },
+    {
+      "q": "A client is scheduled for a procedure in the morning. Which of the following is an appropriate comfort measure the night before?",
+      "answers": [
+        "Explaining what to expect in simple terms to reduce anxiety.",
+        "Administering a strong sedative to ensure a full night's sleep.",
+        "Advising the client not to think about the procedure.",
+        "Allowing a large number of visitors late into the night."
+      ]
+    },
+    {
+      "q": "Which of these is a sign of dehydration in an elderly client?",
+      "answers": [
+        "Confusion.",
+        "Bradycardia.",
+        "Increased skin turgor.",
+        "A decreased hematocrit."
+      ]
+    },
+    {
+      "q": "A client complains of constipation. After assessing for an impaction, what is a common non-pharmacological nursing intervention?",
+      "answers": [
+        "Increasing dietary fiber and fluid intake.",
+        "Administering a Fleet enema.",
+        "Recommending a daily laxative.",
+        "Encouraging a diet of cheese and lean meats."
+      ]
+    },
+    {
+      "q": "When should an anti-embolic stocking (TED hose) be applied?",
+      "answers": [
+        "In the morning before the client gets out of bed.",
+        "At bedtime, after the client has been up all day.",
+        "After the client has been ambulating for at least 10 minutes.",
+        "It can be applied at any time of day."
+      ]
+    },
+    {
+      "q": "A client's family is providing culturally specific foods. The client is not on a restricted diet. The LVN should:",
+      "answers": [
+        "Allow the family to bring in the food, ensuring it is stored properly.",
+        "Forbid all outside food due to hospital policy.",
+        "Ask the dietitian to analyze the food before the client can eat it.",
+        "Tell the family that only hospital-prepared food is allowed."
+      ]
+    },
+    {
+      "q": "What is the primary purpose of a sitz bath?",
+      "answers": [
+        "To provide comfort and promote healing of the perineal or rectal area.",
+        "To cleanse the entire body of a client on bed rest.",
+        "To lower a client's core body temperature.",
+        "To provide hydrotherapy for a client with burns."
+      ]
+    },
+    {
+      "q": "A client is receiving palliative care. The focus of this care is on:",
+      "answers": [
+        "Managing symptoms and providing comfort.",
+        "Curing the client's underlying disease.",
+        "Extending the client's life at all costs.",
+        "Preparing the client for hospice care."
+      ]
+    },
+    {
+      "q": "When assisting a client with one-sided weakness to dress, the LVN should:",
+      "answers": [
+        "Dress the weak side first.",
+        "Dress the strong side first.",
+        "Dress the upper body first, then the lower body.",
+        "It does not matter which side is dressed first."
+      ]
+    },
+    {
+      "q": "A client on a cardiac diet should be advised to limit which of the following?",
+      "answers": [
+        "Sodium.",
+        "Potassium.",
+        "Calcium.",
+        "Iron."
+      ]
+    },
+    {
+      "q": "The LVN is preparing to move a client from the bed to a chair. What is the first action the nurse should take?",
+      "answers": [
+        "Assess the client's ability to assist with the transfer.",
+        "Place a gait belt snugly around the client's waist.",
+        "Position the chair at a 90-degree angle to the bed.",
+        "Lock the wheels of the bed and the chair."
+      ]
+    },
+    {
+      "q": "A client is experiencing pain, and a cold pack is ordered. The cold pack should be applied for how long at a time?",
+      "answers": [
+        "15-20 minutes.",
+        "5 minutes.",
+        "30-45 minutes.",
+        "1 hour."
+      ]
+    },
+    {
+      "q": "A client has a nasogastric tube for decompression. To maintain comfort, the LVN should provide:",
+      "answers": [
+        "Frequent oral and nares care.",
+        "Small sips of water.",
+        "Ice chips to chew.",
+        "Gum to freshen the mouth."
+      ]
+    },
+    {
+      "q": "A client who is visually impaired is served a meal. How can the LVN best assist this client?",
+      "answers": [
+        "Explain the location of food items on the plate using a clock face as a guide.",
+        "Feed the client to ensure they get adequate nutrition.",
+        "Cut up all the food into small pieces.",
+        "Ask a family member to come in and help with the meal."
+      ]
+    },
+    {
+      "q": "Which of the following is a key component of hospice care?",
+      "answers": [
+        "Focusing on comfort and quality of life for clients who are terminally ill.",
+        "Providing aggressive, curative treatments.",
+        "Only providing care in a hospital setting.",
+        "Extending life by any means necessary."
+      ]
+    },
+    {
+      "q": "The LVN is providing care to a client who is actively dying. Which is a common physiological sign of impending death?",
+      "answers": [
+        "Mottling of the extremities.",
+        "Increased blood pressure.",
+        "Increased appetite.",
+        "Warm, dry skin."
+      ]
+    },
+    {
+      "q": "A client with a urinary catheter is complaining of discomfort. The LVN should first check for what?",
+      "answers": [
+        "Kinks or obstructions in the tubing.",
+        "The color and clarity of the urine.",
+        "The client's temperature.",
+        "The last time the client had a bowel movement."
+      ]
+    },
+    {
+      "q": "A client is on a mechanical soft diet. Which of the following meal choices is appropriate?",
+      "answers": [
+        "Scrambled eggs and cooked carrots.",
+        "A raw apple and a handful of nuts.",
+        "A steak and a baked potato.",
+        "A fresh garden salad."
+      ]
+    },
+    {
+      "q": "What is the correct procedure for cleaning a client's eyes during a bed bath?",
+      "answers": [
+        "Wipe from the inner canthus to the outer canthus with separate parts of the washcloth.",
+        "Wipe from the outer canthus to the inner canthus.",
+        "Use soap and water to clean the eyelids.",
+        "Clean both eyes with the same part of the washcloth."
+      ]
+    },
+    {
+      "q": "A client is at risk for orthostatic hypotension. The LVN should instruct the client to:",
+      "answers": [
+        "Dangle their legs at the bedside before standing up.",
+        "Stand up quickly to improve circulation.",
+        "Avoid drinking fluids.",
+        "Lie flat for 10 minutes after ambulating."
+      ]
+    },
+    {
+      "q": "Which of these is a measure to promote normal urination for a client?",
+      "answers": [
+        "Providing privacy and running water.",
+        "Encouraging the client to ignore the urge to void.",
+        "Limiting fluid intake in the evening.",
+        "Administering a diuretic."
+      ]
+    },
+    {
+      "q": "A client who is terminally ill has a 'death rattle'. What is the best action for the LVN to take?",
+      "answers": [
+        "Turn the client onto their side and gently elevate their head.",
+        "Suction the client's airway aggressively.",
+        "Administer oxygen via nasal cannula.",
+        "Inform the family that death is imminent."
+      ]
+    },
+    {
+      "q": "A client on a renal diet should be counseled to limit their intake of:",
+      "answers": [
+        "Potassium, sodium, and phosphorus.",
+        "Carbohydrates and simple sugars.",
+        "Vitamin C and calcium.",
+        "Fiber and complex carbohydrates."
+      ]
+    },
+    {
+      "q": "The LVN is applying a warm compress to a client's arm. The nurse should assess the client's skin frequently for signs of:",
+      "answers": [
+        "Burns.",
+        "Frostbite.",
+        "Infection.",
+        "Infiltration."
+      ]
+    },
+    {
+      "q": "A client who had a stroke has one-sided neglect. This means the client:",
+      "answers": [
+        "Is unaware of the existence of their affected side.",
+        "Prefers to use their unaffected side.",
+        "Has a visual field cut on their affected side.",
+        "Refuses to perform care for their affected side."
+      ]
+    },
+    {
+      "q": "When is the best time to perform postural drainage?",
+      "answers": [
+        "In the morning upon waking, before breakfast.",
+        "Immediately after a meal.",
+        "Right before bedtime.",
+        "In the middle of the afternoon."
+      ]
+    },
+    {
+      "q": "A client is receiving oxygen via a nasal cannula. Which of the following is a key comfort and safety measure?",
+      "answers": [
+        "Using a water-based lubricant to soothe the nares.",
+        "Applying a petroleum-based jelly to the nostrils.",
+        "Securing the tubing tightly around the head.",
+        "Setting the flow rate as high as possible."
+      ]
+    },
+    {
+      "q": "A client who is on bed rest requires assistance with a bedpan. To promote comfort, the LVN should:",
+      "answers": [
+        "Warm the bedpan with warm water before offering it.",
+        "Place the bedpan on the bed and ask the client to roll onto it.",
+        "Leave the client flat in bed while they use the bedpan.",
+        "Cover the client with only a thin sheet for privacy."
+      ]
+    },
+    {
+      "q": "Which of the following is an objective sign of pain?",
+      "answers": [
+        "Increased heart rate and blood pressure.",
+        "The client stating their pain is an 8/10.",
+        "The client requesting pain medication.",
+        "The client's family reporting that the client is in pain."
+      ]
+    },
+    {
+      "q": "What is the primary goal of palliative care?",
+      "answers": [
+        "To improve the quality of life for clients with serious illnesses.",
+        "To cure the client's disease.",
+        "To provide care only during the last six months of life.",
+        "To focus exclusively on the client's spiritual needs."
+      ]
+    },
+    {
+      "q": "A client is at risk for aspiration. Which consistency of liquid is easiest and safest to swallow?",
+      "answers": [
+        "Nectar-thick liquids.",
+        "Thin liquids.",
+        "Honey-thick liquids.",
+        "Spoon-thick liquids."
+      ]
+    },
+    {
+      "q": "The LVN is providing postmortem care. Jewelry should be:",
+      "answers": [
+        "Removed, documented, and given to the family.",
+        "Left on the body.",
+        "Sent with the body to the morgue.",
+        "Placed in the hospital safe."
+      ]
+    },
+    {
+      "q": "Which nutrient is most important for wound healing?",
+      "answers": [
+        "Protein.",
+        "Carbohydrates.",
+        "Fats.",
+        "Vitamin K."
+      ]
+    },
+    {
+      "q": "A client who is hard of hearing has a hearing aid. The LVN should ensure:",
+      "answers": [
+        "The hearing aid is clean and the batteries are working.",
+        "The volume is turned up to the maximum setting.",
+        "The client wears the hearing aid 24 hours a day.",
+        "The hearing aid is removed during all conversations."
+      ]
+    },
+    {
+      "q": "A client is using a transcutaneous electrical nerve stimulation (TENS) unit for pain. This is an example of what type of pain management?",
+      "answers": [
+        "Non-pharmacological.",
+        "Pharmacological.",
+        "Invasive.",
+        "Surgical."
+      ]
+    }
+  ]
