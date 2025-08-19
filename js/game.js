@@ -1,4 +1,6 @@
-const canvas = document.getElementById('gameCanvas');
+import { Player } from './player.js';
+
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
         const playerSprite = new Image();
@@ -42,18 +44,8 @@ const canvas = document.getElementById('gameCanvas');
             idle:       { y: 0,   frames: 1, width: 62, height: 115, startFrame: 0 }
         };
         
-        const player = {
-            x: 100, y: 0, width: 50, height: 92, // Adjusted for new sprite aspect ratio
-            vx: 0, vy: 0, speed: 5, jumpPower: 15,
-            grounded: false, facing: 1, lives: 3, dead: false, crouching: false,
-            armors: [0], currentArmorIndex: 0,
-            onPlatform: null,
-            state: 'idle',
-            currentFrame: 0,
-            animationTimer: 0,
-            isShooting: false,
-            shootTimer: 0
-        };
+        // Create player instance
+        const player = new Player(canvas);
 
         const armorData = [
             { name: 'Default', color: '#FF0000' },
@@ -108,7 +100,7 @@ const canvas = document.getElementById('gameCanvas');
             else if (e.key === 'Enter' && gameState === 'paused') gameState = 'playing';
 
             if ((e.key === 'q' || e.key === 'Q') && gameState === 'playing' && !player.dead) {
-                player.currentArmorIndex = (player.currentArmorIndex + 1) % player.armors.length;
+                player.switchArmor();
             }
             
             if ((e.key === 'e' || e.key === 'E') && gameState === 'playing' && !player.dead) {
@@ -118,8 +110,7 @@ const canvas = document.getElementById('gameCanvas');
             if (e.key === ' ' && canFire) {
                 if (gameState === 'playing' && !player.dead) {
                     fireWeapon();
-                    player.isShooting = true;
-                    player.shootTimer = 15;
+                    player.startShooting();
                 }
                 canFire = false;
             }
@@ -216,9 +207,8 @@ const canvas = document.getElementById('gameCanvas');
 
         async function startGame() {
             gameState = 'playing';
-            player.x = 100; player.y = canvas.height - player.height - 100;
-            player.vx = 0; player.vy = 0;
-            player.lives = 3; player.dead = false;
+            const groundY = canvas.height - 100;
+            player.reset(groundY);
             worldX = 0;
             enemies.length = 0; projectiles.length = 0; pickups.length = 0; platforms.length = 0; npcs.length = 0; pits.length = 0; chests.length = 0; powerups.length = 0;
             currentWeapon = 1; enemySpawnTimer = 0; pickupSpawnTimer = 0;
@@ -358,42 +348,42 @@ const canvas = document.getElementById('gameCanvas');
             }
             fireTimer = fireCooldowns[currentWeapon - 1];
             
-            // FIXED: Adjust Y position based on crouching state
-            const weaponYOffset = player.crouching ? 20 : 0; // Lower the weapon spawn point when crouching
+            // Get weapon spawn position from player
+            const weaponPos = player.getWeaponSpawnPos();
             
             switch(currentWeapon) {
                 case 2: 
                     projectiles.push({ 
-                        x: player.x + (player.facing > 0 ? player.width : -30), 
-                        y: player.y + player.height / 2 - 3 + weaponYOffset, 
+                        x: weaponPos.x, 
+                        y: weaponPos.y - 3, 
                         vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 
                     }); 
                     break;
                 case 3: 
                     projectiles.push({ 
-                        centerX: player.x + player.width / 2, 
-                        centerY: player.y + player.height / 2 + weaponYOffset, 
+                        centerX: weaponPos.centerX, 
+                        centerY: weaponPos.centerY, 
                         radius: 120, angle: 0, rotSpeed: 0.2, type: 3 
                     }); 
                     break;
                 case 4: 
                     projectiles.push({ 
-                        x: player.x + (player.facing > 0 ? player.width : -30), 
-                        y: player.y + player.height / 2 - 5 + weaponYOffset, 
+                        x: weaponPos.x, 
+                        y: weaponPos.y - 5, 
                         vx: player.facing * 6, vy: -10, width: 30, height: 10, wavePhase: 0, type: 4 
                     }); 
                     break;
                 case 5: 
                     projectiles.push({ 
                         x: player.x + (player.facing > 0 ? player.width : -40), 
-                        y: player.y + player.height / 2 - 12 + weaponYOffset, 
+                        y: weaponPos.y - 12, 
                         vx: player.facing * 9, vy: 0, width: 40, height: 4, gap: 4, type: 5 
                     }); 
                     break;
                 case 6: 
                     projectiles.push({ 
-                        x: player.x + (player.facing > 0 ? player.width : -30), 
-                        y: player.y + player.height / 2 - 15 + weaponYOffset, 
+                        x: weaponPos.x, 
+                        y: weaponPos.y - 15, 
                         vx: player.facing * 5, vy: 0, size: 30, angle: 0, rotSpeed: 0.15 * player.facing, type: 6 
                     }); 
                     break;
@@ -442,144 +432,39 @@ const canvas = document.getElementById('gameCanvas');
                 pickupSpawnTimer = 0; 
             }
             
-            if (!player.dead) {
-                if (keys['ArrowLeft'] || keys['a'] || keys['A']) { player.vx = -player.speed; player.facing = -1; }
-                else if (keys['ArrowRight'] || keys['d'] || keys['D']) { player.vx = player.speed; player.facing = 1; }
-                else { player.vx *= 0.8; }
-                if ((keys['ArrowUp'] || keys['w'] || keys['W']) && player.grounded) {
-                    player.vy = -player.jumpPower;
-                    player.grounded = false;
-                    player.onPlatform = null;
-                }
-                player.crouching = (keys['ArrowDown'] || keys['s'] || keys['S']) && player.grounded;
-
-                if(player.shootTimer > 0) player.shootTimer--;
-                else player.isShooting = false;
-                
-                if (player.isShooting) {
-                    if (player.crouching) {
-                        player.state = 'crouchShoot';
-                    } else if (!player.grounded) {
-                        player.state = 'jumpShoot';
-                    } else if (Math.abs(player.vx) > 0.1) {
-                        player.state = 'walkShoot';
-                    } else {
-                        player.state = 'idleShoot';
-                    }
-                } else if (player.crouching) {
-                    player.state = 'crouch';
-                } else if (!player.grounded) {
-                    player.state = player.vy < 0 ? 'jumpUp' : 'jumpDown';
-                } else if (Math.abs(player.vx) > 0.1) {
-                    player.state = 'walk';
-                } else {
-                    player.state = 'idle';
-                }
-                
-                const currentAnimation = spriteAnimations[player.state];
-                player.animationTimer++;
-                if (player.animationTimer > 8) {
-                    player.currentFrame = (player.currentFrame + 1) % currentAnimation.frames;
-                    player.animationTimer = 0;
-                }
-                if (player.currentFrame >= currentAnimation.frames) {
-                    player.currentFrame = 0;
-                }
-
-            } else {
-                player.vx = 0; player.crouching = false;
-            }
+            // Update player input, state, and physics
+            player.handleInput(keys);
+            player.updateState(spriteAnimations);
+            player.updatePhysics(groundY, platforms, pits, worldX);
             
-            player.vy += 0.8;
-            player.x += player.vx;
             
-            for (const p of platforms) {
-                if (p.type === 'elevator' && p.activated) {
-                    p.y += p.speed;
-                    if (p.y <= p.endY) {
-                        p.y = p.endY;
-                        p.speed = Math.abs(p.speed);
-                    } else if (p.y >= p.startY) {
-                        p.y = p.startY;
-                        p.speed = -Math.abs(p.speed);
-                    }
-                    if (player.onPlatform === p) {
-                        player.y = p.y - player.height;
-                    }
-                }
-            }
-            
-            const prevY = player.y;
-            player.y += player.vy;
-            player.grounded = false;
-            player.onPlatform = null;
-
-            for (const p of platforms) {
-                const screenX = p.worldX + worldX;
-                if (p.activated || p.type === 'ledge') {
-                    if (player.x + player.width > screenX && player.x < screenX + p.width && prevY + player.height <= p.y && player.y + player.height >= p.y) {
-                        player.y = p.y - player.height;
-                        player.vy = 0;
-                        player.grounded = true;
-                        if (p.type === 'elevator') {
-                            player.onPlatform = p;
-                        }
-                    }
-                }
-            }
-
-            let onGround = true;
-            const playerCenterX = player.x + player.width / 2 - worldX;
-            for (const pit of pits) {
-                if(playerCenterX > pit.worldX && playerCenterX < pit.worldX + pit.width) {
-                    onGround = false;
-                    break;
-                }
-            }
-
-            if (onGround && player.y + player.height > groundY) {
-                player.y = groundY - player.height;
-                player.vy = 0;
-                player.grounded = true;
-            }
-
-            if (player.y > canvas.height + 50 && !player.dead) {
-                player.lives--;
-                player.dead = true;
+            // Handle player death from falling
+            if (player.checkFallDeath()) {
+                player.die();
                 setTimeout(() => {
                     if (player.lives > 0) {
-                        player.dead = false; player.x = 100;
-                        player.y = groundY - player.height; worldX = 0; enemies.length = 0;
-                    } else { gameState = 'menu'; }
+                        player.respawn(groundY);
+                        worldX = 0;
+                        enemies.length = 0;
+                    } else {
+                        gameState = 'menu';
+                    }
                 }, 2000);
             }
             
-            if (!screenLocked) {
-                if (player.x < 50) player.x = 50;
-                if (player.x > canvas.width / 2 && !player.dead && (-worldX < testLevelEndX - canvas.width / 2)) {
-                    worldX -= player.x - canvas.width / 2;
-                    player.x = canvas.width / 2;
-                }
-            } else {
-                if (player.x < 50) player.x = 50;
-                if (player.x > canvas.width - 50 - player.width) player.x = canvas.width - 50 - player.width;
-            }
-        
-            if (gate && gate.hp > 0) {
-                const gateScreenX = gate.worldX + worldX;
-                if (player.x + player.width > gateScreenX) {
-                    player.x = gateScreenX - player.width;
-                }
+            // Handle screen boundaries and world scrolling
+            const deltaX = player.updateScreenPosition(worldX, screenLocked, testLevelEndX, gate);
+            if (deltaX !== 0) {
+                worldX -= deltaX;
             }
             
+            // Boss logic and collision
             if (boss) {
                 boss.x += boss.vx;
                 if (boss.x <= 100 || boss.x >= canvas.width - 100 - boss.width) {
                     boss.vx = -boss.vx;
                 }
-                if (!player.dead && player.x < boss.x + boss.width && player.x + player.width > boss.x && player.y < boss.y + boss.height && player.y + player.height > boss.y) {
-                    player.lives = 0;
-                    player.dead = true;
+                if (player.checkBossCollision(boss)) {
                     setTimeout(() => { gameState = 'menu'; }, 2000);
                 }
             }
@@ -625,14 +510,15 @@ const canvas = document.getElementById('gameCanvas');
                     enemy.worldX += enemy.vx;
 
                     if (screenX < -100 || screenX > canvas.width + 100) { enemies.splice(i, 1); continue; }
-                    if (!player.dead && player.x < screenX + enemy.width && player.x + player.width > screenX && player.y < enemy.y + enemy.height && player.y + player.height > enemy.y) {
-                        player.lives--;
-                        player.dead = true;
+                    if (player.checkEnemyCollision(enemy, screenX)) {
                         setTimeout(() => {
                             if (player.lives > 0) {
-                                player.dead = false; player.x = 100;
-                                player.y = groundY - player.height; worldX = 0; enemies.length = 0;
-                            } else { gameState = 'menu'; }
+                                player.respawn(groundY);
+                                worldX = 0;
+                                enemies.length = 0;
+                            } else {
+                                gameState = 'menu';
+                            }
                         }, 2000);
                     }
                 }
@@ -766,18 +652,15 @@ const canvas = document.getElementById('gameCanvas');
                 const pickup = pickups[i];
                 const screenX = pickup.worldX + worldX;
                 if (screenX < -100) { pickups.splice(i, 1); continue; }
-                if (!player.dead && player.x < screenX + 30 && player.x + player.width > screenX && player.y < pickup.y + 30 && player.y + player.height > pickup.y) {
-                    currentWeapon = pickup.weaponId;
+                const weaponId = player.checkPickupCollision(pickup, screenX);
+                if (weaponId) {
+                    currentWeapon = weaponId;
                     pickups.splice(i, 1);
                 }
             }
             
             if (armorPickup) {
-                if (!player.dead && player.x < armorPickup.x + armorPickup.width && player.x + player.width > armorPickup.x && player.y < armorPickup.y + armorPickup.height && player.y + player.height > armorPickup.y) {
-                    if (!player.armors.includes(armorPickup.armorId)) {
-                        player.armors.push(armorPickup.armorId);
-                    }
-                    player.currentArmorIndex = player.armors.indexOf(armorPickup.armorId);
+                if (player.checkArmorPickupCollision(armorPickup)) {
                     armorPickup = null;
                     setTimeout(() => {
                         alert('Level Complete! New Armor Acquired!');
@@ -797,11 +680,8 @@ const canvas = document.getElementById('gameCanvas');
                 }
                 
                 const screenX = powerup.worldX + worldX;
-                if (player.x < screenX + 20 && player.x + player.width > screenX &&
-                    player.y < powerup.y + 20 && player.y + player.height > powerup.y) {
-                    if (powerup.type === 'life') {
-                        player.lives++;
-                    }
+                const powerupType = player.checkPowerupCollision(powerup, screenX);
+                if (powerupType) {
                     powerups.splice(i, 1);
                 }
             }
@@ -988,40 +868,11 @@ const canvas = document.getElementById('gameCanvas');
                     }
                 }
                 
-                if (!player.dead) {
-                    if (spriteLoaded) {
-                        const currentAnimation = spriteAnimations[player.state];
-                        const sX = (currentAnimation.startFrame + player.currentFrame) * currentAnimation.width;
-                        const sY = currentAnimation.y;
-                        const sWidth = currentAnimation.width;
-                        const sHeight = currentAnimation.height;
-                        
-                        ctx.save();
-                        
-                        let drawX = player.x;
-                        if (player.facing === -1) {
-                            ctx.scale(-1, 1);
-                            drawX = -player.x - player.width;
-                        }
-                        
-                        const yPos = player.crouching ? player.y + (player.height - (player.width * sHeight / sWidth)) : player.y;
-
-                        ctx.drawImage(
-                            playerSprite,
-                            sX, sY,
-                            sWidth, sHeight,
-                            drawX, yPos,
-                            player.width, player.height
-                        );
-                        
-                        ctx.restore();
-                    } else {
-                        ctx.fillStyle = armorData[player.armors[player.currentArmorIndex]].color;
-                        const height = player.crouching ? player.height / 2 : player.height;
-                        const yPos = player.crouching ? player.y + player.height / 2 : player.y;
-                        ctx.fillRect(player.x, yPos, player.width, height);
-                    }
-                } else {
+                // Render player
+                player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData);
+                
+                // Render dead player effect
+                if (player.dead) {
                     ctx.fillStyle = `rgba(255, 0, 0, ${Math.sin(Date.now() * 0.01) * 0.5 + 0.5})`;
                     ctx.fillRect(player.x, player.y, player.width, player.height);
                 }
