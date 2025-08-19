@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LVN NCLEX Side-Scroller</title>
-    <style>
-        body { margin: 0; padding: 0; overflow: hidden; background: #000; }
-        canvas { display: block; }
-    </style>
-</head>
-<body>
-    <canvas id="gameCanvas"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
         const playerSprite = new Image();
-        playerSprite.src = 'nurse_sprites.png';
+        playerSprite.src = 'assets/nurse_sprites.png';
         let spriteLoaded = false;
         playerSprite.onload = () => {
             spriteLoaded = true;
@@ -33,14 +19,14 @@
         let selectedLevel = -1;
         
         const levelData = [
-            { name: "Coordinated Care", color: '#87CEEB', file: 'coordinated_care.json' },
-            { name: "Pharm. Therapies", color: '#98FB98', file: 'pharma_therapies.json' },
-            { name: "Safety/Infection", color: '#FFD700', file: 'safety_infection_control.json' },
-            { name: "Risk Reduction", color: '#FFB6C1', file: 'reduction_of_risk_potential.json' },
-            { name: "Psychosocial Int.", color: '#ADD8E6', file: 'psychosocial_integrity.json' },
-            { name: "Basic Care", color: '#FFA07A', file: 'basic_care_and_comfort.json' },
-            { name: "Phys. Adaptation", color: '#DA70D6', file: 'physiological_adaptation.json' },
-            { name: "Health Promotion", color: '#A52A2A', file: 'health_promotion_and_maintenance.json' }
+            { name: "Coordinated Care", color: '#87CEEB', file: 'data/coordinated_care.json' },
+            { name: "Pharm. Therapies", color: '#98FB98', file: 'data/pharma_therapies.json' },
+            { name: "Safety/Infection", color: '#FFD700', file: 'data/safety_infection_control.json' },
+            { name: "Risk Reduction", color: '#FFB6C1', file: 'data/reduction_of_risk_potential.json' },
+            { name: "Psychosocial Int.", color: '#ADD8E6', file: 'data/psychosocial_integrity.json' },
+            { name: "Basic Care", color: '#FFA07A', file: 'data/basic_care_and_comfort.json' },
+            { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
+            { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' }
         ];
         
         // NEW: Precise animation map based on the 372x345 sprite sheet
@@ -1140,6 +1126,8 @@
         }
         
         gameLoop();
-    </script>
-</body>
-</html>
+export function initGame() {
+    // TODO: Import/init player, enemies, UI, etc.
+    // TODO: Set up canvas, start game loop
+    console.log('Game initialized');
+  }
