@@ -63,8 +63,9 @@ const level = {
 
         // --- SECTION 6: THE FINAL GAUNTLET ---
         // Hard path across pit 6: challenging but possible without NPC help
-        { id: 'hard_path_pit6_a', x: 6100, y: 'ground-150', width: 40, height: 20, type: 'static', activated: true },
-        { id: 'hard_path_pit6_b', x: 6220, y: 'ground-200', width: 35, height: 20, type: 'disappearing', activated: true, timing: { onTime: 2000, offTime: 1000 } },
+        // **FIX**: Lowered platforms to make them more reachable from jumping range
+        { id: 'hard_path_pit6_a', x: 6100, y: 'ground-120', width: 40, height: 20, type: 'static', activated: true }, // Lowered from ground-150
+        { id: 'hard_path_pit6_b', x: 6220, y: 'ground-160', width: 35, height: 20, type: 'disappearing', activated: true, timing: { onTime: 2000, offTime: 1000 } }, // Lowered from ground-200
         { id: 'hard_path_pit6_c', x: 6350, y: 'ground-120', width: 35, height: 20, type: 'static', activated: true },
         { id: 'gauntlet_approach', x: 6400, y: 'ground-100', width: 100, height: 20, type: 'static', activated: true },
         { id: 'gauntlet_start', x: 6600, y: 'ground-150', width: 200, height: 20, type: 'static', activated: true },
@@ -103,7 +104,7 @@ const level = {
     hazards: [
         { type: 'pit', x: 1000, width: 150 },
         { type: 'pit', x: 1250, width: 100 },
-        { type: 'pit', x: 2700, width: 200 },
+        { type: 'pit', x: 2700, width: 150 }, // **FIX**: Narrowed from 200 to 150 to prevent glitchy double jump
         { type: 'pit', x: 3300, width: 150 },
         // **FIX**: Adjusted pit to match the new platform layout.
         { type: 'pit', x: 4500, width: 550 }, 

@@ -19,6 +19,7 @@ export class Player {
         this.dead = false;
         this.crouching = false;
         this.onPlatform = null;
+        this.canJump = false; // **FIX**: Track if player can validly jump
         
         // Armor system
         this.armors = [0];
@@ -56,8 +57,8 @@ export class Player {
             this.vx *= 0.8;
         }
         
-        // Jumping
-        if ((keys['ArrowUp'] || keys['w'] || keys['W']) && this.grounded) {
+        // Jumping - only allow if grounded AND on valid surface
+        if ((keys['ArrowUp'] || keys['w'] || keys['W']) && this.grounded && this.canJump) {
             this.vy = -this.jumpPower;
             this.grounded = false;
             this.onPlatform = null;
@@ -115,9 +116,16 @@ export class Player {
         this.vy += 0.8;
         this.x += this.vx;
         
+        // Store the current platform before handling platform movement
+        const currentPlatform = this.onPlatform;
+        
         // Handle moving platforms (elevators, moving, orbiting)
         for (const p of platforms) {
             if (p.activated) {
+                // Store previous position for player tracking
+                const prevPlatformY = p.y;
+                const prevPlatformX = p.worldX || p.x;
+                
                 if (p.type === 'elevator') {
                     p.y += p.speed;
                     if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
@@ -125,6 +133,12 @@ export class Player {
                         // To make it go back and forth, swap start and end
                         [p.startY, p.endY] = [p.endY, p.startY]; 
                         p.speed = -p.speed;
+                    }
+                    
+                    // **FIX**: Move player with elevator if they're standing on it
+                    if (currentPlatform === p) {
+                        const platformMovement = p.y - prevPlatformY;
+                        this.y += platformMovement;
                     }
                 }
                 if (p.type === 'moving' && p.movement) {
@@ -186,6 +200,9 @@ export class Player {
             this.vy = 0;
             this.grounded = true;
         }
+        
+        // **FIX**: Set canJump based on valid surfaces (platform or proper ground level)
+        this.canJump = this.grounded && (this.onPlatform || this.y + this.height <= groundY + 5);
     }
     
     // Check if player should die from falling
