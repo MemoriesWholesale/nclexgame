@@ -125,12 +125,19 @@ class LevelManager {
             
             // Check if in visible range
             if (plat.x > visibleLeft && plat.x < visibleRight) {
-                platforms.push({
+                const newPlatform = {
                     ...plat,
                     worldX: plat.x,
                     y: this.parsePosition(plat.y, canvas),
-                    activated: plat.activated !== false // Default to true unless specified
-                });
+                    activated: plat.activated !== false
+                };
+
+                if (plat.type === 'elevator' && plat.startY && plat.endY) {
+                    newPlatform.startY = this.parsePosition(plat.startY, canvas);
+                    newPlatform.endY = this.parsePosition(plat.endY, canvas);
+                }
+
+                platforms.push(newPlatform);
             }
         });
         

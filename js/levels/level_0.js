@@ -38,14 +38,14 @@ const level = {
         {
             id: 'elevator_1',
             x: 800,
-            y: 'ground-120',
+            y: 'ground-108', // **FIX**: Lowered from 'ground-120' to be reachable
             width: 120,
             height: 20,
             type: 'elevator',
             activated: false,
-            startY: 'ground-120',
+            startY: 'ground-108', // **FIX**: Lowered from 'ground-120'
             endY: 'ground-350',
-            speed: -2
+            speed: -1 
         },
         
         // High ledge accessible via elevator
@@ -151,7 +151,74 @@ const level = {
                 offTime: 2000,
                 offset: 2500  // Opposite phase
             }
-        }
+        },
+
+        // *** NEW: Vertical Labyrinth Section ***
+        // A high platform, initially out of reach.
+        {
+            id: 'vert_ledge_1',
+            x: 3600,
+            y: 'ground-500', // Very high up
+            width: 400,
+            height: 20,
+            type: 'ledge',
+            activated: true
+        },
+        // Timed platforms activated by the Physical Therapist NPC
+        {
+            id: 'timed_climb_1',
+            x: 3800,
+            y: 'ground-180',
+            width: 70,
+            height: 20,
+            type: 'timed',
+            activated: false,
+            activeTime: 8000 // A longer timer for the whole sequence
+        },
+        {
+            id: 'timed_climb_2',
+            x: 3650,
+            y: 'ground-300',
+            width: 70,
+            height: 20,
+            type: 'timed',
+            activated: false,
+            activeTime: 8000,
+            requiresPrevious: 'timed_climb_1' 
+        },
+        {
+            id: 'timed_climb_3',
+            x: 3800,
+            y: 'ground-420',
+            width: 70,
+            height: 20,
+            type: 'timed',
+            activated: false,
+            activeTime: 8000,
+            requiresPrevious: 'timed_climb_2'
+        },
+        // Moving platform activated by the Dietitian NPC
+        {
+            id: 'collab_bridge_1',
+            x: 4000,
+            y: 'ground-500',
+            width: 150,
+            height: 20,
+            type: 'moving',
+            activated: false,
+            movement: {
+                startX: 4000,
+                endX: 4500,
+                speed: 1.5,
+                horizontal: true
+            }
+        },
+        // *** END: New Section ***
+
+        // Decorative platforms to add to the "baroque" feel
+        { id: 'deco_1', x: 4200, y: 'ground-300', width: 50, height: 20, type: 'static', activated: true },
+        { id: 'deco_2', x: 4350, y: 'ground-200', width: 50, height: 20, type: 'static', activated: true },
+
     ],
     
     // NPCs
@@ -189,7 +256,27 @@ const level = {
             dialogue: "Excellent coordination! Final platform activated!",
             activates: 'deleg_3',
             requiresPrevious: 'doctor_1'
+        },
+
+        // *** NEW: NPCs for the Labyrinth Section ***
+        {
+            id: 'pt_1',
+            type: 'physical_therapist',
+            x: 3900,
+            y: 'ground-60',
+            dialogue: "Rehabilitation is a climb! Let's get you moving.",
+            activates: 'timed_climb_1' // Activates the start of the timed sequence
+        },
+        {
+            id: 'dietitian_1',
+            type: 'dietitian',
+            x: 3650,
+            y: 'vert_ledge_1-top', // Positioned on the high ledge
+            dialogue: "Good nutrition provides the bridge to recovery. Well done!",
+            activates: 'collab_bridge_1', // Activates the moving bridge
+            requiresPrevious: 'timed_climb_3' // Requires the player to have reached the top
         }
+        // *** END: New NPCs ***
     ],
     
     // Hazards (pits)
@@ -197,7 +284,8 @@ const level = {
         { type: 'pit', x: 1000, width: 150 },
         { type: 'pit', x: 1250, width: 100 },
         { type: 'pit', x: 2700, width: 200 },
-        { type: 'pit', x: 3300, width: 150 }
+        { type: 'pit', x: 3300, width: 150 },
+        { type: 'pit', x: 4600, width: 300 } // Added a new pit after the bridge
     ],
     
     // Items (chests, pickups)
@@ -215,6 +303,14 @@ const level = {
             y: 'deleg_3-top',
             contains: 'weapon_upgrade',
             weaponId: 4,
+            requiresQuestion: true
+        },
+        // New chest on the high vertical ledge
+        {
+            type: 'chest',
+            x: 3700,
+            y: 'vert_ledge_1-top',
+            contains: 'extra_life',
             requiresQuestion: true
         },
         {
@@ -252,6 +348,15 @@ const level = {
                 { type: 'basic', x: 2850, y: 'ground-0' },
                 { type: 'basic', x: 2900, y: 'ground-0' },
                 { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 }
+            ]
+        },
+        // New enemy wave in the vertical section
+        {
+            triggerX: 3500,
+            enemies: [
+                { type: 'basic', x: 3550, y: 'ground-0' },
+                { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 },
+                { type: 'basic', x: 4100, y: 'ground-0' }
             ]
         }
     ],
