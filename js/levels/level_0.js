@@ -23,7 +23,7 @@ const level = {
 
         // --- SECTION 2: DELEGATION CHAIN ---
         { id: 'moving_1', x: 1500, y: 'ground-200', width: 100, height: 20, type: 'moving', activated: true, movement: { startX: 1500, endX: 1700, speed: 1, horizontal: true } },
-        { id: 'moving_2_fixed', x: 1800, y: 'ground-150', width: 100, height: 20, type: 'elevator', activated: true, startY: 'ground-150', endY: 'ground-250', speed: 1 },
+        { id: 'moving_2_fixed', x: 1800, y: 'ground-150', width: 100, height: 20, type: 'elevator', activated: true, startY: 'ground-100', endY: 'ground-250', speed: -1 },
         { id: 'deleg_1', x: 2200, y: 'ground-150', width: 80, height: 20, type: 'timed', activated: false, activeTime: 5000 },
         { id: 'deleg_2', x: 2350, y: 'ground-250', width: 80, height: 20, type: 'timed', activated: false, activeTime: 5000, requiresPrevious: 'deleg_1' },
         { id: 'deleg_3', x: 2500, y: 'ground-350', width: 100, height: 20, type: 'static', activated: false, requiresPrevious: 'deleg_2' },
@@ -32,7 +32,7 @@ const level = {
 
         // --- SECTION 3: VERTICAL LABYRINTH ---
         { id: 'vert_ledge_1', x: 3600, y: 'ground-500', width: 400, height: 20, type: 'ledge', activated: true },
-        { id: 'timed_climb_1', x: 3800, y: 'ground-180', width: 70, height: 20, type: 'timed', activated: false, activeTime: 8000 },
+        { id: 'timed_climb_1', x: 3800, y: 'ground-100', width: 70, height: 20, type: 'timed', activated: false, activeTime: 8000 },
         { id: 'timed_climb_2', x: 3650, y: 'ground-300', width: 70, height: 20, type: 'timed', activated: false, activeTime: 8000, requiresPrevious: 'timed_climb_1' },
         { id: 'timed_climb_3', x: 3800, y: 'ground-420', width: 70, height: 20, type: 'timed', activated: false, activeTime: 8000, requiresPrevious: 'timed_climb_2' },
         { id: 'hard_path_3a', x: 3750, y: 'ground-150', width: 50, height: 20, type: 'static', activated: true },
@@ -126,12 +126,12 @@ const level = {
     
     // Enemy waves (triggered by position)
     enemyWaves: [
-        { triggerX: 500, enemies: [ { type: 'basic', x: 550, y: 'ground-0' }, { type: 'basic', x: 600, y: 'ground-0' } ] },
-        { triggerX: 1500, enemies: [ { type: 'basic', x: 1550, y: 'ground-0' }, { type: 'nurse_zombie', x: 1650, y: 'ground-0', hp: 2 } ] },
-        { triggerX: 2800, enemies: [ { type: 'basic', x: 2850, y: 'ground-0' }, { type: 'basic', x: 2900, y: 'ground-0' }, { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 } ] },
-        { triggerX: 3500, enemies: [ { type: 'basic', x: 3550, y: 'ground-0' }, { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 }, { type: 'basic', x: 4100, y: 'ground-0' } ] },
-        { triggerX: 5600, enemies: [ { type: 'nurse_zombie', x: 5650, y: 'ground-0', hp: 2 }, { type: 'nurse_zombie', x: 5800, y: 'ground-0', hp: 2 } ] },
-        { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
+        // { triggerX: 500, enemies: [ { type: 'basic', x: 550, y: 'ground-0' }, { type: 'basic', x: 600, y: 'ground-0' } ] },
+        // { triggerX: 1500, enemies: [ { type: 'basic', x: 1550, y: 'ground-0' }, { type: 'nurse_zombie', x: 1650, y: 'ground-0', hp: 2 } ] },
+        // { triggerX: 2800, enemies: [ { type: 'basic', x: 2850, y: 'ground-0' }, { type: 'basic', x: 2900, y: 'ground-0' }, { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 } ] },
+        // { triggerX: 3500, enemies: [ { type: 'basic', x: 3550, y: 'ground-0' }, { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 }, { type: 'basic', x: 4100, y: 'ground-0' } ] },
+        // { triggerX: 5600, enemies: [ { type: 'nurse_zombie', x: 5650, y: 'ground-0', hp: 2 }, { type: 'nurse_zombie', x: 5800, y: 'ground-0', hp: 2 } ] },
+        // { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
     ],
     
     // Boss configuration

@@ -605,7 +605,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 for (const p of platforms) {
                     const screenX = p.worldX + worldX;
                     if (screenX > -p.width && screenX < canvas.width) {
-                        ctx.globalAlpha = (p.type === 'elevator' && !p.activated) ? 0.3 : 1.0;
+                        ctx.globalAlpha = !p.activated ? 0.3 : 1.0;
                         ctx.fillStyle = '#808080';
                         ctx.fillRect(screenX, p.y, p.width, p.height);
                         ctx.globalAlpha = 1.0;
