@@ -71,7 +71,7 @@ import { Enemy, EnemyManager } from './enemy.js';
         
         let worldX = 0;
         let groundY = 0;
-        const testLevelEndX = 10800;
+        let testLevelEndX = 10800;
         
         let gate = null;
         let boss = null;
@@ -81,6 +81,7 @@ import { Enemy, EnemyManager } from './enemy.js';
         const projectiles = [];
         const platforms = [];
         const npcs = [];
+        const enemies = [];
         const pickups = [];
         let pickupSpawnTimer = 0;
         const pits = [];
@@ -208,7 +209,7 @@ import { Enemy, EnemyManager } from './enemy.js';
             const groundY = canvas.height - 100;
             player.reset(groundY);
             worldX = 0;
-            projectiles.length = 0; pickups.length = 0; platforms.length = 0; npcs.length = 0; pits.length = 0; chests.length = 0; powerups.length = 0;
+            projectiles.length = 0; pickups.length = 0; platforms.length = 0; npcs.length = 0; enemies.length = 0; pits.length = 0; chests.length = 0; powerups.length = 0;
             enemyManager.clear();
             currentWeapon = 1;
             screenLocked = false;
@@ -217,8 +218,6 @@ import { Enemy, EnemyManager } from './enemy.js';
             armorPickup = null;
             quiz.clearCurrentQuestion();
             canFire = true;
-            const questionFile = levelDef.questionFile || levelData[selectedLevel].file;
-
 
             if (selectedLevel !== -1) {
                 try {
@@ -262,8 +261,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     // === KEEP YOUR EXISTING QUESTION LOADING (just update the file reference) ===
                     const response = await fetch(levelDef.questionFile || levelData[selectedLevel].file);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    questionBank = await response.json();
-                    availableQuestions = [...questionBank];
+                    await quiz.loadQuestions(levelDef.questionFile || levelData[selectedLevel].file);
                     
                 } catch (error) {
                     console.error("Could not load level:", error);
