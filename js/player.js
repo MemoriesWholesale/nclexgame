@@ -116,11 +116,15 @@ export class Player {
         this.vy += 0.8;
         this.x += this.vx;
         
+        // Store the current platform before handling platform movement
+        const currentPlatform = this.onPlatform;
+        
         // Handle moving platforms (elevators, moving, orbiting)
         for (const p of platforms) {
             if (p.activated) {
                 // Store previous position for player tracking
                 const prevPlatformY = p.y;
+                const prevPlatformX = p.worldX || p.x;
                 
                 if (p.type === 'elevator') {
                     p.y += p.speed;
@@ -132,7 +136,7 @@ export class Player {
                     }
                     
                     // **FIX**: Move player with elevator if they're standing on it
-                    if (this.onPlatform === p) {
+                    if (currentPlatform === p) {
                         const platformMovement = p.y - prevPlatformY;
                         this.y += platformMovement;
                     }
@@ -165,9 +169,6 @@ export class Player {
         const prevY = this.y;
         this.y += this.vy;
         this.grounded = false;
-        
-        // Store previous platform to detect platform movement
-        const prevPlatform = this.onPlatform;
         this.onPlatform = null;
         
         // Check platform collisions
@@ -180,13 +181,6 @@ export class Player {
                     this.vy = 0;
                     this.grounded = true;
                     this.onPlatform = p;
-                    
-                    // **FIX**: Handle player being carried by moving platforms (especially elevators)
-                    if (p.type === 'elevator' && prevPlatform === p) {
-                        // Keep the player at the same relative position on the moving elevator
-                        const platformMovement = p.y - (prevPlatform.y || p.y);
-                        this.y += platformMovement;
-                    }
                 }
             }
         }
