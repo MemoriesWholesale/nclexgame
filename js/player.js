@@ -147,6 +147,12 @@ export class Player {
                         if ((p.movement.speed > 0 && p.worldX >= p.movement.endX) || (p.movement.speed < 0 && p.worldX <= p.movement.startX)) {
                             p.movement.speed = -p.movement.speed;
                         }
+                        
+                        // **FIX**: Move player with horizontally moving platform if they're standing on it
+                        if (currentPlatform === p) {
+                            const platformMovement = p.worldX - prevPlatformX;
+                            this.x += platformMovement;
+                        }
                     } else if (p.movement.vertical) {
                         p.y += p.movement.speed;
                          if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
