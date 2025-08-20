@@ -756,9 +756,101 @@ import { Enemy, EnemyManager } from './enemy.js';
             }
         }
 
+        // Debugging function to draw spatial axes
+        function drawSpatialAxes() {
+            if (gameState !== 'playing') return;
+            
+            const axisColor = 'rgba(255, 255, 255, 0.8)';
+            const tickColor = 'rgba(255, 255, 255, 0.6)';
+            const textColor = 'rgba(255, 255, 255, 0.9)';
+            
+            ctx.save();
+            ctx.strokeStyle = axisColor;
+            ctx.fillStyle = textColor;
+            ctx.font = '12px monospace';
+            ctx.lineWidth = 1;
+            
+            // X-axis (horizontal) - shows world coordinates
+            const xAxisY = canvas.height - 40; // 40 pixels from bottom
+            ctx.beginPath();
+            ctx.moveTo(0, xAxisY);
+            ctx.lineTo(canvas.width, xAxisY);
+            ctx.stroke();
+            
+            // X-axis tick marks and labels
+            const playerWorldX = player.x - worldX; // Current player world position
+            const tickInterval = 200; // Every 200 world units
+            const startWorldX = Math.floor((-worldX - 100) / tickInterval) * tickInterval;
+            
+            for (let worldX_pos = startWorldX; worldX_pos <= -worldX + canvas.width + 100; worldX_pos += tickInterval) {
+                const screenX = worldX_pos + worldX;
+                if (screenX >= 0 && screenX <= canvas.width) {
+                    // Draw tick mark
+                    ctx.strokeStyle = tickColor;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, xAxisY - 5);
+                    ctx.lineTo(screenX, xAxisY + 5);
+                    ctx.stroke();
+                    
+                    // Draw label
+                    ctx.fillStyle = textColor;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(worldX_pos.toString(), screenX, xAxisY + 18);
+                }
+            }
+            
+            // Y-axis (vertical) - shows pixel coordinates from ground
+            const yAxisX = 30; // 30 pixels from left
+            ctx.strokeStyle = axisColor;
+            ctx.beginPath();
+            ctx.moveTo(yAxisX, 50); // Start 50px from top
+            ctx.lineTo(yAxisX, groundY + 10); // End 10px below ground
+            ctx.stroke();
+            
+            // Y-axis tick marks and labels (every 100 pixels)
+            const yTickInterval = 100;
+            for (let y = groundY; y >= 50; y -= yTickInterval) {
+                const groundOffset = groundY - y; // Distance above ground level
+                
+                // Draw tick mark
+                ctx.strokeStyle = tickColor;
+                ctx.beginPath();
+                ctx.moveTo(yAxisX - 5, y);
+                ctx.lineTo(yAxisX + 5, y);
+                ctx.stroke();
+                
+                // Draw label (showing distance above ground)
+                ctx.fillStyle = textColor;
+                ctx.textAlign = 'right';
+                ctx.fillText(groundOffset.toString(), yAxisX - 8, y + 4);
+            }
+            
+            // Draw axis labels
+            ctx.fillStyle = textColor;
+            ctx.font = '14px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('X (World)', 10, xAxisY - 10);
+            ctx.save();
+            ctx.translate(15, (groundY + 50) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Y (Height)', 0, 0);
+            ctx.restore();
+            
+            // Show current player position
+            ctx.fillStyle = 'rgba(255, 255, 0, 0.9)';
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'left';
+            const playerY = groundY - player.y - player.height;
+            ctx.fillText(`Player: (${Math.round(playerWorldX)}, ${Math.round(playerY)})`, canvas.width - 200, 20);
+            
+            ctx.restore();
+        }
+
         function gameLoop() {
             update();
             draw();
+            drawSpatialAxes(); // Add debugging axes overlay
             requestAnimationFrame(gameLoop);
         }
         
