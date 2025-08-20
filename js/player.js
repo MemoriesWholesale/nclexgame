@@ -19,6 +19,7 @@ export class Player {
         this.dead = false;
         this.crouching = false;
         this.onPlatform = null;
+        this.canJump = false; // **FIX**: Track if player can validly jump
         
         // Armor system
         this.armors = [0];
@@ -56,8 +57,8 @@ export class Player {
             this.vx *= 0.8;
         }
         
-        // Jumping
-        if ((keys['ArrowUp'] || keys['w'] || keys['W']) && this.grounded) {
+        // Jumping - only allow if grounded AND on valid surface
+        if ((keys['ArrowUp'] || keys['w'] || keys['W']) && this.grounded && this.canJump) {
             this.vy = -this.jumpPower;
             this.grounded = false;
             this.onPlatform = null;
@@ -118,6 +119,9 @@ export class Player {
         // Handle moving platforms (elevators, moving, orbiting)
         for (const p of platforms) {
             if (p.activated) {
+                // Store previous position for player tracking
+                const prevPlatformY = p.y;
+                
                 if (p.type === 'elevator') {
                     p.y += p.speed;
                     if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
@@ -125,6 +129,12 @@ export class Player {
                         // To make it go back and forth, swap start and end
                         [p.startY, p.endY] = [p.endY, p.startY]; 
                         p.speed = -p.speed;
+                    }
+                    
+                    // **FIX**: Move player with elevator if they're standing on it
+                    if (this.onPlatform === p) {
+                        const platformMovement = p.y - prevPlatformY;
+                        this.y += platformMovement;
                     }
                 }
                 if (p.type === 'moving' && p.movement) {
@@ -155,6 +165,9 @@ export class Player {
         const prevY = this.y;
         this.y += this.vy;
         this.grounded = false;
+        
+        // Store previous platform to detect platform movement
+        const prevPlatform = this.onPlatform;
         this.onPlatform = null;
         
         // Check platform collisions
@@ -167,6 +180,13 @@ export class Player {
                     this.vy = 0;
                     this.grounded = true;
                     this.onPlatform = p;
+                    
+                    // **FIX**: Handle player being carried by moving platforms (especially elevators)
+                    if (p.type === 'elevator' && prevPlatform === p) {
+                        // Keep the player at the same relative position on the moving elevator
+                        const platformMovement = p.y - (prevPlatform.y || p.y);
+                        this.y += platformMovement;
+                    }
                 }
             }
         }
@@ -186,6 +206,9 @@ export class Player {
             this.vy = 0;
             this.grounded = true;
         }
+        
+        // **FIX**: Set canJump based on valid surfaces (platform or proper ground level)
+        this.canJump = this.grounded && (this.onPlatform || this.y + this.height <= groundY + 5);
     }
     
     // Check if player should die from falling
