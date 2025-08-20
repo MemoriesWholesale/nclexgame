@@ -62,8 +62,18 @@ const level = {
         { id: 'hard_path_5d', x: 6000, y: 'ground-550', width: 30, height: 20, type: 'static', activated: true },
 
         // --- SECTION 6: THE FINAL GAUNTLET ---
+        // Hard path across pit 6: challenging but possible without NPC help
+        { id: 'hard_path_pit6_a', x: 6100, y: 'ground-150', width: 40, height: 20, type: 'static', activated: true },
+        { id: 'hard_path_pit6_b', x: 6220, y: 'ground-200', width: 35, height: 20, type: 'disappearing', activated: true, timing: { onTime: 2000, offTime: 1000 } },
+        { id: 'hard_path_pit6_c', x: 6350, y: 'ground-120', width: 35, height: 20, type: 'static', activated: true },
         { id: 'gauntlet_approach', x: 6400, y: 'ground-100', width: 100, height: 20, type: 'static', activated: true },
         { id: 'gauntlet_start', x: 6600, y: 'ground-150', width: 200, height: 20, type: 'static', activated: true },
+        // Bridge platform to access weave section over the large pit
+        { id: 'weave_access_bridge', x: 6850, y: 'ground-200', width: 80, height: 20, type: 'static', activated: true },
+        // NPC-activated easier path for pit 6 crossing
+        { id: 'pit6_bridge_1', x: 6150, y: 'ground-300', width: 80, height: 20, type: 'elevator', activated: false, startY: 'ground-300', endY: 'ground-150', speed: -2 },
+        { id: 'pit6_bridge_2', x: 6280, y: 'ground-250', width: 100, height: 20, type: 'static', activated: false },
+        { id: 'pit6_reward_platform', x: 6180, y: 'ground-400', width: 120, height: 20, type: 'static', activated: false },
         { id: 'weave_1', x: 7000, y: 'ground-250', width: 120, height: 20, type: 'moving', activated: false, movement: { startX: 7000, endX: 7300, speed: 2.5, horizontal: true } },
         { id: 'weave_2', x: 7420, y: 'ground-250', width: 120, height: 20, type: 'moving', activated: false, movement: { startX: 7420, endX: 7120, speed: -2.5, horizontal: true } },
         { id: 'weave_3', x: 7500, y: 'ground-400', width: 100, height: 20, type: 'elevator', activated: false, startY: 'ground-400', endY: 'ground-200', speed: -2 },
@@ -85,6 +95,7 @@ const level = {
         { id: 'dietitian_1', type: 'dietitian', x: 3650, y: 'vert_ledge_1-top', dialogue: "Good nutrition provides the bridge to recovery. Well done!", activates: 'collab_bridge_1', requiresPrevious: 'timed_climb_3' },
         { id: 'ot_1', type: 'occupational_therapist', x: 5550, y: 'tower_base-top', dialogue: "Let's get you functional! These platforms will help you adapt.", activates: 'orbit_1,orbit_2' },
         { id: 'charge_nurse_1', type: 'charge_nurse', x: 5750, y: 'tower_base-top', dialogue: "Good progress. I'll give you a lift to the top.", activates: 'elevator_2', requiresPrevious: 'ot_1' },
+        { id: 'respiratory_therapist_1', type: 'respiratory_therapist', x: 6050, y: 'hard_path_5d-top', dialogue: "That pit ahead looks dangerous! Let me help you breathe easier with a safe path.", activates: 'pit6_bridge_1,pit6_bridge_2,pit6_reward_platform' },
         { id: 'case_manager_1', type: 'case_manager', x: 6650, y: 'gauntlet_start-top', dialogue: "Discharge is ahead, but you need a safe path. Let me coordinate it.", activates: 'weave_1,weave_2,weave_3' }
     ],
     
@@ -108,6 +119,7 @@ const level = {
         { type: 'weapon_pickup', x: 1800, y: 'ground-30', weaponId: 3 },
         { type: 'health_pack', x: 2600, y: 'ground-30' },
         { type: 'chest', x: 6100, y: 'tower_top_ledge-top', contains: 'weapon_upgrade', weaponId: 5, requiresQuestion: true },
+        { type: 'chest', x: 6220, y: 'pit6_reward_platform-top', contains: 'extra_life', requiresQuestion: true },
         { type: 'health_pack', x: 7800, y: 'ground-30' }
     ],
     
