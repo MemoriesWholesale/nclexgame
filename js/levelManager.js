@@ -136,6 +136,12 @@ class LevelManager {
                     newPlatform.startY = this.parsePosition(plat.startY, canvas);
                     newPlatform.endY = this.parsePosition(plat.endY, canvas);
                 }
+                
+                // **FIX**: Initialize orbiting platforms
+                if (plat.type === 'orbiting' && plat.orbit) {
+                    newPlatform.orbit.centerY = this.parsePosition(plat.orbit.centerY, canvas);
+                    newPlatform.orbit.currentAngle = plat.orbit.startAngle || 0;
+                }
 
                 platforms.push(newPlatform);
             }
@@ -154,7 +160,7 @@ class LevelManager {
                     y: this.parsePosition(npc.y, canvas),
                     width: npc.width || 40,
                     height: npc.height || 60,
-                    interactionId: npc.activates,
+                    interactionId: npc.id, // Use unique NPC id for tracking
                     isLeaving: false
                 });
             }

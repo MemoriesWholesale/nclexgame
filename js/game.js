@@ -170,14 +170,17 @@ import { Enemy, EnemyManager } from './enemy.js';
             } else if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
                 const currentQuestion = quiz.getCurrentQuestion();
                 if (currentQuestion.answered) {
-                    const targetPlatform = platforms.find(p => p.id === currentQuestion.interactionId);
-                    if (targetPlatform && currentQuestion.isCorrect) {
-                        targetPlatform.activated = true;
-                    }
-
-                    const targetChest = chests.find(c => c.id === currentQuestion.interactionId);
-                    if (targetChest) {
-                        if (currentQuestion.isCorrect) {
+                    if (currentQuestion.isCorrect) {
+                        const activationIds = currentQuestion.interactionId.split(',');
+                        activationIds.forEach(id => {
+                            const targetPlatform = platforms.find(p => p.id === id);
+                            if (targetPlatform) {
+                                targetPlatform.activated = true;
+                            }
+                        });
+                        
+                        const targetChest = chests.find(c => c.id === currentQuestion.interactionId);
+                        if (targetChest) {
                             targetChest.state = 'open';
                             powerups.push({
                                 worldX: targetChest.worldX + targetChest.width / 2 - 10,
@@ -185,13 +188,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                                 vy: -5,
                                 type: 'life'
                             });
-                        } else {
-                            targetChest.state = 'inert';
                         }
+                    } else {
+                        const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.originalInteractionId);
+                        if(interactingNpc) interactingNpc.isLeaving = true;
                     }
-
-                    const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.interactionId);
-                    if(interactingNpc && !currentQuestion.isCorrect) interactingNpc.isLeaving = true;
                     
                     quiz.clearCurrentQuestion();
                     gameState = 'playing';
@@ -221,7 +222,6 @@ import { Enemy, EnemyManager } from './enemy.js';
 
             if (selectedLevel !== -1) {
                 try {
-                    // Load the level definition
                     await levelManager.loadLevel(selectedLevel);
                     const levelDef = levelManager.getLevelData();
                     
@@ -229,15 +229,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                         throw new Error("Failed to load level definition");
                     }
                     
-                    // Set level-specific values
-                    testLevelEndX = levelDef.worldLength || 10800; // Default to 10800 if not specified
-                    
-                    // Set player starting position
+                    testLevelEndX = levelDef.worldLength || 10800;
                     player.x = levelDef.playerStart.x || 100;
                     const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
-                    player.y = startY - player.height; // Subtract player height so they stand on ground
+                    player.y = startY - player.height;
                     
-                    // Set the gate at the end of the level
                     gate = { 
                         worldX: testLevelEndX, 
                         width: 60, 
@@ -246,7 +242,6 @@ import { Enemy, EnemyManager } from './enemy.js';
                         maxHp: 5 
                     };
                     
-                    // Load pits/hazards (these don't spawn dynamically, they're always there)
                     if (levelDef.hazards) {
                         levelDef.hazards.forEach(hazard => {
                             if (hazard.type === 'pit') {
@@ -258,7 +253,6 @@ import { Enemy, EnemyManager } from './enemy.js';
                         });
                     }
                     
-                    // === KEEP YOUR EXISTING QUESTION LOADING (just update the file reference) ===
                     const response = await fetch(levelDef.questionFile || levelData[selectedLevel].file);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     await quiz.loadQuestions(levelDef.questionFile || levelData[selectedLevel].file);
@@ -270,14 +264,13 @@ import { Enemy, EnemyManager } from './enemy.js';
                     return;
                 }
             } else {
-                // No level selected, return to menu
                 gameState = 'menu';
                 return;
             }
         }
 
-        function askQuestion(interactionId) {
-            quiz.askQuestion(interactionId);
+        function askQuestion(interactionId, originalId) {
+            quiz.askQuestion(interactionId, originalId);
             gameState = 'quiz';
         }
 
@@ -285,17 +278,14 @@ import { Enemy, EnemyManager } from './enemy.js';
             for (const npc of npcs) {
                 const screenX = npc.worldX + worldX;
                 if(player.x < screenX + npc.width && player.x + player.width > screenX && player.y < npc.y + npc.height && player.y + player.height > npc.y && !npc.isLeaving) {
-                    const targetPlatform = platforms.find(p => p.id === npc.interactionId);
-                    if (targetPlatform && !targetPlatform.activated) {
-                        askQuestion(npc.interactionId);
-                    }
+                     askQuestion(npc.activates, npc.interactionId);
                 }
             }
             for (const chest of chests) {
                 if (chest.state === 'closed') {
                     const screenX = chest.worldX + worldX;
                     if(player.x < screenX + chest.width && player.x + player.width > screenX && player.y < chest.y && player.y + player.height > chest.y - chest.height) {
-                         askQuestion(chest.id);
+                         askQuestion(chest.id, chest.id);
                     }
                 }
             }
@@ -320,74 +310,18 @@ import { Enemy, EnemyManager } from './enemy.js';
             }
             fireTimer = fireCooldowns[currentWeapon - 1];
             
-            // Get weapon spawn position from player
             const weaponPos = player.getWeaponSpawnPos();
-
             const weaponYOffset = player.crouching ? 20 : 0;
             
             switch(currentWeapon) {
-                case 2: 
-                    projectiles.push({ 
-                        x: weaponPos.x, 
-                        y: weaponPos.y - 3 + weaponYOffset, 
-                        vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 
-                    }); 
-                    break;
-                case 3: 
-                    projectiles.push({ 
-                        centerX: weaponPos.centerX, 
-                        centerY: weaponPos.centerY + weaponYOffset, 
-                        radius: 120, angle: 0, rotSpeed: 0.2, type: 3 
-                    }); 
-                    break;
-                case 4: 
-                    projectiles.push({ 
-                        x: weaponPos.x, 
-                        y: weaponPos.y - 5 + weaponYOffset, 
-                        vx: player.facing * 6, vy: -10, width: 30, height: 10, wavePhase: 0, type: 4 
-                    }); 
-                    break;
-                case 5: 
-                    projectiles.push({ 
-                        x: player.x + (player.facing > 0 ? player.width : -40), 
-                        y: weaponPos.y - 12 + weaponYOffset, 
-                        vx: player.facing * 9, vy: 0, width: 40, height: 4, gap: 4, type: 5 
-                    }); 
-                    break;
-                case 6: 
-                    projectiles.push({ 
-                        x: weaponPos.x, 
-                        y: weaponPos.y - 15 + weaponYOffset, 
-                        vx: player.facing * 5, vy: 0, size: 30, angle: 0, rotSpeed: 0.15 * player.facing, type: 6 
-                    }); 
-                    break;
-                case 7: 
-                    projectiles.push({ 
-                        centerX: player.x + player.width / 2, 
-                        centerY: player.y + player.height / 2 + weaponYOffset, 
-                        radius: 150, angle: 0, rotSpeed: 0.12, direction: 1, type: 7 
-                    }); 
-                    break;
-                case 8: 
-                    projectiles.push({ 
-                        x: player.x + (player.facing > 0 ? player.width : -30), 
-                        y: player.y + player.height / 2 - 7 + weaponYOffset, 
-                        vx: player.facing * 8, vy: -18, width: 30, height: 15, 
-                        lastDropX: player.x + (player.facing > 0 ? player.width : -30), 
-                        dropsLeft: 5, type: 8 
-                    }); 
-                    break;
-                case 1:
-                    projectiles.push({ 
-                        x: player.x + (player.facing > 0 ? player.width : -20), 
-                        y: player.y + player.height / 2 - 5 + weaponYOffset,
-                        vx: player.facing * 8, 
-                        vy: -8, 
-                        width: 20, 
-                        height: 10, 
-                        type: 1
-                    });
-                    break;
+                case 2: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 3 + weaponYOffset, vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 }); break;
+                case 3: projectiles.push({ centerX: weaponPos.centerX, centerY: weaponPos.centerY + weaponYOffset, radius: 120, angle: 0, rotSpeed: 0.2, type: 3 }); break;
+                case 4: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 5 + weaponYOffset, vx: player.facing * 6, vy: -10, width: 30, height: 10, wavePhase: 0, type: 4 }); break;
+                case 5: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -40), y: weaponPos.y - 12 + weaponYOffset, vx: player.facing * 9, vy: 0, width: 40, height: 4, gap: 4, type: 5 }); break;
+                case 6: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 15 + weaponYOffset, vx: player.facing * 5, vy: 0, size: 30, angle: 0, rotSpeed: 0.15 * player.facing, type: 6 }); break;
+                case 7: projectiles.push({ centerX: player.x + player.width / 2, centerY: player.y + player.height / 2 + weaponYOffset, radius: 150, angle: 0, rotSpeed: 0.12, direction: 1, type: 7 }); break;
+                case 8: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -30), y: player.y + player.height / 2 - 7 + weaponYOffset, vx: player.facing * 8, vy: -18, width: 30, height: 15, lastDropX: player.x + (player.facing > 0 ? player.width : -30), dropsLeft: 5, type: 8 }); break;
+                case 1: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -20), y: player.y + player.height / 2 - 5 + weaponYOffset, vx: player.facing * 8, vy: -8, width: 20, height: 10, type: 1 }); break;
             }
         }
         
@@ -403,7 +337,6 @@ import { Enemy, EnemyManager } from './enemy.js';
             if (fireTimer > 0) fireTimer--;
             pickupSpawnTimer++;
             
-            // Update enemies using enemy manager
             const enemyResult = enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
             if (enemyResult.playerHit) {
                 setTimeout(() => {
@@ -421,13 +354,10 @@ import { Enemy, EnemyManager } from './enemy.js';
                 pickupSpawnTimer = 0; 
             }
             
-            // Update player input, state, and physics
             player.handleInput(keys);
             player.updateState(spriteAnimations);
             player.updatePhysics(groundY, platforms, pits, worldX);
             
-            
-            // Handle player death from falling
             if (player.checkFallDeath()) {
                 player.die();
                 setTimeout(() => {
@@ -441,13 +371,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }, 2000);
             }
             
-            // Handle screen boundaries and world scrolling
             const deltaX = player.updateScreenPosition(worldX, screenLocked, testLevelEndX, gate);
             if (deltaX !== 0) {
                 worldX -= deltaX;
             }
             
-            // Boss logic and collision
             if (boss) {
                 boss.x += boss.vx;
                 if (boss.x <= 100 || boss.x >= canvas.width - 100 - boss.width) {
@@ -461,33 +389,19 @@ import { Enemy, EnemyManager } from './enemy.js';
             for (let i = npcs.length - 1; i >= 0; i--) {
                 const npc = npcs[i];
                 if (npc.isLeaving) {
-                    npc.worldX -= 2; 
-                    if (npc.worldX + worldX < -npc.width) {
+                    npc.worldX += 4;
+                    if (npc.worldX + worldX > canvas.width) {
                         npcs.splice(i, 1);
                     }
                 }
             }
 
-            // Update projectiles with crouch-aware positions for rotating weapons
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 const proj = projectiles[i];
                 
                 switch(proj.type) {
-                    case 3: 
-                        // Update center position for stethoscope based on current crouch state
-                        proj.centerX = player.x + player.width/2; 
-                        proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); 
-                        proj.angle += proj.rotSpeed; 
-                        if (proj.angle > Math.PI * 2) { projectiles.splice(i, 1); continue; } 
-                        break;
-                    case 7: 
-                        // Update center position for BP monitor based on current crouch state
-                        proj.centerX = player.x + player.width/2; 
-                        proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); 
-                        proj.angle += proj.rotSpeed * proj.direction; 
-                        if ((proj.direction === 1 && proj.angle >= Math.PI * 2)) { proj.direction = -1; } 
-                        else if (proj.direction === -1 && proj.angle <= 0) { projectiles.splice(i, 1); continue; } 
-                        break;
+                    case 3: proj.centerX = player.x + player.width/2; proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); proj.angle += proj.rotSpeed; if (proj.angle > Math.PI * 2) { projectiles.splice(i, 1); continue; } break;
+                    case 7: proj.centerX = player.x + player.width/2; proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); proj.angle += proj.rotSpeed * proj.direction; if ((proj.direction === 1 && proj.angle >= Math.PI * 2)) { proj.direction = -1; } else if (proj.direction === -1 && proj.angle <= 0) { projectiles.splice(i, 1); continue; } break;
                     case 4: if (!proj.landed) { proj.x += proj.vx; proj.vy += 0.6; proj.y += proj.vy; proj.wavePhase += 0.3; if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                     case 5: proj.x += proj.vx; break;
                     case 6: proj.x += proj.vx; proj.angle += proj.rotSpeed; break;
@@ -496,37 +410,44 @@ import { Enemy, EnemyManager } from './enemy.js';
                     default: if (!proj.landed) { if (proj.worldX !== undefined) { proj.x = proj.worldX + worldX; } else if (proj.vx !== 0) { proj.x += proj.vx; } proj.vy += 0.6; proj.y += proj.vy; if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; if (proj.worldX === undefined) proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { if (proj.worldX !== undefined) proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                 }
 
+                // **FIX**: Corrected Boss Gate and Boss Spawn Logic
                 if (gate && gate.hp > 0 && !proj.landed) {
                     const gateScreenX = gate.worldX + worldX;
-                    const gateY = groundY - gate.height;
-                    let hitGate = false;
-                    if (proj.type === 3 || proj.type === 7) { 
-                        const numChecks = 10;
-                        for (let k = 0; k <= numChecks; k++) {
-                            const t = k / numChecks;
-                            const checkX = proj.centerX + Math.cos(proj.angle) * proj.radius * t;
-                            const checkY = proj.centerY + Math.sin(proj.angle) * proj.radius * t;
-                            if (checkX > gateScreenX && checkX < gateScreenX + gate.width && checkY > gateY && checkY < gateY + gate.height) {
-                                hitGate = true; break;
+                    
+                    // Gate can only be damaged if it's on screen
+                    if (gateScreenX < canvas.width) {
+                        const gateY = groundY - gate.height;
+                        let hitGate = false;
+                        if (proj.type === 3 || proj.type === 7) { 
+                            const numChecks = 10;
+                            for (let k = 0; k <= numChecks; k++) {
+                                const t = k / numChecks;
+                                const checkX = proj.centerX + Math.cos(proj.angle) * proj.radius * t;
+                                const checkY = proj.centerY + Math.sin(proj.angle) * proj.radius * t;
+                                if (checkX > gateScreenX && checkX < gateScreenX + gate.width && checkY > gateY && checkY < gateY + gate.height) {
+                                    hitGate = true; break;
+                                }
                             }
+                        } else if (proj.x < gateScreenX + gate.width && proj.x + (proj.width || proj.size || 20) > gateScreenX && proj.y < gateY + gate.height && proj.y + (proj.height || proj.size || 10) > gateY) {
+                            hitGate = true;
                         }
-                    } else if (proj.x < gateScreenX + gate.width && proj.x + (proj.width || proj.size || 20) > gateScreenX && proj.y < gateY + gate.height && proj.y + (proj.height || proj.size || 10) > gateY) {
-                        hitGate = true;
-                    }
 
-                    if (hitGate) {
-                        gate.hp--;
-                        if (gate.hp <= 0) {
-                            gate = null;
-                            screenLocked = true;
-                            boss = {
-                                x: canvas.width - 200, y: groundY - 120,
-                                width: 80, height: 120, vx: -2, hp: 10, maxHp: 10
-                            };
-                        }
-                        if (proj.type !== 3 && proj.type !== 7) {
-                            projectiles.splice(i, 1);
-                            continue;
+                        if (hitGate) {
+                            gate.hp--;
+                            if (gate.hp <= 0) {
+                                gate = null; // Gate is destroyed
+                                screenLocked = true; // Lock the screen for the boss fight
+                                
+                                // Spawn the boss *only* now
+                                boss = {
+                                    x: canvas.width - 200, y: groundY - 120,
+                                    width: 80, height: 120, vx: -2, hp: 10, maxHp: 10
+                                };
+                            }
+                            if (proj.type !== 3 && proj.type !== 7) {
+                                projectiles.splice(i, 1);
+                                continue;
+                            }
                         }
                     }
                 }
@@ -563,10 +484,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                 }
 
-                // Check projectile-enemy collisions using enemy manager
                 const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
                 
-                // Remove hit projectiles (excluding rotating weapons)
                 for (const result of hitResults) {
                     if (result.projectileType !== 3 && result.projectileType !== 7) {
                         projectiles.splice(result.projectileIndex, 1);
@@ -770,7 +689,6 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                 }
                 
-                // Render enemies using enemy manager
                 enemyManager.render(ctx, worldX);
 
                 for (const proj of projectiles) {
@@ -786,10 +704,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                 }
                 
-                // Render player
                 player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData);
                 
-                // Render dead player effect
                 if (player.dead) {
                     ctx.fillStyle = `rgba(255, 0, 0, ${Math.sin(Date.now() * 0.01) * 0.5 + 0.5})`;
                     ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -852,3 +768,4 @@ export function initGame() {
     // TODO: Set up canvas, start game loop
     console.log('Game initialized');
   }
+

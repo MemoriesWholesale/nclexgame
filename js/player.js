@@ -115,19 +115,38 @@ export class Player {
         this.vy += 0.8;
         this.x += this.vx;
         
-        // Handle moving platforms (elevators)
+        // Handle moving platforms (elevators, moving, orbiting)
         for (const p of platforms) {
-            if (p.type === 'elevator' && p.activated) {
-                p.y += p.speed;
-                if (p.y <= p.endY) {
-                    p.y = p.endY;
-                    p.speed = Math.abs(p.speed);
-                } else if (p.y >= p.startY) {
-                    p.y = p.startY;
-                    p.speed = -Math.abs(p.speed);
+            if (p.activated) {
+                if (p.type === 'elevator') {
+                    p.y += p.speed;
+                    if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
+                        p.y = p.endY;
+                        // To make it go back and forth, swap start and end
+                        [p.startY, p.endY] = [p.endY, p.startY]; 
+                        p.speed = -p.speed;
+                    }
                 }
-                if (this.onPlatform === p) {
-                    this.y = p.y - this.height;
+                if (p.type === 'moving' && p.movement) {
+                    if (p.movement.horizontal) {
+                        p.worldX += p.movement.speed;
+                        if ((p.movement.speed > 0 && p.worldX >= p.movement.endX) || (p.movement.speed < 0 && p.worldX <= p.movement.startX)) {
+                            p.movement.speed = -p.movement.speed;
+                        }
+                    } else if (p.movement.vertical) {
+                        p.y += p.movement.speed;
+                         if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
+                            p.y = p.endY;
+                            [p.startY, p.endY] = [p.endY, p.startY]; 
+                            p.speed = -p.speed;
+                        }
+                    }
+                }
+                // **FIX**: Added logic for orbiting platforms
+                if (p.type === 'orbiting' && p.orbit) {
+                    p.orbit.currentAngle += p.orbit.speed;
+                    p.worldX = p.orbit.centerX + Math.cos(p.orbit.currentAngle) * p.orbit.radiusX;
+                    p.y = p.orbit.centerY + Math.sin(p.orbit.currentAngle) * p.orbit.radiusY;
                 }
             }
         }
@@ -141,15 +160,13 @@ export class Player {
         // Check platform collisions
         for (const p of platforms) {
             const screenX = p.worldX + worldX;
-            if (p.activated || p.type === 'ledge') {
+            if (p.activated || p.type === 'ledge' || p.type === 'static' || (p.type === 'disappearing' && p.visible)) {
                 if (this.x + this.width > screenX && this.x < screenX + p.width && 
                     prevY + this.height <= p.y && this.y + this.height >= p.y) {
                     this.y = p.y - this.height;
                     this.vy = 0;
                     this.grounded = true;
-                    if (p.type === 'elevator') {
-                        this.onPlatform = p;
-                    }
+                    this.onPlatform = p;
                 }
             }
         }
