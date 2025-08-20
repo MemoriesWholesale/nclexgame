@@ -1,7 +1,9 @@
 import { Player } from './player.js';
+import LevelManager from './levelManager.js';
 import { Quiz } from './quiz.js';
 import { Enemy, EnemyManager } from './enemy.js';
 
+        const levelManager = new LevelManager();
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -215,45 +217,64 @@ import { Enemy, EnemyManager } from './enemy.js';
             armorPickup = null;
             quiz.clearCurrentQuestion();
             canFire = true;
+            const questionFile = levelDef.questionFile || levelData[selectedLevel].file;
+
 
             if (selectedLevel !== -1) {
-                const success = await quiz.loadQuestions(levelData[selectedLevel].file);
-                if (!success) {
-                    alert("Error: Could not load questions for this level. Please ensure the .json file exists and you are using a live server.");
+                try {
+                    // Load the level definition
+                    await levelManager.loadLevel(selectedLevel);
+                    const levelDef = levelManager.getLevelData();
+                    
+                    if (!levelDef) {
+                        throw new Error("Failed to load level definition");
+                    }
+                    
+                    // Set level-specific values
+                    testLevelEndX = levelDef.worldLength || 10800; // Default to 10800 if not specified
+                    
+                    // Set player starting position
+                    player.x = levelDef.playerStart.x || 100;
+                    const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
+                    player.y = startY - player.height; // Subtract player height so they stand on ground
+                    
+                    // Set the gate at the end of the level
+                    gate = { 
+                        worldX: testLevelEndX, 
+                        width: 60, 
+                        height: 150, 
+                        hp: 5, 
+                        maxHp: 5 
+                    };
+                    
+                    // Load pits/hazards (these don't spawn dynamically, they're always there)
+                    if (levelDef.hazards) {
+                        levelDef.hazards.forEach(hazard => {
+                            if (hazard.type === 'pit') {
+                                pits.push({ 
+                                    worldX: hazard.x, 
+                                    width: hazard.width 
+                                });
+                            }
+                        });
+                    }
+                    
+                    // === KEEP YOUR EXISTING QUESTION LOADING (just update the file reference) ===
+                    const response = await fetch(levelDef.questionFile || levelData[selectedLevel].file);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    questionBank = await response.json();
+                    availableQuestions = [...questionBank];
+                    
+                } catch (error) {
+                    console.error("Could not load level:", error);
+                    alert("Error: Could not load level data. Please ensure all files are present.");
                     gameState = 'menu';
                     return;
                 }
-            }
-
-            if (selectedLevel === 0) {
-                const elevatorPlatform = {
-                    worldX: 800, y: canvas.height - 120, width: 120, height: 20,
-                    activated: false, type: 'elevator', id: 1,
-                    startY: canvas.height - 120, endY: canvas.height - 350, speed: -2
-                };
-                platforms.push(elevatorPlatform);
-                
-                const highLedge = {
-                    worldX: 920, y: canvas.height - 350, width: 500, height: 20, activated: true, type: 'ledge'
-                };
-                platforms.push(highLedge);
-
-                const pharmacistNPC = {
-                    worldX: 720, y: canvas.height - 100 - 60, width: 40, height: 60,
-                    type: 'pharmacist', interactionId: 1,
-                    isLeaving: false
-                };
-                npcs.push(pharmacistNPC);
-
-                chests.push({
-                    worldX: highLedge.worldX + 100, y: highLedge.y,
-                    width: 50, height: 25,
-                    id: 101,
-                    state: 'closed'
-                });
-
-                pits.push({ worldX: 1000, width: 150 });
-                pits.push({ worldX: 1250, width: 100 });
+            } else {
+                // No level selected, return to menu
+                gameState = 'menu';
+                return;
             }
         }
 
@@ -376,6 +397,10 @@ import { Enemy, EnemyManager } from './enemy.js';
             if (gameState !== 'playing') return;
             
             groundY = canvas.height - 100;
+
+            if (levelManager.currentLevel) {
+                levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests);
+            };
             
             if (fireTimer > 0) fireTimer--;
             pickupSpawnTimer++;
