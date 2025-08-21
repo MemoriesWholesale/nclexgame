@@ -392,6 +392,26 @@ import { Enemy, EnemyManager } from './enemy.js';
             }
         }
         
+        // [NEW] Central function to handle player death and respawn
+        function handlePlayerDeath() {
+            if (player.isRespawning) return; // Prevent this from running multiple times
+
+            player.isRespawning = true;
+            setTimeout(() => {
+                if (player.lives > 0) {
+                    player.respawn(groundY);
+                    worldX = 0;
+                    // Reset any dynamic level elements if needed
+                    enemyManager.clear();
+                    hazards.forEach(h => {
+                        if (h.deactivatedByNPC) h.activated = true; // Reactivate hazards
+                    });
+                } else {
+                    gameState = 'menu'; // Game over
+                }
+            }, 2000); // 2-second delay before respawn/game over
+        }
+
         function update() {
             if (gameState !== 'playing') return;
             
@@ -495,18 +515,8 @@ import { Enemy, EnemyManager } from './enemy.js';
             }
 
             
-            const enemyResult = enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
-            if (enemyResult.playerHit) {
-                setTimeout(() => {
-                    if (player.lives > 0) {
-                        player.respawn(groundY);
-                        worldX = 0;
-                        enemyManager.clear();
-                    } else {
-                        gameState = 'menu';
-                    }
-                }, 2000);
-            }
+            enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
+
             if (pickupSpawnTimer > 450) { 
                 spawnPickup(); 
                 pickupSpawnTimer = 0; 
@@ -518,15 +528,11 @@ import { Enemy, EnemyManager } from './enemy.js';
             
             if (player.checkFallDeath()) {
                 player.die();
-                setTimeout(() => {
-                    if (player.lives > 0) {
-                        player.respawn(groundY);
-                        worldX = 0;
-                        enemyManager.clear();
-                    } else {
-                        gameState = 'menu';
-                    }
-                }, 2000);
+            }
+
+                        // [NEW] Central Death Handler - This now manages all respawns
+            if (player.dead) {
+                handlePlayerDeath();
             }
             
             const deltaX = player.updateScreenPosition(worldX, screenLocked, testLevelEndX, gate);

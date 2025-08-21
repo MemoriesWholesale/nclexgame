@@ -20,7 +20,7 @@ export class Player {
         this.crouching = false;
         this.onPlatform = null;
         this.canJump = false; // **FIX**: Track if player can validly jump
-        
+        this.isRespawning = false;
         // Medication system
         this.activeMedications = [];
         this.medicationCooldowns = {}; // Track tolerance/cooldowns
@@ -263,6 +263,7 @@ export class Player {
     // Respawn the player
     respawn(groundY) {
         this.dead = false;
+        this.isRespawning = false;
         this.x = 100;
         this.y = groundY - this.height;
     }
