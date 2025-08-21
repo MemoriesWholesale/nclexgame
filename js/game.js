@@ -92,11 +92,7 @@ import { Enemy, EnemyManager } from './enemy.js';
         const hiddenPlatforms = [];
         let medicationSpawnTimer = 0;
 
-        const aerosolGeysers = [];
-        const dropletSprays = [];
-        const spillSlicks = [];
-        const sparkingHazards = [];
-        const risingTides = [];
+        const hazards = [];
         
         let currentWeapon = 1;
         const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
@@ -276,11 +272,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 hiddenPlatforms.length = 0;
             }
 
-            aerosolGeysers.length = 0;
-            dropletSprays.length = 0;
-            spillSlicks.length = 0;
-            sparkingHazards.length = 0;
-            risingTides.length = 0;
+            hazards.length = 0;
 
             if (selectedLevel !== -1) {
                 try {
@@ -406,7 +398,7 @@ import { Enemy, EnemyManager } from './enemy.js';
             groundY = canvas.height - 100;
 
             if (levelManager.currentLevel) {
-                levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests);
+                levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests, hazards);
             };
             
             if (fireTimer > 0) fireTimer--;
@@ -469,40 +461,37 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             }
 
-                        // --- AEROSOL GEYSER LOGIC ---
-            aerosolGeysers.forEach(geyser => {
-                if (!geyser.activated) return;
-                const now = Date.now();
-                const cycleTime = geyser.timing.onTime + geyser.timing.offTime;
-                const timeInCycle = (now - (geyser.timing.offset || 0)) % cycleTime;
-                
-                geyser.isOn = timeInCycle < geyser.timing.onTime;
-
-                if (geyser.isOn) {
-                    const screenX = geyser.worldX + worldX;
-                    // Check for player collision
-                    if (player.x < screenX + geyser.width && player.x + player.width > screenX && player.y + player.height > geyser.y) {
-                        if (!player.invincible) player.die();
-                    }
-                }
-            });
-
-            // --- SPILL SLICK LOGIC ---
             let onSpill = false;
-            spillSlicks.forEach(spill => {
-                if (!spill.activated) return;
-                const screenX = spill.worldX + worldX;
-                if (player.x + player.width > screenX && player.x < screenX + spill.width && player.y + player.height > spill.y) {
-                    onSpill = true;
+            hazards.forEach(haz => {
+                if (!haz.activated) return;
+
+                const screenX = haz.worldX + worldX;
+
+                switch(haz.type) {
+                    case 'aerosol_geyser':
+                        const now = Date.now();
+                        const cycleTime = haz.timing.onTime + haz.timing.offTime;
+                        const timeInCycle = (now - (haz.timing.offset || 0)) % cycleTime;
+                        haz.isOn = timeInCycle < haz.timing.onTime;
+                        
+                        if (haz.isOn && !player.dead && player.x < screenX + haz.width && player.x + player.width > screenX && player.y + player.height > haz.y - haz.height) {
+                           if(!player.invincible) player.die();
+                        }
+                        break;
+                    
+                    case 'spill_slick':
+                        if (player.grounded && player.x + player.width > screenX && player.x < screenX + haz.width && player.y + player.height > haz.y) {
+                            onSpill = true;
+                        }
+                        break;
+                    
+                    // Add cases for other hazards like 'sparking_hazard' here later
                 }
             });
 
             if (onSpill && player.grounded) {
-                // Make player slide by reducing friction
-                player.vx *= 1.05; // Accelerate slightly
-                if (Math.abs(player.vx) < 2) {
-                    player.vx = player.facing * 2; // Maintain minimum slide speed
-                }
+                player.vx *= 1.05;
+                if (Math.abs(player.vx) < 2) player.vx = player.facing * 2;
             }
 
             
@@ -795,6 +784,28 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                 }
             }
+
+            // --- [NEW] DRAW HAZARDS ---
+            hazards.forEach(haz => {
+                if (!haz.activated) return;
+                const screenX = haz.worldX + worldX;
+                if (screenX > -haz.width && screenX < canvas.width) {
+                    switch(haz.type) {
+                        case 'aerosol_geyser':
+                            if (haz.isOn) {
+                                ctx.fillStyle = 'rgba(144, 238, 144, 0.7)'; // Light green, semi-transparent
+                                ctx.fillRect(screenX, haz.y - haz.height, haz.width, haz.height);
+                            }
+                            break;
+                        case 'spill_slick':
+                            ctx.fillStyle = 'rgba(100, 100, 200, 0.5)'; // Puddle blue
+                            ctx.beginPath();
+                            ctx.ellipse(screenX + haz.width / 2, haz.y, haz.width / 2, 8, 0, 0, Math.PI * 2);
+                            ctx.fill();
+                            break;
+                    }
+                }
+            });
 
             // Draw medications
             for (const med of medications) {

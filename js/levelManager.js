@@ -223,6 +223,21 @@ class LevelManager {
                 });
             }
         });
+
+        level.hazards?.forEach(haz => {
+            // Check if already spawned
+            if (hazards.some(h => h.id === haz.id)) return;
+            
+            // Check if in visible range
+            if (haz.x > visibleLeft && haz.x < visibleRight) {
+                const newHazard = {
+                    ...haz,
+                    worldX: haz.x,
+                    y: this.parsePosition(haz.y, canvas)
+                };
+                hazards.push(newHazard);
+            }
+        });
         
         // Spawn enemy waves when triggered
         level.enemyWaves?.forEach(wave => {
