@@ -520,7 +520,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 pickupSpawnTimer = 0; 
             }
             
-            player.handleInput(keys);
+            player.handleInput(keys, onSpill);
             player.updateState(spriteAnimations);
             player.updatePhysics(groundY, platforms, pits, worldX);
             

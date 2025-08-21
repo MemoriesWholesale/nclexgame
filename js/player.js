@@ -55,7 +55,7 @@ export class Player {
     }
     
     // Handle player input for movement
-    handleInput(keys) {
+    handleInput(keys, onSpill) {
         if (this.dead) {
             this.vx = 0;
             this.crouching = false;
