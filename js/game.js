@@ -91,6 +91,12 @@ import { Enemy, EnemyManager } from './enemy.js';
         const interactionZones = [];
         const hiddenPlatforms = [];
         let medicationSpawnTimer = 0;
+
+        const aerosolGeysers = [];
+        const dropletSprays = [];
+        const spillSlicks = [];
+        const sparkingHazards = [];
+        const risingTides = [];
         
         let currentWeapon = 1;
         const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
@@ -269,6 +275,12 @@ import { Enemy, EnemyManager } from './enemy.js';
                 interactionZones.length = 0;
                 hiddenPlatforms.length = 0;
             }
+
+            aerosolGeysers.length = 0;
+            dropletSprays.length = 0;
+            spillSlicks.length = 0;
+            sparkingHazards.length = 0;
+            risingTides.length = 0;
 
             if (selectedLevel !== -1) {
                 try {
@@ -453,6 +465,43 @@ import { Enemy, EnemyManager } from './enemy.js';
                     enemy.speed = 2; // Normal speed
                 }
             }
+
+                        // --- AEROSOL GEYSER LOGIC ---
+            aerosolGeysers.forEach(geyser => {
+                if (!geyser.activated) return;
+                const now = Date.now();
+                const cycleTime = geyser.timing.onTime + geyser.timing.offTime;
+                const timeInCycle = (now - (geyser.timing.offset || 0)) % cycleTime;
+                
+                geyser.isOn = timeInCycle < geyser.timing.onTime;
+
+                if (geyser.isOn) {
+                    const screenX = geyser.worldX + worldX;
+                    // Check for player collision
+                    if (player.x < screenX + geyser.width && player.x + player.width > screenX && player.y + player.height > geyser.y) {
+                        if (!player.invincible) player.die();
+                    }
+                }
+            });
+
+            // --- SPILL SLICK LOGIC ---
+            let onSpill = false;
+            spillSlicks.forEach(spill => {
+                if (!spill.activated) return;
+                const screenX = spill.worldX + worldX;
+                if (player.x + player.width > screenX && player.x < screenX + spill.width && player.y + player.height > spill.y) {
+                    onSpill = true;
+                }
+            });
+
+            if (onSpill && player.grounded) {
+                // Make player slide by reducing friction
+                player.vx *= 1.05; // Accelerate slightly
+                if (Math.abs(player.vx) < 2) {
+                    player.vx = player.facing * 2; // Maintain minimum slide speed
+                }
+            }
+
             
             const enemyResult = enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
             if (enemyResult.playerHit) {

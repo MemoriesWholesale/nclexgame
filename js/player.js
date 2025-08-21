@@ -73,7 +73,7 @@ export class Player {
             this.vx = currentSpeed;
             this.facing = 1;
         } else {
-            this.vx *= 0.8;
+            if (!onSpill) { this.vx *= 0.8; }
         }
         
         // Enhanced jumping with medication effects
