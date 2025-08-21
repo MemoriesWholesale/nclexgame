@@ -59,7 +59,9 @@ class LevelManager {
                             console.error('Failed to import level_2.js:', e);                                throw e;
                             }
                             break;
-                case 3:
+                    case 3:
+                            module = await import('./levels/level_3.js');
+                            break;
                 case 4:
                 case 5:
                 case 6:
