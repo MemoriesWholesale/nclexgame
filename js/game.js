@@ -509,8 +509,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                         // Handle falling object timing and spawning
                         if (!haz.instances) haz.instances = [];
                         
-                        const now = Date.now();
-                        const timeSinceStart = (now - (haz.timing.offset || 0)) % haz.timing.interval;
+                        const fallNow = Date.now();
+                        const timeSinceStart = (fallNow - (haz.timing.offset || 0)) % haz.timing.interval;
                         
                         // Spawn new falling object at interval
                         if (timeSinceStart < 50 && !haz.lastSpawned) { // 50ms window to prevent double spawning
