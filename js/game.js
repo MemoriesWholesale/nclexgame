@@ -284,6 +284,9 @@ import { Enemy, EnemyManager } from './enemy.js';
 
             if (selectedLevel !== -1) {
                 try {
+                    // Clear any existing level content to prevent carryover
+                    levelManager.clearLevelContent(platforms, npcs, enemies, chests);
+                    
                     await levelManager.loadLevel(selectedLevel);
                     const levelDef = levelManager.getLevelData();
                     
