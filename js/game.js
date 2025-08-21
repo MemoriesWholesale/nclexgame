@@ -595,17 +595,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                     if (elapsed > (platform.alarmDelay || 1000) && !platform.enemiesSpawned) {
                         // Spawn enemies near the alarm platform
                         const spawnX = platform.worldX + platform.width + 100;
-                        enemyManager.enemies.push({
-                            worldX: spawnX,
-                            y: platform.y - 40,
-                            vy: 0,
-                            width: 40,
-                            height: 40,
-                            vx: 0,
-                            hp: 1,
-                            falling: false,
-                            speed: 2
-                        });
+                        const newEnemy = new Enemy(spawnX, platform.y - 40, 40, 40);
+                        enemyManager.enemies.push(newEnemy);
                         platform.enemiesSpawned = true;
                         
                         // Reset after 5 seconds to allow retriggering

@@ -207,6 +207,38 @@ export class Player {
                     p.y = p.orbit.centerY + Math.sin(p.orbit.currentAngle) * p.orbit.radiusY;
                 }
                 
+                // Handle falling platform physics  
+                if (p.type === 'falling' && p.isFalling) {
+                    const elapsed = Date.now() - p.fallStartTime;
+                    
+                    if (elapsed > (p.fallDelay || 500)) {
+                        // Start falling
+                        if (!p.fallSpeed) p.fallSpeed = 0;
+                        p.fallSpeed += 0.8; // Gravity acceleration
+                        p.y += p.fallSpeed;
+                        
+                        // Remove from collision if fallen far enough
+                        if (p.y > (p.originalY || p.y) + 200) {
+                            p.activated = false;
+                            p.fellAlready = true;
+                            
+                            // Respawn after respawnTime
+                            setTimeout(() => {
+                                p.y = p.originalY || p.y - 200;
+                                p.activated = true;
+                                p.isFalling = false;
+                                p.fallSpeed = 0;
+                                p.fellAlready = false;
+                                p.fallStartTime = null;
+                            }, p.respawnTime || 3000);
+                        }
+                    }
+                    
+                    if (!p.originalY && elapsed > (p.fallDelay || 500)) {
+                        p.originalY = p.y;
+                    }
+                }
+                
                 // Handle malfunctioning platform erratic movement
                 if (p.type === 'malfunctioning' && p.isActiveMalfunction) {
                     if (!p.malfunctionStartTime) p.malfunctionStartTime = Date.now();
@@ -261,7 +293,7 @@ export class Player {
         // Check platform collisions
         for (const p of platforms) {
             const screenX = p.worldX + worldX;
-            if (p.activated || p.type === 'ledge' || p.type === 'static' || p.type === 'malfunctioning' || p.type === 'alarm' || (p.type === 'disappearing' && p.visible)) {
+            if (p.activated || p.type === 'ledge' || p.type === 'static' || p.type === 'malfunctioning' || p.type === 'alarm' || p.type === 'falling' || (p.type === 'disappearing' && p.visible)) {
                 if (this.x + this.width > screenX && this.x < screenX + p.width && 
                     prevY + this.height <= p.y && this.y + this.height >= p.y) {
                     this.y = p.y - this.height;
@@ -272,6 +304,12 @@ export class Player {
                     // Trigger malfunctioning platform
                     if (p.type === 'malfunctioning' && !p.isActiveMalfunction) {
                         p.isActiveMalfunction = true;
+                    }
+                    
+                    // Trigger falling platform
+                    if (p.type === 'falling' && !p.isFalling && !p.fellAlready) {
+                        p.fallStartTime = Date.now();
+                        p.isFalling = true;
                     }
                     
                     // Trigger alarm platform (handled in game.js)
