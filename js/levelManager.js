@@ -134,7 +134,7 @@ class LevelManager {
         return pos;
     }
     
-    spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests) {
+    spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests, hazards) {
         if (!this.currentLevel) return;
         
         const level = this.currentLevel;
