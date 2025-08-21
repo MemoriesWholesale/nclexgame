@@ -183,16 +183,55 @@ import { Enemy, EnemyManager } from './enemy.js';
                             }
                         });
                         
+                        // Handle chest opening
                         const targetChest = chests.find(c => c.id === currentQuestion.interactionId);
                         if (targetChest) {
                             targetChest.state = 'open';
-                            powerups.push({
-                                worldX: targetChest.worldX + targetChest.width / 2 - 10,
-                                y: targetChest.y - 30,
-                                vy: -5,
-                                type: 'life'
-                            });
+                            
+                            // Create appropriate reward based on chest contents
+                            if (targetChest.contains === 'medication') {
+                                // Spawn medication
+                                medications.push({
+                                    worldX: targetChest.worldX + targetChest.width / 2 - 15,
+                                    y: targetChest.y - 30,
+                                    type: targetChest.subtype,
+                                    width: 30,
+                                    height: 30
+                                });
+                            } else if (targetChest.contains === 'extra_life') {
+                                // Spawn life powerup
+                                powerups.push({
+                                    worldX: targetChest.worldX + targetChest.width / 2 - 10,
+                                    y: targetChest.y - 30,
+                                    vy: -5,
+                                    type: 'life'
+                                });
+                            } else if (targetChest.contains === 'weapon_upgrade') {
+                                // Handle weapon upgrade
+                                powerups.push({
+                                    worldX: targetChest.worldX + targetChest.width / 2 - 10,
+                                    y: targetChest.y - 30,
+                                    vy: -5,
+                                    type: 'weapon',
+                                    weaponId: targetChest.weaponId
+                                });
+                            }
                         }
+                        
+                        // Handle NPC medication rewards
+                        const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.originalInteractionId);
+                        if (interactingNpc && interactingNpc.givesItem) {
+                            // Spawn medication from NPC
+                            medications.push({
+                                worldX: interactingNpc.worldX + interactingNpc.width / 2 - 15,
+                                y: interactingNpc.y - 30,
+                                type: interactingNpc.givesItem,
+                                width: 30,
+                                height: 30
+                            });
+                            interactingNpc.isLeaving = true;
+                        }
+                        
                     } else {
                         const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.originalInteractionId);
                         if(interactingNpc) interactingNpc.isLeaving = true;
@@ -229,15 +268,6 @@ import { Enemy, EnemyManager } from './enemy.js';
                 medications.length = 0;
                 interactionZones.length = 0;
                 hiddenPlatforms.length = 0;
-                
-                // Load special zones from level data
-                const levelDef = levelManager.getLevelData();
-                if (levelDef.interactionZones) {
-                    interactionZones.push(...levelDef.interactionZones);
-                }
-                if (levelDef.hiddenPlatforms) {
-                    hiddenPlatforms.push(...levelDef.hiddenPlatforms);
-                }
             }
 
             if (selectedLevel !== -1) {
@@ -271,6 +301,16 @@ import { Enemy, EnemyManager } from './enemy.js';
                                 });
                             }
                         });
+                    }
+                    
+                    // Load special zones for level 1 after level data is available
+                    if (selectedLevel === 1) {
+                        if (levelDef.interactionZones) {
+                            interactionZones.push(...levelDef.interactionZones);
+                        }
+                        if (levelDef.hiddenPlatforms) {
+                            hiddenPlatforms.push(...levelDef.hiddenPlatforms);
+                        }
                     }
                     
                     const response = await fetch(levelDef.questionFile || levelData[selectedLevel].file);
@@ -360,21 +400,8 @@ import { Enemy, EnemyManager } from './enemy.js';
             // Update player medications
             player.updateMedications();
 
-            // Update medication spawning
-            medicationSpawnTimer++;
-            if (selectedLevel === 1 && medicationSpawnTimer > 300) {
-                // Spawn medications periodically in level 1
-                const medTypes = ['epinephrine', 'benzodiazepine', 'morphine', 'insulin', 'corticosteroid', 'atropine'];
-                const randomMed = medTypes[Math.floor(Math.random() * medTypes.length)];
-                medications.push({
-                    worldX: -worldX + canvas.width + 50,
-                    y: canvas.height - 150 - Math.random() * 200,
-                    type: randomMed,
-                    width: 30,
-                    height: 30
-                });
-                medicationSpawnTimer = 0;
-            }
+            // Medication spawning disabled for level 1 - medications only from NPCs/chests
+            // Level 1 medications are now only available through quiz interactions
 
             // Check medication pickups
             for (let i = medications.length - 1; i >= 0; i--) {

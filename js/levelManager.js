@@ -202,6 +202,8 @@ class LevelManager {
                     id: `chest_${item.x}`,
                     state: 'closed',
                     contains: item.contains,
+                    subtype: item.subtype, // For medications
+                    weaponId: item.weaponId, // For weapon upgrades
                     requiresQuestion: item.requiresQuestion !== false
                 });
             }

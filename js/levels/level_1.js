@@ -31,6 +31,10 @@ const level = {
         // Hidden platform only visible with atropine
         { id: 'hidden_shortcut_1', x: 1800, y: 'ground-350', width: 400, height: 20, type: 'hidden', activated: true },
         
+        // Alternative path platforms (harder route without medications)
+        { id: 'alt_path_1', x: 1900, y: 'ground-400', width: 100, height: 20, type: 'static', activated: true },
+        { id: 'alt_path_2', x: 2050, y: 'ground-350', width: 80, height: 20, type: 'static', activated: true },
+        
         // --- SECTION 3: BLOODSTREAM RAPIDS ---
         // Fast-moving platforms representing blood flow
         { id: 'blood_cell_1', x: 2800, y: 'ground-150', width: 80, height: 80, type: 'moving', activated: true, 
@@ -41,10 +45,15 @@ const level = {
           movement: { startX: 3200, endX: 3600, speed: 4, horizontal: true } },
         { id: 'vessel_wall_1', x: 3700, y: 'ground-200', width: 150, height: 20, type: 'static', activated: true },
         
-        // Small passages that require insulin to shrink
+        // Small passages that require insulin to shrink, but with alternative route
         { id: 'capillary_1', x: 4000, y: 'ground-50', width: 200, height: 40, type: 'static', activated: true },
         { id: 'capillary_tunnel', x: 4200, y: 'ground-90', width: 40, height: 40, type: 'static', activated: true },
         { id: 'capillary_2', x: 4240, y: 'ground-50', width: 200, height: 40, type: 'static', activated: true },
+        
+        // Alternative route over capillaries (harder without insulin)
+        { id: 'capillary_over_1', x: 3950, y: 'ground-150', width: 80, height: 20, type: 'static', activated: true },
+        { id: 'capillary_over_2', x: 4100, y: 'ground-200', width: 80, height: 20, type: 'static', activated: true },
+        { id: 'capillary_over_3', x: 4250, y: 'ground-150', width: 80, height: 20, type: 'static', activated: true },
         
         // --- SECTION 4: BLOOD-BRAIN BARRIER ---
         // Puzzle platforms requiring specific medications
@@ -60,6 +69,12 @@ const level = {
         // High platforms requiring double jump from corticosteroid
         { id: 'high_ledge_1', x: 6000, y: 'ground-450', width: 200, height: 20, type: 'static', activated: true },
         { id: 'high_ledge_2', x: 6300, y: 'ground-500', width: 200, height: 20, type: 'static', activated: true },
+        
+        // Alternative route around high ledges (more challenging without corticosteroids)
+        { id: 'low_alt_1', x: 5900, y: 'ground-100', width: 100, height: 20, type: 'static', activated: true },
+        { id: 'low_alt_2', x: 6050, y: 'ground-150', width: 80, height: 20, type: 'static', activated: true },
+        { id: 'low_alt_3', x: 6200, y: 'ground-200', width: 80, height: 20, type: 'static', activated: true },
+        { id: 'low_alt_4', x: 6350, y: 'ground-100', width: 100, height: 20, type: 'static', activated: true },
         
         // --- SECTION 5: RECEPTOR SITE ARENA ---
         { id: 'arena_floor', x: 6800, y: 'ground-0', width: 800, height: 20, type: 'static', activated: true },
@@ -144,17 +159,30 @@ const level = {
     
     // Items
     items: [
-        // Medication pickups
-        { type: 'medication', subtype: 'epinephrine', x: 600, y: 'pharm_shelf_2-top' },
-        { type: 'medication', subtype: 'insulin', x: 850, y: 'pharm_shelf_3-top' },
-        { type: 'medication', subtype: 'atropine', x: 1700, y: 'ground-30' },
-        { type: 'medication', subtype: 'morphine', x: 3750, y: 'vessel_wall_1-top' },
-        { type: 'medication', subtype: 'corticosteroid', x: 5750, y: 'withdrawal_3-top' },
-        { type: 'medication', subtype: 'benzodiazepine', x: 7200, y: 'ground-30' },
+        // Medication pickups removed - now only available through NPCs and chests
         
-        // Chests requiring questions
+        // Chests requiring questions - strategically placed near challenges
         { type: 'chest', x: 2100, y: 'ground-400', contains: 'extra_life', requiresQuestion: true },
+        
+        // Insulin chest - placed before capillary tunnel section (helps with shrinking)
+        { type: 'chest', x: 3900, y: 'ground-50', contains: 'medication', subtype: 'insulin', requiresQuestion: true },
+        
+        // Epinephrine chest - helps with speed/jumping in blood-brain barrier section
         { type: 'chest', x: 4300, y: 'capillary_2-top', contains: 'medication', subtype: 'epinephrine', requiresQuestion: true },
+        
+        // Morphine chest - provides invincibility for hazardous areas
+        { type: 'chest', x: 3600, y: 'vessel_wall_1-top', contains: 'medication', subtype: 'morphine', requiresQuestion: true },
+        
+        // Atropine chest - reveals hidden platforms for shortcuts 
+        { type: 'chest', x: 1650, y: 'ground-200', contains: 'medication', subtype: 'atropine', requiresQuestion: true },
+        
+        // Corticosteroid chest - enables double jump for high platforms
+        { type: 'chest', x: 5900, y: 'withdrawal_3-top', contains: 'medication', subtype: 'corticosteroid', requiresQuestion: true },
+        
+        // Benzodiazepine chest - provides bullet time for difficult sections
+        { type: 'chest', x: 7000, y: 'ground-200', contains: 'medication', subtype: 'benzodiazepine', requiresQuestion: true },
+        
+        // Weapon upgrade chest
         { type: 'chest', x: 6150, y: 'high_ledge_1-top', contains: 'weapon_upgrade', weaponId: 6, requiresQuestion: true },
         { type: 'chest', x: 8650, y: 'ground-400', contains: 'extra_life', requiresQuestion: true },
         
