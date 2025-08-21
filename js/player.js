@@ -206,6 +206,49 @@ export class Player {
                     p.worldX = p.orbit.centerX + Math.cos(p.orbit.currentAngle) * p.orbit.radiusX;
                     p.y = p.orbit.centerY + Math.sin(p.orbit.currentAngle) * p.orbit.radiusY;
                 }
+                
+                // Handle malfunctioning platform erratic movement
+                if (p.type === 'malfunctioning' && p.isActiveMalfunction) {
+                    if (!p.malfunctionStartTime) p.malfunctionStartTime = Date.now();
+                    
+                    const elapsed = Date.now() - p.malfunctionStartTime;
+                    const oscillation = Math.sin(elapsed * 0.01) * p.malfunctionSpeed; // Fast oscillation
+                    
+                    if (p.axis === 'horizontal') {
+                        p.worldX = (p.originalX || p.worldX) + oscillation;
+                        if (!p.originalX) p.originalX = p.worldX - oscillation;
+                        
+                        // Move player with platform if they're on it
+                        if (currentPlatform === p) {
+                            const platformMovement = p.worldX - prevPlatformX;
+                            this.x += platformMovement;
+                        }
+                    } else if (p.axis === 'vertical') {
+                        p.y = (p.originalY || p.y) + oscillation;
+                        if (!p.originalY) p.originalY = p.y - oscillation;
+                        
+                        // Move player with platform if they're on it  
+                        if (currentPlatform === p) {
+                            const platformMovement = p.y - prevPlatformY;
+                            this.y += platformMovement;
+                        }
+                    }
+                    
+                    // Stop malfunction after 3 seconds
+                    if (elapsed > 3000) {
+                        p.isActiveMalfunction = false;
+                        p.malfunctionStartTime = null;
+                        // Reset to original position
+                        if (p.originalX) {
+                            p.worldX = p.originalX;
+                            p.originalX = null;
+                        }
+                        if (p.originalY) {
+                            p.y = p.originalY;
+                            p.originalY = null;
+                        }
+                    }
+                }
             }
         }
         
@@ -218,13 +261,24 @@ export class Player {
         // Check platform collisions
         for (const p of platforms) {
             const screenX = p.worldX + worldX;
-            if (p.activated || p.type === 'ledge' || p.type === 'static' || (p.type === 'disappearing' && p.visible)) {
+            if (p.activated || p.type === 'ledge' || p.type === 'static' || p.type === 'malfunctioning' || p.type === 'alarm' || (p.type === 'disappearing' && p.visible)) {
                 if (this.x + this.width > screenX && this.x < screenX + p.width && 
                     prevY + this.height <= p.y && this.y + this.height >= p.y) {
                     this.y = p.y - this.height;
                     this.vy = 0;
                     this.grounded = true;
                     this.onPlatform = p;
+                    
+                    // Trigger malfunctioning platform
+                    if (p.type === 'malfunctioning' && !p.isActiveMalfunction) {
+                        p.isActiveMalfunction = true;
+                    }
+                    
+                    // Trigger alarm platform (handled in game.js)
+                    if (p.type === 'alarm' && !p.alarmTriggered) {
+                        p.alarmTriggered = true;
+                        p.alarmTime = Date.now();
+                    }
                 }
             }
         }
