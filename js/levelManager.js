@@ -34,7 +34,15 @@ class LevelManager {
                     }
                     break;
                     
-                case 1:
+                    case 1:
+                        try {
+                            module = await import('./levels/level_1.js');
+                            console.log('Successfully imported level_1.js:', module);
+                        } catch (e) {
+                            console.error('Failed to import level_1.js:', e);
+                            throw e;
+                        }
+                        break;                
                 case 2:
                 case 3:
                 case 4:

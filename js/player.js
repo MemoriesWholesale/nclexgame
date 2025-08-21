@@ -21,6 +21,22 @@ export class Player {
         this.onPlatform = null;
         this.canJump = false; // **FIX**: Track if player can validly jump
         
+        // Medication system
+        this.activeMedications = [];
+        this.medicationCooldowns = {}; // Track tolerance/cooldowns
+        this.baseSpeed = 5;
+        this.baseJumpPower = 15;
+        this.speedMultiplier = 1;
+        this.jumpMultiplier = 1;
+        this.sizeScale = 1;
+        this.invincible = false;
+        this.canDoubleJump = false;
+        this.hasDoubleJumped = false;
+        this.canGlide = false;
+        this.isGliding = false;
+        this.hiddenPlatformsVisible = false;
+        this.bulletTime = false;
+
         // Armor system
         this.armors = [0];
         this.currentArmorIndex = 0;
@@ -46,25 +62,47 @@ export class Player {
             return;
         }
         
+        // Apply speed multiplier from medications
+        const currentSpeed = this.baseSpeed * this.speedMultiplier;
+        
         // Horizontal movement
         if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
-            this.vx = -this.speed;
+            this.vx = -currentSpeed;
             this.facing = -1;
         } else if (keys['ArrowRight'] || keys['d'] || keys['D']) {
-            this.vx = this.speed;
+            this.vx = currentSpeed;
             this.facing = 1;
         } else {
             this.vx *= 0.8;
         }
         
-        // Jumping - only allow if grounded AND on valid surface
-        if ((keys['ArrowUp'] || keys['w'] || keys['W']) && this.grounded && this.canJump) {
-            this.vy = -this.jumpPower;
-            this.grounded = false;
-            this.onPlatform = null;
+        // Enhanced jumping with medication effects
+        const jumpPressed = keys['ArrowUp'] || keys['w'] || keys['W'];
+        const currentJumpPower = this.baseJumpPower * this.jumpMultiplier;
+        
+        if (jumpPressed) {
+            if (this.grounded && this.canJump) {
+                this.vy = -currentJumpPower;
+                this.grounded = false;
+                this.onPlatform = null;
+                this.hasDoubleJumped = false;
+            } else if (this.canDoubleJump && !this.hasDoubleJumped && !this.grounded) {
+                this.vy = -currentJumpPower * 0.8; // Double jump is slightly weaker
+                this.hasDoubleJumped = true;
+            }
         }
         
-        // Crouching
+        // Gliding mechanic (from corticosteroid)
+        if (this.canGlide && !this.grounded && this.vy > 0) {
+            if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+                this.isGliding = true;
+                this.vy = Math.min(this.vy, 2); // Slow fall
+            } else {
+                this.isGliding = false;
+            }
+        }
+        
+        // Crouching (modified for size changes)
         this.crouching = (keys['ArrowDown'] || keys['s'] || keys['S']) && this.grounded;
     }
     
@@ -323,6 +361,140 @@ export class Player {
         return null;
     }
     
+    // Apply medication effect
+        applyMedication(medType) {
+            // Check for cooldown (tolerance)
+            const now = Date.now();
+            if (this.medicationCooldowns[medType]) {
+                const timeSinceLast = now - this.medicationCooldowns[medType];
+                if (timeSinceLast < 60000) { // 60 second cooldown
+                    // Reduced effect due to tolerance
+                    return { success: false, reason: 'tolerance' };
+                }
+            }
+            
+            // Check for dangerous interactions
+            const dangerous = this.checkDangerousInteraction(medType);
+            if (dangerous) {
+                this.lives--;
+                return { success: false, reason: 'interaction' };
+            }
+            
+            // Apply the medication effect
+            const medication = {
+                type: medType,
+                startTime: now,
+                duration: this.getMedicationDuration(medType)
+            };
+            
+            this.activeMedications.push(medication);
+            this.medicationCooldowns[medType] = now;
+            
+            // Apply immediate effects
+            switch(medType) {
+                case 'epinephrine':
+                    this.speedMultiplier = 2;
+                    this.jumpMultiplier = 1.5;
+                    break;
+                case 'benzodiazepine':
+                    this.bulletTime = true;
+                    break;
+                case 'morphine':
+                    this.invincible = true;
+                    break;
+                case 'insulin':
+                    this.sizeScale = 0.5;
+                    this.width = 25;
+                    this.height = 46;
+                    break;
+                case 'corticosteroid':
+                    this.canDoubleJump = true;
+                    this.canGlide = true;
+                    break;
+                case 'atropine':
+                    this.hiddenPlatformsVisible = true;
+                    break;
+            }
+            
+            return { success: true };
+        }
+
+        // Check for dangerous drug interactions
+        checkDangerousInteraction(newMed) {
+            // Define dangerous combinations
+            const dangerousCombos = [
+                ['morphine', 'benzodiazepine'], // Respiratory depression
+                ['epinephrine', 'atropine'], // Cardiac stress
+            ];
+            
+            for (const combo of dangerousCombos) {
+                const hasFirst = this.activeMedications.some(m => m.type === combo[0]);
+                const hasSecond = this.activeMedications.some(m => m.type === combo[1]);
+                
+                if ((hasFirst && newMed === combo[1]) || (hasSecond && newMed === combo[0])) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Get medication duration
+        getMedicationDuration(medType) {
+            const durations = {
+                'epinephrine': 10000,
+                'benzodiazepine': 8000,
+                'morphine': 6000,
+                'insulin': 15000,
+                'corticosteroid': 12000,
+                'atropine': 20000
+            };
+            return durations[medType] || 10000;
+        }
+
+        // Update medication effects
+        updateMedications() {
+            const now = Date.now();
+            
+            // Remove expired medications
+            for (let i = this.activeMedications.length - 1; i >= 0; i--) {
+                const med = this.activeMedications[i];
+                if (now - med.startTime > med.duration) {
+                    this.removeMedicationEffect(med.type);
+                    this.activeMedications.splice(i, 1);
+                }
+            }
+        }
+
+        // Remove medication effect
+        removeMedicationEffect(medType) {
+            switch(medType) {
+                case 'epinephrine':
+                    this.speedMultiplier = 1;
+                    this.jumpMultiplier = 1;
+                    break;
+                case 'benzodiazepine':
+                    this.bulletTime = false;
+                    break;
+                case 'morphine':
+                    this.invincible = false;
+                    break;
+                case 'insulin':
+                    this.sizeScale = 1;
+                    this.width = 50;
+                    this.height = 92;
+                    break;
+                case 'corticosteroid':
+                    this.canDoubleJump = false;
+                    this.canGlide = false;
+                    this.isGliding = false;
+                    break;
+                case 'atropine':
+                    this.hiddenPlatformsVisible = false;
+                    break;
+            }
+        }
+
     // Handle shooting
     startShooting() {
         this.isShooting = true;

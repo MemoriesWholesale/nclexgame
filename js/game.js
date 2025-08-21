@@ -87,6 +87,10 @@ import { Enemy, EnemyManager } from './enemy.js';
         const pits = [];
         const chests = [];
         const powerups = [];
+        const medications = [];
+        const interactionZones = [];
+        const hiddenPlatforms = [];
+        let medicationSpawnTimer = 0;
         
         let currentWeapon = 1;
         const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
@@ -220,6 +224,22 @@ import { Enemy, EnemyManager } from './enemy.js';
             quiz.clearCurrentQuestion();
             canFire = true;
 
+            if (selectedLevel === 1) {
+                // Clear medication-specific arrays
+                medications.length = 0;
+                interactionZones.length = 0;
+                hiddenPlatforms.length = 0;
+                
+                // Load special zones from level data
+                const levelDef = levelManager.getLevelData();
+                if (levelDef.interactionZones) {
+                    interactionZones.push(...levelDef.interactionZones);
+                }
+                if (levelDef.hiddenPlatforms) {
+                    hiddenPlatforms.push(...levelDef.hiddenPlatforms);
+                }
+            }
+
             if (selectedLevel !== -1) {
                 try {
                     await levelManager.loadLevel(selectedLevel);
@@ -336,6 +356,76 @@ import { Enemy, EnemyManager } from './enemy.js';
             
             if (fireTimer > 0) fireTimer--;
             pickupSpawnTimer++;
+
+            // Update player medications
+            player.updateMedications();
+
+            // Update medication spawning
+            medicationSpawnTimer++;
+            if (selectedLevel === 1 && medicationSpawnTimer > 300) {
+                // Spawn medications periodically in level 1
+                const medTypes = ['epinephrine', 'benzodiazepine', 'morphine', 'insulin', 'corticosteroid', 'atropine'];
+                const randomMed = medTypes[Math.floor(Math.random() * medTypes.length)];
+                medications.push({
+                    worldX: -worldX + canvas.width + 50,
+                    y: canvas.height - 150 - Math.random() * 200,
+                    type: randomMed,
+                    width: 30,
+                    height: 30
+                });
+                medicationSpawnTimer = 0;
+            }
+
+            // Check medication pickups
+            for (let i = medications.length - 1; i >= 0; i--) {
+                const med = medications[i];
+                const screenX = med.worldX + worldX;
+                
+                if (player.x < screenX + med.width && player.x + player.width > screenX &&
+                    player.y < med.y + med.height && player.y + player.height > med.y) {
+                    
+                    const result = player.applyMedication(med.type);
+                    if (result.success) {
+                        medications.splice(i, 1);
+                    } else if (result.reason === 'tolerance') {
+                        // Show reduced effect message
+                        console.log('Tolerance built up! Wait before using again.');
+                        medications.splice(i, 1);
+                    } else if (result.reason === 'interaction') {
+                        // Show interaction warning
+                        console.log('Dangerous drug interaction!');
+                        medications.splice(i, 1);
+                    }
+                }
+            }
+
+            // Check interaction zones (areas where multiple meds cause damage)
+            if (!player.invincible) {
+                for (const zone of interactionZones) {
+                    const screenX = zone.worldX + worldX;
+                    if (player.x < screenX + zone.width && player.x + player.width > screenX &&
+                        player.y < zone.y + zone.height && player.y + zone.height > zone.y) {
+                        
+                        if (player.activeMedications.length >= 2) {
+                            player.lives--;
+                            player.invincible = true; // Brief immunity
+                            setTimeout(() => { player.invincible = false; }, 2000);
+                        }
+                    }
+                }
+            }
+
+            // Apply bullet time effect
+            if (player.bulletTime) {
+                // Slow down enemies
+                for (const enemy of enemyManager.enemies) {
+                    enemy.speed = 0.5;
+                }
+            } else {
+                for (const enemy of enemyManager.enemies) {
+                    enemy.speed = 2; // Normal speed
+                }
+            }
             
             const enemyResult = enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
             if (enemyResult.playerHit) {
@@ -611,6 +701,93 @@ import { Enemy, EnemyManager } from './enemy.js';
                         ctx.globalAlpha = 1.0;
                     }
                 }
+
+                // Draw hidden platforms if atropine is active
+            if (player.hiddenPlatformsVisible) {
+                for (const p of hiddenPlatforms) {
+                    const screenX = p.worldX + worldX;
+                    if (screenX > -p.width && screenX < canvas.width) {
+                        ctx.globalAlpha = 0.7;
+                        ctx.fillStyle = '#FFD700';
+                        ctx.fillRect(screenX, p.y, p.width, p.height);
+                        ctx.strokeStyle = '#FFF';
+                        ctx.strokeRect(screenX, p.y, p.width, p.height);
+                        ctx.globalAlpha = 1.0;
+                    }
+                }
+            }
+
+            // Draw medications
+            for (const med of medications) {
+                const screenX = med.worldX + worldX;
+                if (screenX > -30 && screenX < canvas.width + 30) {
+                    // Draw medication capsule
+                    const colors = {
+                        'epinephrine': '#FF69B4',
+                        'benzodiazepine': '#4169E1',
+                        'morphine': '#FFD700',
+                        'insulin': '#90EE90',
+                        'corticosteroid': '#E6E6FA',
+                        'atropine': '#FF4500'
+                    };
+                    
+                    ctx.fillStyle = colors[med.type] || '#FFF';
+                    ctx.beginPath();
+                    ctx.arc(screenX + 15, med.y + 15, 15, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw medication initial
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(med.type[0].toUpperCase(), screenX + 15, med.y + 20);
+                }
+            }
+
+            // Draw interaction zones
+            for (const zone of interactionZones) {
+                const screenX = zone.worldX + worldX;
+                if (screenX > -zone.width && screenX < canvas.width) {
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                    ctx.fillRect(screenX, zone.y, zone.width, zone.height);
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(screenX, zone.y, zone.width, zone.height);
+                    ctx.setLineDash([]);
+                }
+            }
+
+            // Draw medication UI (active medications)
+            if (selectedLevel === 1) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(10, 120, 250, 100);
+                ctx.fillStyle = '#FFF';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('Active Medications:', 20, 140);
+                
+                player.activeMedications.forEach((med, index) => {
+                    const timeLeft = Math.ceil((med.duration - (Date.now() - med.startTime)) / 1000);
+                    ctx.fillText(`${med.type}: ${timeLeft}s`, 20, 160 + index * 20);
+                });
+            }
+
+            // Visual effects for medications
+            if (player.invincible) {
+                ctx.save();
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(player.x - 5, player.y - 5, player.width + 10, player.height + 10);
+                ctx.restore();
+            }
+
+            if (player.bulletTime) {
+                ctx.fillStyle = 'rgba(0, 0, 255, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
                 
                 for (const npc of npcs) {
                     const screenX = npc.worldX + worldX;
