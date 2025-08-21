@@ -505,6 +505,80 @@ import { Enemy, EnemyManager } from './enemy.js';
                         }
                         break;
                     
+                    case 'falling_object':
+                        // Handle falling object timing and spawning
+                        if (!haz.instances) haz.instances = [];
+                        
+                        const fallNow = Date.now();
+                        const timeSinceStart = (fallNow - (haz.timing.offset || 0)) % haz.timing.interval;
+                        
+                        // Spawn new falling object at interval
+                        if (timeSinceStart < 50 && !haz.lastSpawned) { // 50ms window to prevent double spawning
+                            haz.instances.push({
+                                x: haz.worldX,
+                                y: haz.y,
+                                vy: 0,
+                                width: haz.width,
+                                height: haz.height,
+                                active: true
+                            });
+                            haz.lastSpawned = true;
+                        } else if (timeSinceStart > 100) {
+                            haz.lastSpawned = false;
+                        }
+                        
+                        // Update existing falling objects
+                        for (let i = haz.instances.length - 1; i >= 0; i--) {
+                            const obj = haz.instances[i];
+                            if (!obj.active) continue;
+                            
+                            // Apply gravity
+                            obj.vy += 0.6;
+                            obj.y += obj.vy;
+                            
+                            // Check collision with player
+                            const objScreenX = obj.x + worldX;
+                            if (objScreenX + obj.width > player.x && objScreenX < player.x + player.width &&
+                                obj.y + obj.height > player.y && obj.y < player.y + player.height) {
+                                if (!player.invincible && !player.dead) {
+                                    player.die();
+                                }
+                            }
+                            
+                            // Remove if off screen
+                            if (obj.y > canvas.height + 100) {
+                                haz.instances.splice(i, 1);
+                            }
+                        }
+                        break;
+                    
+                    case 'rushing_hazard':
+                        // Handle rushing hazard horizontal movement
+                        if (!haz.currentX) haz.currentX = haz.worldX;
+                        if (!haz.direction) haz.direction = haz.speed > 0 ? 1 : -1;
+                        
+                        // Move horizontally
+                        haz.currentX += haz.speed;
+                        
+                        // Reverse direction at boundaries (assuming 200px movement range)
+                        if (Math.abs(haz.currentX - haz.worldX) > 200) {
+                            haz.speed = -haz.speed;
+                            haz.direction = -haz.direction;
+                        }
+                        
+                        // Check collision with player and apply push
+                        const rushScreenX = haz.currentX + worldX;
+                        if (rushScreenX + haz.width > player.x && rushScreenX < player.x + player.width &&
+                            haz.y + haz.height > player.y && haz.y < player.y + player.height) {
+                            // Push player in direction of movement
+                            player.vx += haz.direction * 3;
+                            if (!player.invincible && Math.abs(player.vx) > 8) {
+                                // If pushed too hard, cause damage
+                                if (!player.dead) player.die();
+                            }
+                        }
+                        break;
+                    
                     // Add cases for other hazards like 'sparking_hazard' here later
                 }
             });
@@ -514,6 +588,35 @@ import { Enemy, EnemyManager } from './enemy.js';
                 if (Math.abs(player.vx) < 2) player.vx = player.facing * 2;
             }
 
+            // Handle alarm platform enemy spawning
+            platforms.forEach(platform => {
+                if (platform.type === 'alarm' && platform.alarmTriggered && platform.alarmTime) {
+                    const elapsed = Date.now() - platform.alarmTime;
+                    if (elapsed > (platform.alarmDelay || 1000) && !platform.enemiesSpawned) {
+                        // Spawn enemies near the alarm platform
+                        const spawnX = platform.worldX + platform.width + 100;
+                        enemyManager.enemies.push({
+                            worldX: spawnX,
+                            y: platform.y - 40,
+                            vy: 0,
+                            width: 40,
+                            height: 40,
+                            vx: 0,
+                            hp: 1,
+                            falling: false,
+                            speed: 2
+                        });
+                        platform.enemiesSpawned = true;
+                        
+                        // Reset after 5 seconds to allow retriggering
+                        setTimeout(() => {
+                            platform.alarmTriggered = false;
+                            platform.alarmTime = null;
+                            platform.enemiesSpawned = false;
+                        }, 5000);
+                    }
+                }
+            });
             
             enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
 
@@ -770,8 +873,44 @@ import { Enemy, EnemyManager } from './enemy.js';
                     const screenX = p.worldX + worldX;
                     if (screenX > -p.width && screenX < canvas.width) {
                         ctx.globalAlpha = !p.activated ? 0.3 : 1.0;
-                        ctx.fillStyle = '#808080';
+                        
+                        // Different colors for different platform types
+                        switch(p.type) {
+                            case 'malfunctioning':
+                                ctx.fillStyle = p.isActiveMalfunction ? '#FF4444' : '#FF8888'; // Red when malfunctioning
+                                break;
+                            case 'alarm':
+                                if (p.alarmTriggered) {
+                                    // Flashing alarm platform
+                                    const flash = Math.floor(Date.now() / 200) % 2;
+                                    ctx.fillStyle = flash ? '#FFFF00' : '#FF0000'; // Yellow/Red flash
+                                } else {
+                                    ctx.fillStyle = '#FFAA00'; // Orange for alarm platforms
+                                }
+                                break;
+                            case 'falling':
+                                ctx.fillStyle = '#8B4513'; // Brown for unstable platforms
+                                break;
+                            default:
+                                ctx.fillStyle = '#808080'; // Default gray
+                                break;
+                        }
+                        
                         ctx.fillRect(screenX, p.y, p.width, p.height);
+                        
+                        // Add visual indicators
+                        if (p.type === 'malfunctioning') {
+                            ctx.fillStyle = '#FFFFFF';
+                            ctx.font = '12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('!', screenX + p.width/2, p.y - 5);
+                        } else if (p.type === 'alarm') {
+                            ctx.fillStyle = '#000000';
+                            ctx.font = '12px Arial'; 
+                            ctx.textAlign = 'center';
+                            ctx.fillText('⚠', screenX + p.width/2, p.y - 5);
+                        }
+                        
                         ctx.globalAlpha = 1.0;
                     }
                 }
@@ -808,6 +947,45 @@ import { Enemy, EnemyManager } from './enemy.js';
                             ctx.beginPath();
                             ctx.ellipse(screenX + haz.width / 2, haz.y, haz.width / 2, 8, 0, 0, Math.PI * 2);
                             ctx.fill();
+                            break;
+                        
+                        case 'falling_object':
+                            // Draw falling object instances
+                            if (haz.instances) {
+                                haz.instances.forEach(obj => {
+                                    if (obj.active) {
+                                        const objScreenX = obj.x + worldX;
+                                        if (objScreenX > -obj.width && objScreenX < canvas.width) {
+                                            ctx.fillStyle = '#8B4513'; // Brown for falling debris
+                                            ctx.fillRect(objScreenX, obj.y, obj.width, obj.height);
+                                            ctx.strokeStyle = '#654321';
+                                            ctx.strokeRect(objScreenX, obj.y, obj.width, obj.height);
+                                        }
+                                    }
+                                });
+                            }
+                            break;
+                        
+                        case 'rushing_hazard':
+                            // Draw rushing hazard with movement animation
+                            const rushScreenX = (haz.currentX || haz.worldX) + worldX;
+                            if (rushScreenX > -haz.width && rushScreenX < canvas.width) {
+                                ctx.fillStyle = '#FF6B6B'; // Red for danger
+                                ctx.fillRect(rushScreenX, haz.y, haz.width, haz.height);
+                                
+                                // Add motion lines to show movement
+                                ctx.strokeStyle = '#FF4444';
+                                ctx.lineWidth = 2;
+                                ctx.beginPath();
+                                const direction = haz.direction || 1;
+                                for (let i = 0; i < 3; i++) {
+                                    const lineX = rushScreenX - (direction * (10 + i * 5));
+                                    ctx.moveTo(lineX, haz.y + 10 + i * 15);
+                                    ctx.lineTo(lineX + direction * 15, haz.y + 10 + i * 15);
+                                }
+                                ctx.stroke();
+                                ctx.lineWidth = 1;
+                            }
                             break;
                     }
                 }
