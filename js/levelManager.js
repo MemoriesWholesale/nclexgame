@@ -51,7 +51,231 @@ class LevelManager {
             wave.triggered = false;
         });
     }
+    updatePlatformStates(platforms, worldX, player, canvas) {
+        const now = Date.now();
+        
+        platforms.forEach(platform => {
+            // Handle rhythmic platforms (Level 6 - cardiac)
+            if (platform.type === 'rhythmic' && platform.activated) {
+                const beatPhase = ((now + (platform.offset || 0)) % platform.beatInterval) / platform.beatInterval;
+                
+                if (platform.irregular) {
+                    // Atrial fibrillation - irregular rhythm
+                    platform.visible = Math.random() > 0.3;
+                } else {
+                    // Normal sinus rhythm - regular beats
+                    platform.visible = beatPhase < 0.6; // Visible 60% of cycle
+                }
+                
+                // Platform only solid when visible
+                platform.activated = platform.visible;
+            }
 
+            // Handle breathing platforms (Level 6 - respiratory)
+            if (platform.type === 'breathing' && platform.activated) {
+                const breathPhase = ((now + (platform.offset || 0)) % 3000) / 3000; // 3 second breath cycle
+                const expansion = Math.sin(breathPhase * Math.PI * 2) * 0.5 + 0.5;
+                
+                platform.width = platform.minWidth + (platform.maxWidth - platform.minWidth) * expansion;
+                // Recenter platform as it expands
+                const widthDiff = platform.width - platform.minWidth;
+                platform.worldX = platform.originalX - widthDiff / 2;
+                if (!platform.originalX) platform.originalX = platform.worldX;
+            }
+
+            // Handle oxygen-dependent platforms (Level 6)
+            if (platform.type === 'oxygen_dependent' && platform.activated) {
+                // Get current O2 from respiratory zone if player is in it
+                let currentO2 = platform.currentO2 || 95;
+                
+                // Platform fades if O2 too low
+                if (currentO2 < platform.minO2) {
+                    platform.opacity = Math.max(0, (currentO2 - 80) / (platform.minO2 - 80));
+                    platform.activated = platform.opacity > 0.3;
+                } else {
+                    platform.opacity = 1;
+                }
+            }
+
+            // Handle fluid-sensitive platforms (Level 6)
+            if (platform.type === 'fluid_sensitive' && platform.activated) {
+                if (platform.sinks) {
+                    // Platform sinks based on fluid level
+                    const sinkAmount = (platform.currentFluid - 50) * 0.5;
+                    platform.y = platform.originalY + sinkAmount;
+                    if (!platform.originalY) platform.originalY = platform.y;
+                }
+            }
+
+            // Handle tilting platforms (Level 5 - positioning)
+            if (platform.type === 'tilting' && platform.activated) {
+                // Gradually tilt toward target angle
+                const angleDiff = platform.targetAngle - platform.currentAngle;
+                platform.currentAngle += angleDiff * 0.02;
+                
+                // Apply tilt physics to player if on platform
+                if (player.onPlatform === platform) {
+                    player.vx += Math.sin(platform.currentAngle * Math.PI / 180) * 0.3;
+                }
+            }
+
+            // Handle temperature platforms (Level 5)
+            if (platform.type === 'temperature' && platform.activated) {
+                // Create visual effect based on temperature
+                if (platform.temp === 'hot') {
+                    platform.heatWave = Math.sin(now * 0.01) * 5;
+                } else if (platform.temp === 'cold') {
+                    platform.frostLevel = Math.sin(now * 0.005) * 0.3 + 0.7;
+                }
+            }
+
+            // Handle noise-sensitive platforms (Level 5 - sleep)
+            if (platform.type === 'noise_sensitive' && platform.activated) {
+                // Check for nearby noise sources
+                let totalNoise = 0;
+                platforms.forEach(other => {
+                    if (other.type === 'noisy' && other.activated) {
+                        const distance = Math.abs(platform.worldX - other.worldX);
+                        if (distance < 500) {
+                            totalNoise += other.noiseLevel * (1 - distance / 500);
+                        }
+                    }
+                });
+                
+                if (totalNoise > platform.maxNoise && platform.breaksIfLoud) {
+                    platform.breaking = true;
+                    platform.breakTimer = (platform.breakTimer || 0) + 1;
+                    if (platform.breakTimer > 60) {
+                        platform.activated = false;
+                        setTimeout(() => {
+                            platform.activated = true;
+                            platform.breaking = false;
+                            platform.breakTimer = 0;
+                        }, 3000);
+                    }
+                }
+            }
+
+            // Handle pulsing pain platforms (Level 5)
+            if (platform.type === 'pulsing' && platform.activated) {
+                const pulsePhase = ((now + (platform.offset || 0)) % platform.pulseRate) / platform.pulseRate;
+                const safePhase = platform.safeWindow / platform.pulseRate;
+                
+                platform.isPainful = pulsePhase > safePhase;
+                platform.painIntensity = platform.isPainful ? platform.painLevel : 0;
+                
+                // Visual pulsing effect
+                platform.pulseScale = 1 + Math.sin(pulsePhase * Math.PI * 2) * 0.1;
+            }
+
+            // Handle milestone platforms (Level 7 - infant)
+            if (platform.type === 'milestone' && platform.activated) {
+                if (platform.skill === 'rolling' && platform.rotates) {
+                    platform.rotation = (platform.rotation || 0) + 0.02;
+                }
+                if (platform.skill === 'sitting' && !platform.stable) {
+                    platform.wobble = Math.sin(now * 0.003) * 5;
+                }
+                if (platform.skill === 'standing' && platform.wobbly) {
+                    platform.sway = Math.sin(now * 0.004) * 3;
+                }
+            }
+
+            // Handle growth spurt platforms (Level 7 - childhood)
+            if (platform.type === 'growth_spurt' && platform.activated) {
+                if (platform.height < platform.maxHeight) {
+                    platform.height += platform.growthRate * 0.1;
+                    platform.y = platform.originalY - (platform.height - 20);
+                    if (!platform.originalY) platform.originalY = platform.y;
+                }
+            }
+
+            // Handle bubble protection platforms (Level 7 - prenatal)
+            if (platform.type === 'bubble' && platform.activated) {
+                platform.protection -= platform.degradeRate * 0.1;
+                if (platform.protection <= 0) {
+                    platform.protection = 0;
+                    platform.vulnerable = true;
+                }
+                
+                // Bubble visual effect
+                platform.bubbleSize = 1 + Math.sin(now * 0.002) * 0.05;
+            }
+
+            // Handle balance platforms (Level 7 - adult wellness)
+            if (platform.type === 'balance' && platform.activated) {
+                // Apply energy drain/restore effects to player
+                if (player.onPlatform === platform) {
+                    if (!player.energy) player.energy = 100;
+                    
+                    if (platform.drains === 'energy') {
+                        player.energy = Math.max(0, player.energy - 0.5);
+                    } else if (platform.restores === 'energy') {
+                        player.energy = Math.min(100, player.energy + 1);
+                    }
+                    
+                    // Affect player movement based on energy
+                    player.speedMultiplier = 0.5 + (player.energy / 200);
+                }
+            }
+
+            // Handle reflex test platforms (Level 6 - neurologic)
+            if (platform.type === 'reflex_test' && platform.activated) {
+                // Player must jump within response time when landing
+                if (player.onPlatform === platform) {
+                    if (!platform.testStartTime) {
+                        platform.testStartTime = now;
+                        platform.testing = true;
+                    }
+                    
+                    if (platform.testing && now - platform.testStartTime > platform.responseTime) {
+                        if (platform.disappearsOnFail && !player.hasJumped) {
+                            platform.activated = false;
+                            setTimeout(() => {
+                                platform.activated = true;
+                                platform.testStartTime = null;
+                                platform.testing = false;
+                            }, 2000);
+                        }
+                    }
+                }
+            }
+
+            // Handle organ system platforms (Level 6 - multi-organ failure)
+            if (platform.type === 'organ_system' && platform.activated) {
+                if (!platform.failureStartTime) {
+                    platform.failureStartTime = now;
+                }
+                
+                const elapsed = now - platform.failureStartTime;
+                if (elapsed > platform.failureTime) {
+                    platform.failing = true;
+                    platform.opacity = Math.max(0, 1 - (elapsed - platform.failureTime) / 1000);
+                    platform.activated = platform.opacity > 0.1;
+                }
+            }
+
+            // Handle pH-sensitive platforms (Level 6 - metabolic)
+            if (platform.type === 'pH_sensitive' && platform.activated) {
+                const pHDiff = Math.abs(platform.currentPH - platform.idealPH);
+                if (pHDiff > 0.1) {
+                    platform.damaging = true;
+                    platform.damageAmount = platform.damageRate * pHDiff * 10;
+                } else {
+                    platform.damaging = false;
+                }
+                
+                // Visual indication of pH
+                if (platform.currentPH < 7.35) {
+                    platform.color = '#FF6B6B'; // Acidic - red
+                } else if (platform.currentPH > 7.45) {
+                    platform.color = '#6B6BFF'; // Alkalotic - blue  
+                } else {
+                    platform.color = '#6BFF6B'; // Normal - green
+                }
+            }
+        });
+    }
     // Reset all dynamic platform states that can accumulate during gameplay
     resetPlatformStates(platforms) {
         platforms.forEach(platform => {
@@ -147,12 +371,18 @@ class LevelManager {
                     case 3:
                             module = await import('./levels/level_3.js');
                             break;
-                case 4:
+                    case 4:
                             module = await import('./levels/level_4.js');
                             break;
-                case 5:
-                case 6:
-                case 7:
+                    case 5:
+                            module = await import('./levels/level_5.js');
+                            break;
+                    case 6:
+                            module = await import('./levels/level_6.js');
+                            break;
+                    case 7:
+                            module = await import('./levels/level_7.js');
+                            break;
                     // For now, return a placeholder for other levels
                     console.log('Using placeholder for level', levelId);
                     this.currentLevel = {
@@ -226,6 +456,209 @@ class LevelManager {
 
         return pos;
     }
+
+    initializeLevelZones(level) {
+        // Level 5: Comfort Zones
+        if (level.comfortZones) {
+            level.comfortZones.forEach(zone => {
+                // Initialize comfort zone states
+                if (zone.type === 'temperature') {
+                    zone.playerTemp = 98.6; // Normal body temp
+                }
+                if (zone.type === 'hygiene') {
+                    zone.cleanlinessLevel = 0;
+                    zone.hygieneSequence = [];
+                }
+                if (zone.type === 'nutrition') {
+                    zone.hungerLevel = 100;
+                    zone.lastFeedTime = 0;
+                }
+                if (zone.type === 'sleep') {
+                    zone.currentNoise = zone.noiseLevel;
+                }
+            });
+        }
+
+        // Level 6: Vital Zones
+        if (level.vitalZones) {
+            level.vitalZones.forEach(zone => {
+                // Initialize vital sign states
+                if (zone.type === 'cardiac') {
+                    zone.currentHR = zone.heartRate;
+                    zone.rhythmStable = true;
+                }
+                if (zone.type === 'respiratory') {
+                    zone.currentResp = zone.respRate;
+                    zone.currentO2 = zone.o2Sat;
+                }
+                if (zone.type === 'renal') {
+                    zone.currentBalance = zone.fluidBalance;
+                    zone.currentOutput = zone.urineOutput;
+                }
+                if (zone.type === 'metabolic') {
+                    zone.currentSugar = zone.bloodSugar;
+                    zone.currentPH = zone.pH;
+                }
+            });
+        }
+
+        // Level 7: Lifecycle Zones
+        if (level.lifecycleZones) {
+            level.lifecycleZones.forEach(zone => {
+                // Initialize lifecycle states
+                zone.milestonesCompleted = [];
+                zone.preventionMeasures = [];
+                zone.healthStatus = 100;
+            });
+        }
+    }
+
+    applyZoneEffects(player, worldX, canvas) {
+        const level = this.currentLevel;
+        if (!level) return;
+        
+        const playerWorldX = player.x - worldX;
+        
+        // Level 5: Comfort Zones
+        if (level.comfortZones) {
+            for (const zone of level.comfortZones) {
+                if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                    switch(zone.type) {
+                        case 'temperature':
+                            // Player temp drifts from ideal
+                            const tempDiff = zone.idealTemp - zone.currentTemp;
+                            zone.currentTemp += tempDiff * 0.01;
+                            
+                            // Damage if too hot or cold
+                            if (Math.abs(zone.currentTemp - zone.idealTemp) > 10) {
+                                player.comfortDamage = true;
+                            }
+                            break;
+                            
+                        case 'hygiene':
+                            // Cleanliness decreases over time
+                            zone.cleanlinessLevel = Math.max(0, zone.cleanlinessLevel - 0.5);
+                            if (zone.cleanlinessLevel < 30) {
+                                player.speedMultiplier *= 0.8; // Slow when dirty
+                            }
+                            break;
+                            
+                        case 'nutrition':
+                            // Hunger increases
+                            zone.hungerLevel = Math.max(0, zone.hungerLevel - 0.3);
+                            if (zone.hungerLevel < 30) {
+                                player.jumpMultiplier *= 0.8; // Weak when hungry
+                            }
+                            break;
+                            
+                        case 'sleep':
+                            // Fatigue if too noisy
+                            if (zone.currentNoise > zone.maxNoise) {
+                                player.fatigue = (player.fatigue || 0) + 0.5;
+                                if (player.fatigue > 50) {
+                                    player.speedMultiplier *= 0.7;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        
+        // Level 6: Vital Zones
+        if (level.vitalZones) {
+            for (const zone of level.vitalZones) {
+                if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                    switch(zone.type) {
+                        case 'cardiac':
+                            // Heart rate changes
+                            if (zone.arrhythmiaRisk && Math.random() < 0.01) {
+                                zone.rhythmStable = false;
+                                player.irregularMovement = true;
+                            }
+                            break;
+                            
+                        case 'respiratory':
+                            // O2 decreases without proper breathing
+                            zone.currentO2 = Math.max(80, zone.currentO2 - 0.2);
+                            if (zone.currentO2 < 90) {
+                                player.speedMultiplier *= (zone.currentO2 / 100);
+                            }
+                            break;
+                            
+                        case 'renal':
+                            // Fluid balance affects jump
+                            if (Math.abs(zone.currentBalance) > 500) {
+                                player.jumpMultiplier *= 0.8;
+                            }
+                            break;
+                            
+                        case 'neurologic':
+                            // ICP affects vision
+                            if (zone.icpLevel > 20) {
+                                player.visionBlur = (zone.icpLevel - 20) / 10;
+                            }
+                            break;
+                            
+                        case 'metabolic':
+                            // pH imbalance causes damage
+                            if (zone.currentPH < 7.35 || zone.currentPH > 7.45) {
+                                player.metabolicDamage = true;
+                            }
+                            break;
+                            
+                        case 'shock':
+                            // Poor perfusion affects everything
+                            if (zone.perfusion < 60) {
+                                const perfusionRatio = zone.perfusion / 100;
+                                player.speedMultiplier *= perfusionRatio;
+                                player.jumpMultiplier *= perfusionRatio;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        
+        // Level 7: Lifecycle Zones
+        if (level.lifecycleZones) {
+            for (const zone of level.lifecycleZones) {
+                if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                    // Apply stage-specific mechanics
+                    switch(zone.stage) {
+                        case 'infant':
+                            if (zone.mechanics === 'crawling') {
+                                player.maxHeight = 60; // Can't stand fully
+                                player.crawling = true;
+                            }
+                            break;
+                            
+                        case 'toddler':
+                            if (zone.mechanics === 'exploration') {
+                                player.curiosity = true; // Drawn to hazards
+                                player.speedMultiplier *= 1.2; // Fast but unsteady
+                            }
+                            break;
+                            
+                        case 'adolescent':
+                            if (zone.mechanics === 'risk_taking') {
+                                player.invincibilityFrames = 30; // Feel invincible
+                                player.riskTaking = true;
+                            }
+                            break;
+                            
+                        case 'older_adult':
+                            if (zone.mechanics === 'adaptation') {
+                                player.speedMultiplier *= 0.7; // Slower movement
+                                player.fallRisk = true; // Higher fall damage
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
 
     spawnLevelContent(worldX, canvas, platforms, npcs, chests, hazards, enemyManager) {
         if (!this.currentLevel) return;
@@ -392,6 +825,8 @@ class LevelManager {
         };
     }
 }
+
+
 
 // Export the class
 export default LevelManager;

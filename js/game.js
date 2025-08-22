@@ -492,6 +492,243 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             };
 
+            // Update platform states for new mechanics
+        if (levelManager.currentLevel) {
+            levelManager.updatePlatformStates(platforms, worldX, player, canvas);
+            levelManager.applyZoneEffects(player, worldX, canvas);
+        }
+
+        // Handle special platform interactions
+        for (const platform of platforms) {
+            const screenX = platform.worldX + worldX;
+            
+            // Check if player is on this platform
+            if (player.onPlatform === platform) {
+                // Handle different platform types
+                switch(platform.type) {
+                    case 'temperature':
+                        // Apply temperature effect to player
+                        if (!player.temperature) player.temperature = 98.6;
+                        player.temperature += platform.effect * 0.1;
+                        
+                        // Damage if too extreme
+                        if (player.temperature < 95 || player.temperature > 104) {
+                            if (!player.invincible) {
+                                player.lives--;
+                                player.invincible = true;
+                                setTimeout(() => { player.invincible = false; }, 2000);
+                            }
+                        }
+                        break;
+                        
+                    case 'hygiene_tool':
+                        // Track hygiene sequence
+                        if (!player.hygieneSequence) player.hygieneSequence = [];
+                        if (!player.hygieneSequence.includes(platform.tool)) {
+                            player.hygieneSequence.push(platform.tool);
+                            
+                            // Check if sequence is correct
+                            const correctSequence = ['soap', 'water', 'towel', 'lotion'];
+                            if (player.hygieneSequence.length === correctSequence.length) {
+                                const isCorrect = player.hygieneSequence.every((tool, i) => tool === correctSequence[i]);
+                                if (isCorrect) {
+                                    player.cleanlinessBoost = true;
+                                    player.speedMultiplier *= 1.2;
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case 'pushable':
+                        // Food cart mechanics
+                        if (keys['e'] || keys['E']) {
+                            platform.worldX += player.facing * 2;
+                            
+                            // Check if cart reached feeding zone
+                            for (const zone of platforms) {
+                                if (zone.type === 'feeding_zone' && zone.requiresFood) {
+                                    const dist = Math.abs(platform.worldX - zone.worldX);
+                                    if (dist < 50) {
+                                        zone.fed = true;
+                                        zone.activated = true;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case 'pulsing':
+                        // Pain platform damage
+                        if (platform.isPainful && !player.invincible) {
+                            player.lives--;
+                            player.invincible = true;
+                            setTimeout(() => { player.invincible = false; }, 1000);
+                        }
+                        break;
+                        
+                    case 'pH_sensitive':
+                        // pH damage
+                        if (platform.damaging && !player.invincible) {
+                            player.lives -= platform.damageAmount;
+                            player.invincible = true;
+                            setTimeout(() => { player.invincible = false; }, 1000);
+                        }
+                        break;
+                        
+                    case 'glucose_powered':
+                        // Depletes glucose
+                        if (platform.depletes) {
+                            platform.requiredGlucose -= 0.5;
+                            if (platform.requiredGlucose <= 0) {
+                                platform.activated = false;
+                            }
+                        }
+                        break;
+                        
+                    case 'reflex_test':
+                        // Mark if player jumped
+                        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+                            player.hasJumped = true;
+                        }
+                        break;
+                        
+                    case 'milestone':
+                        // Apply milestone effects
+                        if (platform.skill === 'crawling' && platform.lowCeiling) {
+                            player.forceCrouch = true;
+                        }
+                        if (platform.skill === 'rolling' && platform.rotates) {
+                            player.vx += Math.sin(platform.rotation) * 0.5;
+                        }
+                        break;
+                        
+                    case 'bubble':
+                        // Prenatal protection
+                        player.bubbleProtection = platform.protection;
+                        break;
+                        
+                    case 'social':
+                        // Peer pressure effects
+                        if (platform.influence === 'negative' && platform.pulls) {
+                            // Pull player toward bad decisions
+                            const pullDirection = Math.sign(platform.worldX - (player.x - worldX));
+                            player.vx += pullDirection * 0.3;
+                        }
+                        break;
+                }
+            }
+        }
+
+        if (levelManager.currentLevel && levelManager.currentLevel.comfortItems) {
+            for (let i = levelManager.currentLevel.comfortItems.length - 1; i >= 0; i--) {
+                const item = levelManager.currentLevel.comfortItems[i];
+                const screenX = item.x + worldX;
+                
+                if (player.x < screenX + 30 && player.x + player.width > screenX &&
+                    player.y < item.y + 30 && player.y + player.height > item.y) {
+                    
+                    // Apply comfort item effect
+                    switch(item.effect) {
+                        case 'warmth':
+                            if (player.temperature) player.temperature += item.value;
+                            break;
+                        case 'cleanliness':
+                            player.cleanlinessLevel = (player.cleanlinessLevel || 0) + item.value;
+                            break;
+                        case 'nutrition':
+                            player.hungerSatisfied = true;
+                            break;
+                        case 'pain_relief':
+                            player.painImmunity = true;
+                            setTimeout(() => { player.painImmunity = false; }, 5000);
+                            break;
+                    }
+                    
+                    levelManager.currentLevel.comfortItems.splice(i, 1);
+                }
+            }
+        }
+
+        // Handle vital pickups (Level 6)
+        if (levelManager.currentLevel && levelManager.currentLevel.vitalPickups) {
+            for (let i = levelManager.currentLevel.vitalPickups.length - 1; i >= 0; i--) {
+                const pickup = levelManager.currentLevel.vitalPickups[i];
+                const screenX = pickup.x + worldX;
+                
+                if (player.x < screenX + 30 && player.x + player.width > screenX &&
+                    player.y < pickup.y + 30 && player.y + player.height > pickup.y) {
+                    
+                    // Apply vital sign effect
+                    const playerWorldX = player.x - worldX;
+                    
+                    // Find current vital zone
+                    if (levelManager.currentLevel.vitalZones) {
+                        for (const zone of levelManager.currentLevel.vitalZones) {
+                            if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                                switch(pickup.increases) {
+                                    case 'o2Sat':
+                                        zone.currentO2 = Math.min(100, zone.currentO2 + pickup.value);
+                                        break;
+                                    case 'fluidBalance':
+                                        zone.currentBalance += pickup.value;
+                                        break;
+                                    case 'bloodSugar':
+                                        zone.currentSugar += pickup.value;
+                                        break;
+                                    case 'perfusion':
+                                        zone.perfusion = Math.min(100, zone.perfusion + pickup.value);
+                                        break;
+                                }
+                                
+                                if (pickup.balances === 'electrolytes') {
+                                    zone.electrolytes = 'balanced';
+                                }
+                            }
+                        }
+                    }
+                    
+                    levelManager.currentLevel.vitalPickups.splice(i, 1);
+                }
+            }
+        }
+
+        // Handle health items (Level 7)
+        if (levelManager.currentLevel && levelManager.currentLevel.healthItems) {
+            for (let i = levelManager.currentLevel.healthItems.length - 1; i >= 0; i--) {
+                const item = levelManager.currentLevel.healthItems[i];
+                const screenX = item.x + worldX;
+                
+                if (player.x < screenX + 30 && player.x + player.width > screenX &&
+                    player.y < item.y + 30 && player.y + player.height > item.y) {
+                    
+                    // Apply health promotion effect
+                    switch(item.type) {
+                        case 'prenatal_vitamin':
+                            player.prenatalProtection = true;
+                            break;
+                        case 'vaccine_record':
+                            player.immunityBoost = true;
+                            player.invincibleFrames = 300;
+                            break;
+                        case 'safety_lock':
+                            // Deactivate nearby hazards
+                            hazards.forEach(h => {
+                                if (h.childproofable && Math.abs(h.x - item.x) < 500) {
+                                    h.activated = false;
+                                }
+                            });
+                            break;
+                        case 'walker':
+                            player.mobilityAssist = true;
+                            player.fallDamageReduction = 0.5;
+                            break;
+                    }
+                    
+                    levelManager.currentLevel.healthItems.splice(i, 1);
+                }
+            }
+        }
+
             if (fireTimer > 0) fireTimer--;
             pickupSpawnTimer++;
 
@@ -1015,6 +1252,152 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             }
 
+            for (const p of platforms) {
+                const screenX = p.worldX + worldX;
+                if (screenX > -p.width && screenX < canvas.width) {
+                    ctx.save();
+                    
+                    // Apply special visual effects based on platform type
+                    switch(p.type) {
+                        case 'rhythmic':
+                            // Cardiac rhythm visualization
+                            if (p.visible) {
+                                ctx.fillStyle = '#FF6B6B';
+                                ctx.globalAlpha = 0.8;
+                                ctx.fillRect(screenX, p.y, p.width, p.height);
+                                
+                                // ECG line effect
+                                ctx.strokeStyle = '#FFF';
+                                ctx.lineWidth = 2;
+                                ctx.beginPath();
+                                const beatPhase = (Date.now() % p.beatInterval) / p.beatInterval;
+                                const peakX = screenX + p.width * beatPhase;
+                                ctx.moveTo(screenX, p.y + p.height/2);
+                                ctx.lineTo(peakX - 5, p.y + p.height/2);
+                                ctx.lineTo(peakX, p.y);
+                                ctx.lineTo(peakX + 5, p.y + p.height);
+                                ctx.lineTo(peakX + 10, p.y + p.height/2);
+                                ctx.lineTo(screenX + p.width, p.y + p.height/2);
+                                ctx.stroke();
+                            }
+                            break;
+                            
+                        case 'breathing':
+                            // Lung expansion effect
+                            ctx.fillStyle = '#6B9FFF';
+                            ctx.globalAlpha = 0.7;
+                            ctx.fillRect(screenX, p.y, p.width, p.height);
+                            
+                            // Airflow particles
+                            const breathPhase = (Date.now() % 3000) / 3000;
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                            for (let i = 0; i < 5; i++) {
+                                const particleX = screenX + p.width * (i / 5) + Math.sin(breathPhase * Math.PI * 2) * 10;
+                                const particleY = p.y + p.height/2 + Math.cos(breathPhase * Math.PI * 2 + i) * 5;
+                                ctx.beginPath();
+                                ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                            break;
+                            
+                        case 'temperature':
+                            // Temperature visual effects
+                            if (p.temp === 'hot') {
+                                // Heat waves
+                                ctx.fillStyle = '#FF4444';
+                                ctx.globalAlpha = 0.6;
+                                ctx.fillRect(screenX, p.y, p.width, p.height);
+                                
+                                // Heat shimmer
+                                ctx.strokeStyle = 'rgba(255, 100, 0, 0.3)';
+                                for (let i = 0; i < 3; i++) {
+                                    const waveY = p.y - 10 - i * 10 + p.heatWave;
+                                    ctx.beginPath();
+                                    ctx.moveTo(screenX, waveY);
+                                    ctx.quadraticCurveTo(screenX + p.width/2, waveY - 10, screenX + p.width, waveY);
+                                    ctx.stroke();
+                                }
+                            } else if (p.temp === 'cold') {
+                                // Frost effect
+                                ctx.fillStyle = '#B0E0FF';
+                                ctx.globalAlpha = p.frostLevel;
+                                ctx.fillRect(screenX, p.y, p.width, p.height);
+                                
+                                // Ice crystals
+                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                                ctx.lineWidth = 1;
+                                for (let i = 0; i < 5; i++) {
+                                    const crystalX = screenX + (p.width / 5) * i + 10;
+                                    const crystalY = p.y + 10;
+                                    ctx.beginPath();
+                                    // Snowflake pattern
+                                    for (let j = 0; j < 6; j++) {
+                                        const angle = (j / 6) * Math.PI * 2;
+                                        ctx.moveTo(crystalX, crystalY);
+                                        ctx.lineTo(crystalX + Math.cos(angle) * 5, crystalY + Math.sin(angle) * 5);
+                                    }
+                                    ctx.stroke();
+                                }
+                            }
+                            break;
+                            
+                        case 'pulsing':
+                            // Pain pulse effect
+                            ctx.fillStyle = p.isPainful ? '#FF0000' : '#00FF00';
+                            ctx.globalAlpha = p.isPainful ? 0.8 : 0.5;
+                            ctx.save();
+                            ctx.translate(screenX + p.width/2, p.y + p.height/2);
+                            ctx.scale(p.pulseScale, p.pulseScale);
+                            ctx.fillRect(-p.width/2, -p.height/2, p.width, p.height);
+                            ctx.restore();
+                            
+                            // Pain indicator
+                            if (p.isPainful) {
+                                ctx.fillStyle = '#FFF';
+                                ctx.font = 'bold 16px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText('PAIN!', screenX + p.width/2, p.y - 10);
+                            }
+                            break;
+                            
+                        case 'bubble':
+                            // Prenatal bubble effect
+                            ctx.strokeStyle = `rgba(100, 200, 255, ${p.protection / 100})`;
+                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.arc(screenX + p.width/2, p.y + p.height/2, 
+                                   (p.width/2 + 20) * p.bubbleSize, 0, Math.PI * 2);
+                            ctx.stroke();
+                            
+                            // Protection percentage
+                            ctx.fillStyle = '#FFF';
+                            ctx.font = '12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(`${Math.round(p.protection)}%`, screenX + p.width/2, p.y + p.height/2);
+                            break;
+                            
+                        case 'growth_spurt':
+                            // Growth visualization
+                            ctx.fillStyle = '#90EE90';
+                            ctx.fillRect(screenX, p.y, p.width, p.height);
+                            
+                            // Growth arrows
+                            ctx.strokeStyle = '#00FF00';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(screenX + p.width/2, p.y + p.height);
+                            ctx.lineTo(screenX + p.width/2, p.y - 10);
+                            ctx.moveTo(screenX + p.width/2 - 5, p.y - 5);
+                            ctx.lineTo(screenX + p.width/2, p.y - 10);
+                            ctx.lineTo(screenX + p.width/2 + 5, p.y - 5);
+                            ctx.stroke();
+                            break;
+                    }
+                    
+                    ctx.restore();
+                }
+            }
+
             // --- [NEW] DRAW HAZARDS ---
             hazards.forEach(haz => {
                 if (!haz.activated) return;
@@ -1246,6 +1629,91 @@ import { Enemy, EnemyManager } from './enemy.js';
                     drawPsychZoneEffects();
                 }
 
+                if (levelManager.currentLevel) {
+                    // Comfort zones (Level 5)
+                    if (levelManager.currentLevel.comfortZones) {
+                        for (const zone of levelManager.currentLevel.comfortZones) {
+                            const zoneStartX = zone.startX + worldX;
+                            const zoneEndX = zone.endX + worldX;
+                            
+                            if (zoneEndX > 0 && zoneStartX < canvas.width) {
+                                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                                ctx.fillRect(Math.max(0, zoneStartX), 0, 
+                                           Math.min(canvas.width, zoneEndX) - Math.max(0, zoneStartX), 
+                                           canvas.height);
+                                
+                                // Zone label
+                                ctx.fillStyle = '#FFF';
+                                ctx.font = 'bold 20px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(zone.type.toUpperCase() + ' ZONE', 
+                                           (Math.max(0, zoneStartX) + Math.min(canvas.width, zoneEndX)) / 2, 
+                                           50);
+                                
+                                // Zone-specific indicators
+                                switch(zone.type) {
+                                    case 'temperature':
+                                        ctx.fillText(`Temp: ${zone.currentTemp.toFixed(1)}°F (Target: ${zone.idealTemp}°F)`,
+                                                   (Math.max(0, zoneStartX) + Math.min(canvas.width, zoneEndX)) / 2, 80);
+                                        break;
+                                    case 'hygiene':
+                                        ctx.fillText(`Cleanliness: ${zone.cleanlinessLevel.toFixed(0)}%`,
+                                                   (Math.max(0, zoneStartX) + Math.min(canvas.width, zoneEndX)) / 2, 80);
+                                        break;
+                                    case 'nutrition':
+                                        ctx.fillText(`Hunger: ${zone.hungerLevel.toFixed(0)}%`,
+                                                   (Math.max(0, zoneStartX) + Math.min(canvas.width, zoneEndX)) / 2, 80);
+                                        break;
+                                    case 'sleep':
+                                        ctx.fillText(`Noise: ${zone.currentNoise} dB (Max: ${zone.maxNoise} dB)`,
+                                                   (Math.max(0, zoneStartX) + Math.min(canvas.width, zoneEndX)) / 2, 80);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Vital zones (Level 6)
+                    if (levelManager.currentLevel.vitalZones) {
+                        for (const zone of levelManager.currentLevel.vitalZones) {
+                            const zoneStartX = zone.startX + worldX;
+                            const zoneEndX = zone.endX + worldX;
+                            
+                            if (zoneEndX > 0 && zoneStartX < canvas.width) {
+                                // Zone-specific vital sign display
+                                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                                ctx.font = 'bold 16px monospace';
+                                ctx.textAlign = 'left';
+                                
+                                let vitalText = '';
+                                let vitalColor = '#00FF00';
+                                
+                                switch(zone.type) {
+                                    case 'cardiac':
+                                        vitalText = `HR: ${zone.currentHR} bpm`;
+                                        if (zone.currentHR < 60 || zone.currentHR > 100) vitalColor = '#FF0000';
+                                        break;
+                                    case 'respiratory':
+                                        vitalText = `RR: ${zone.currentResp} | O2: ${zone.currentO2}%`;
+                                        if (zone.currentO2 < 92) vitalColor = '#FF0000';
+                                        break;
+                                    case 'renal':
+                                        vitalText = `UO: ${zone.currentOutput} mL/hr`;
+                                        if (zone.currentOutput < 30) vitalColor = '#FF0000';
+                                        break;
+                                    case 'metabolic':
+                                        vitalText = `pH: ${zone.currentPH.toFixed(2)} | Glucose: ${zone.currentSugar}`;
+                                        if (zone.currentPH < 7.35 || zone.currentPH > 7.45) vitalColor = '#FF0000';
+                                        break;
+                                }
+                                
+                                ctx.fillStyle = vitalColor;
+                                ctx.fillText(vitalText, 20, 150);
+                            }
+                        }
+                    }
+                }
+
                 if (player.dead) {
                     ctx.fillStyle = `rgba(255, 0, 0, ${Math.sin(Date.now() * 0.01) * 0.5 + 0.5})`;
                     ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -1270,6 +1738,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                         ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
                     }
                 }
+
+                
 
                 function drawPsychZoneEffects() {
                     const playerWorldX = player.x - worldX;
@@ -1339,6 +1809,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             }
         }
+
+        
 
         // Debugging function to draw spatial axes
         function drawSpatialAxes() {
