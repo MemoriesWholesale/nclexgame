@@ -1,0 +1,18 @@
+{
+  "name": "nclex-platformer-game",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "NCLEX educational platformer game with modular architecture",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "node test/test-runner.js",
+    "dev": "python3 -m http.server 8000",
+    "lint": "echo 'Linting would go here'",
+    "build": "echo 'Build process would go here'"
+  },
+  "keywords": ["game", "education", "nclex", "platformer"],
+  "author": "NCLEX Game Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

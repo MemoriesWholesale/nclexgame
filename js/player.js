@@ -1,33 +1,36 @@
+import { PlayerMedication } from './systems/PlayerMedication.js';
+import { PlayerPhysics } from './systems/PlayerPhysics.js';
+import { PlayerAnimation } from './systems/PlayerAnimation.js';
+import { PlayerInput } from './systems/PlayerInput.js';
+
 export class Player {
     constructor(canvas) {
-        // Position and size
+        // Core properties
+        this.canvas = canvas;
         this.x = 100;
         this.y = 0;
         this.width = 50;
-        this.height = 92; // Adjusted for new sprite aspect ratio
+        this.height = 92;
         
-        // Movement
+        // Movement state
         this.vx = 0;
         this.vy = 0;
-        this.speed = 5;
-        this.jumpPower = 15;
-        
-        // State
-        this.grounded = false;
-        this.facing = 1;
-        this.lives = 3;
-        this.dead = false;
-        this.crouching = false;
-        this.onPlatform = null;
-        this.canJump = false; // **FIX**: Track if player can validly jump
-        this.isRespawning = false;
-        // Medication system
-        this.activeMedications = [];
-        this.medicationCooldowns = {}; // Track tolerance/cooldowns
         this.baseSpeed = 5;
         this.baseJumpPower = 15;
         this.speedMultiplier = 1;
         this.jumpMultiplier = 1;
+        this.facing = 1;
+        
+        // Player state
+        this.grounded = false;
+        this.crouching = false;
+        this.onPlatform = null;
+        this.canJump = false;
+        this.lives = 3;
+        this.dead = false;
+        this.isRespawning = false;
+        
+        // Ability flags
         this.sizeScale = 1;
         this.invincible = false;
         this.canDoubleJump = false;
@@ -36,298 +39,69 @@ export class Player {
         this.isGliding = false;
         this.hiddenPlatformsVisible = false;
         this.bulletTime = false;
-
+        
+        // Special effects (from level zones)
+        this.invertedControls = false;
+        this.hasTwin = false;
+        this.gravityFlipped = false;
+        this.tunnelVision = 0;
+        this.depressionFog = 0;
+        
         // Armor system
         this.armors = [0];
         this.currentArmorIndex = 0;
         
-        // Animation
-        this.state = 'idle';
-        this.currentFrame = 0;
-        this.animationTimer = 0;
-        
-        // Shooting
+        // Animation properties
         this.isShooting = false;
         this.shootTimer = 0;
         
-        // Canvas reference for bounds checking
-        this.canvas = canvas;
+        // Initialize subsystems
+        this.medication = new PlayerMedication(this);
+        this.physics = new PlayerPhysics(this);
+        this.animation = new PlayerAnimation(this);
+        this.input = new PlayerInput(this);
     }
     
-    // Handle player input for movement
+    /**
+     * Handle player input for movement
+     */
     handleInput(keys, onSpill) {
-        if (this.dead) {
-            this.vx = 0;
-            this.crouching = false;
-            return;
-        }
-
-            // Handle inverted controls
-        let leftKey = keys['ArrowLeft'] || keys['a'] || keys['A'];
-        let rightKey = keys['ArrowRight'] || keys['d'] || keys['D'];
-        let upKey = keys['ArrowUp'] || keys['w'] || keys['W'];
-        let downKey = keys['ArrowDown'] || keys['s'] || keys['S'];
-
-        if (this.invertedControls) {
-            // Swap left/right
-            [leftKey, rightKey] = [rightKey, leftKey];
-            // Swap up/down
-            [upKey, downKey] = [downKey, upKey];
-        }
-        
-        // Apply speed multiplier from medications
-        const currentSpeed = this.baseSpeed * this.speedMultiplier;
-        
-        // Horizontal movement
-        if (leftKey) {
-            this.vx = -currentSpeed;
-            this.facing = -1;
-        } else if (rightKey) {
-            this.vx = currentSpeed;
-            this.facing = 1;
-        } else {
-            if (!onSpill) { this.vx *= 0.8; }
-        }
-
-        // Enhanced jumping with medication effects
-        const jumpPressed = upKey;
-        const currentJumpPower = this.baseJumpPower * this.jumpMultiplier;
-        
-        if (jumpPressed) {
-            if (this.grounded && this.canJump) {
-                this.vy = -currentJumpPower;
-                this.grounded = false;
-                this.onPlatform = null;
-                this.hasDoubleJumped = false;
-            } else if (this.canDoubleJump && !this.hasDoubleJumped && !this.grounded) {
-                this.vy = -currentJumpPower * 0.8; // Double jump is slightly weaker
-                this.hasDoubleJumped = true;
-            }
-        }
-        
-        // Gliding mechanic (from corticosteroid)
-        if (this.canGlide && !this.grounded && this.vy > 0) {
-            if (upKey) {
-                this.isGliding = true;
-                this.vy = Math.min(this.vy, 2); // Slow fall
-            } else {
-                this.isGliding = false;
-            }
-        }
-
-        // Crouching (modified for size changes)
-        this.crouching = downKey && this.grounded;
+        this.input.handleInput(keys, onSpill);
+        this.physics.applySpillPhysics(onSpill);
     }
     
-    // Update player state and animation
+    /**
+     * Update player state and animation
+     */
     updateState(spriteAnimations) {
-        // Update shoot timer
-        if (this.shootTimer > 0) {
-            this.shootTimer--;
-        } else {
-            this.isShooting = false;
-        }
-        
-        // Determine animation state
-        if (this.isShooting) {
-            if (this.crouching) {
-                this.state = 'crouchShoot';
-            } else if (!this.grounded) {
-                this.state = 'jumpShoot';
-            } else if (Math.abs(this.vx) > 0.1) {
-                this.state = 'walkShoot';
-            } else {
-                this.state = 'idleShoot';
-            }
-        } else if (this.crouching) {
-            this.state = 'crouch';
-        } else if (!this.grounded) {
-            this.state = this.vy < 0 ? 'jumpUp' : 'jumpDown';
-        } else if (Math.abs(this.vx) > 0.1) {
-            this.state = 'walk';
-        } else {
-            this.state = 'idle';
-        }
-        
-        // Update animation frame
-        const currentAnimation = spriteAnimations[this.state];
-        this.animationTimer++;
-        if (this.animationTimer > 8) {
-            this.currentFrame = (this.currentFrame + 1) % currentAnimation.frames;
-            this.animationTimer = 0;
-        }
-        if (this.currentFrame >= currentAnimation.frames) {
-            this.currentFrame = 0;
-        }
+        this.animation.updateState(spriteAnimations);
     }
     
-    // Update player physics and position
+    /**
+     * Update player physics and position
+     */
     updatePhysics(groundY, platforms, pits, worldX) {
-        // Apply gravity
-        this.vy += 0.8;
-        this.x += this.vx;
-        
-        // Store the current platform before handling platform movement
-        const currentPlatform = this.onPlatform;
-        
-        // Handle moving platforms (elevators, moving, orbiting)
-        for (const p of platforms) {
-            if (p.activated) {
-                // Store previous position for player tracking
-                const prevPlatformY = p.y;
-                const prevPlatformX = p.worldX || p.x;
-                
-                if (p.type === 'elevator') {
-                    p.y += p.speed;
-                    if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
-                        p.y = p.endY;
-                        // To make it go back and forth, swap start and end
-                        [p.startY, p.endY] = [p.endY, p.startY]; 
-                        p.speed = -p.speed;
-                    }
-                    
-                    // **FIX**: Move player with elevator if they're standing on it
-                    if (currentPlatform === p) {
-                        const platformMovement = p.y - prevPlatformY;
-                        this.y += platformMovement;
-                    }
-                }
-                if (p.type === 'moving' && p.movement) {
-                    if (p.movement.horizontal) {
-                        p.worldX += p.movement.speed;
-                        if ((p.movement.speed > 0 && p.worldX >= p.movement.endX) || (p.movement.speed < 0 && p.worldX <= p.movement.startX)) {
-                            p.movement.speed = -p.movement.speed;
-                        }
-                        
-                        // **FIX**: Move player with horizontally moving platform if they're standing on it
-                        if (currentPlatform === p) {
-                            const platformMovement = p.worldX - prevPlatformX;
-                            this.x += platformMovement;
-                        }
-                    } else if (p.movement.vertical) {
-                        p.y += p.movement.speed;
-                         if ((p.speed < 0 && p.y <= p.endY) || (p.speed > 0 && p.y >= p.endY)) {
-                            p.y = p.endY;
-                            [p.startY, p.endY] = [p.endY, p.startY]; 
-                            p.speed = -p.speed;
-                        }
-                    }
-                }
-                // **FIX**: Added logic for orbiting platforms
-                if (p.type === 'orbiting' && p.orbit) {
-                    p.orbit.currentAngle += p.orbit.speed;
-                    p.worldX = p.orbit.centerX + Math.cos(p.orbit.currentAngle) * p.orbit.radiusX;
-                    p.y = p.orbit.centerY + Math.sin(p.orbit.currentAngle) * p.orbit.radiusY;
-                }
-                
-                // Handle malfunctioning platform erratic movement
-                if (p.type === 'malfunctioning' && p.isActiveMalfunction) {
-                    if (!p.malfunctionStartTime) p.malfunctionStartTime = Date.now();
-                    
-                    const elapsed = Date.now() - p.malfunctionStartTime;
-                    const oscillation = Math.sin(elapsed * 0.01) * p.malfunctionSpeed; // Fast oscillation
-                    
-                    if (p.axis === 'horizontal') {
-                        p.worldX = (p.originalX || p.worldX) + oscillation;
-                        if (!p.originalX) p.originalX = p.worldX - oscillation;
-                        
-                        // Move player with platform if they're on it
-                        if (currentPlatform === p) {
-                            const platformMovement = p.worldX - prevPlatformX;
-                            this.x += platformMovement;
-                        }
-                    } else if (p.axis === 'vertical') {
-                        p.y = (p.originalY || p.y) + oscillation;
-                        if (!p.originalY) p.originalY = p.y - oscillation;
-                        
-                        // Move player with platform if they're on it  
-                        if (currentPlatform === p) {
-                            const platformMovement = p.y - prevPlatformY;
-                            this.y += platformMovement;
-                        }
-                    }
-                    
-                    // Stop malfunction after 3 seconds
-                    if (elapsed > 3000) {
-                        p.isActiveMalfunction = false;
-                        p.malfunctionStartTime = null;
-                        // Reset to original position
-                        if (p.originalX) {
-                            p.worldX = p.originalX;
-                            p.originalX = null;
-                        }
-                        if (p.originalY) {
-                            p.y = p.originalY;
-                            p.originalY = null;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Platform collision detection
-        const prevY = this.y;
-        this.y += this.vy;
-        this.grounded = false;
-        this.onPlatform = null;
-        
-        // Check platform collisions
-        for (const p of platforms) {
-            const screenX = p.worldX + worldX;
-            if (p.activated || p.type === 'ledge' || p.type === 'static' || p.type === 'malfunctioning' || p.type === 'alarm' || (p.type === 'disappearing' && p.visible)) {
-                if (this.x + this.width > screenX && this.x < screenX + p.width && 
-                    prevY + this.height <= p.y && this.y + this.height >= p.y) {
-                    this.y = p.y - this.height;
-                    this.vy = 0;
-                    this.grounded = true;
-                    this.onPlatform = p;
-                    
-                    // Trigger malfunctioning platform
-                    if (p.type === 'malfunctioning' && !p.isActiveMalfunction) {
-                        p.isActiveMalfunction = true;
-                    }
-                    
-                    // Trigger alarm platform (handled in game.js)
-                    if (p.type === 'alarm' && !p.alarmTriggered) {
-                        p.alarmTriggered = true;
-                        p.alarmTime = Date.now();
-                    }
-                }
-            }
-        }
-        
-        // Ground collision
-        let onGround = true;
-        const playerCenterX = this.x + this.width / 2 - worldX;
-        for (const pit of pits) {
-            if (playerCenterX > pit.worldX && playerCenterX < pit.worldX + pit.width) {
-                onGround = false;
-                break;
-            }
-        }
-        
-        if (onGround && this.y + this.height > groundY) {
-            this.y = groundY - this.height;
-            this.vy = 0;
-            this.grounded = true;
-        }
-        
-        // **FIX**: Set canJump based on valid surfaces (platform or proper ground level)
-        this.canJump = this.grounded && (this.onPlatform || this.y + this.height <= groundY + 5);
+        this.physics.update(groundY, platforms, pits, worldX);
     }
     
-    // Check if player should die from falling
+    /**
+     * Check if player should die from falling
+     */
     checkFallDeath() {
         return (this.y > this.canvas.height + 50 && !this.dead);
     }
     
-    // Handle player death
+    /**
+     * Handle player death
+     */
     die() {
         this.lives--;
         this.dead = true;
     }
     
-    // Respawn the player
+    /**
+     * Respawn the player
+     */
     respawn(groundY) {
         this.dead = false;
         this.isRespawning = false;
@@ -337,10 +111,7 @@ export class Player {
         this.vy = 0;
         
         // Clear medication effects on respawn
-        this.activeMedications.forEach(med => {
-            this.removeMedicationEffect(med.type);
-        });
-        this.activeMedications = [];
+        this.medication.clearAll();
     }
     
     // Handle screen boundaries and world scrolling
@@ -440,152 +211,44 @@ export class Player {
         return null;
     }
     
-    // Apply medication effect
-        applyMedication(medType) {
-            // Check for cooldown (tolerance)
-            const now = Date.now();
-            if (this.medicationCooldowns[medType]) {
-                const timeSinceLast = now - this.medicationCooldowns[medType];
-                if (timeSinceLast < 60000) { // 60 second cooldown
-                    // Reduced effect due to tolerance
-                    return { success: false, reason: 'tolerance' };
-                }
-            }
-            
-            // Check for dangerous interactions
-            const dangerous = this.checkDangerousInteraction(medType);
-            if (dangerous) {
-                this.lives--;
-                return { success: false, reason: 'interaction' };
-            }
-            
-            // Apply the medication effect
-            const medication = {
-                type: medType,
-                startTime: now,
-                duration: this.getMedicationDuration(medType)
-            };
-            
-            this.activeMedications.push(medication);
-            this.medicationCooldowns[medType] = now;
-            
-            // Apply immediate effects
-            switch(medType) {
-                case 'epinephrine':
-                    this.speedMultiplier = 2;
-                    this.jumpMultiplier = 1.5;
-                    break;
-                case 'benzodiazepine':
-                    this.bulletTime = true;
-                    break;
-                case 'morphine':
-                    this.invincible = true;
-                    break;
-                case 'insulin':
-                    this.sizeScale = 0.5;
-                    this.width = 25;
-                    this.height = 46;
-                    break;
-                case 'corticosteroid':
-                    this.canDoubleJump = true;
-                    this.canGlide = true;
-                    break;
-                case 'atropine':
-                    this.hiddenPlatformsVisible = true;
-                    break;
-            }
-            
-            return { success: true };
-        }
+    /**
+     * Apply medication effect
+     */
+    applyMedication(medType) {
+        return this.medication.applyMedication(medType);
+    }
 
-        // Check for dangerous drug interactions
-        checkDangerousInteraction(newMed) {
-            // Define dangerous combinations
-            const dangerousCombos = [
-                ['morphine', 'benzodiazepine'], // Respiratory depression
-                ['epinephrine', 'atropine'], // Cardiac stress
-            ];
-            
-            for (const combo of dangerousCombos) {
-                const hasFirst = this.activeMedications.some(m => m.type === combo[0]);
-                const hasSecond = this.activeMedications.some(m => m.type === combo[1]);
-                
-                if ((hasFirst && newMed === combo[1]) || (hasSecond && newMed === combo[0])) {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
-        // Get medication duration
-        getMedicationDuration(medType) {
-            const durations = {
-                'epinephrine': 10000,
-                'benzodiazepine': 8000,
-                'morphine': 6000,
-                'insulin': 15000,
-                'corticosteroid': 12000,
-                'atropine': 20000
-            };
-            return durations[medType] || 10000;
-        }
-
-        // Update medication effects
-        updateMedications() {
-            const now = Date.now();
-            
-            // Remove expired medications
-            for (let i = this.activeMedications.length - 1; i >= 0; i--) {
-                const med = this.activeMedications[i];
-                if (now - med.startTime > med.duration) {
-                    this.removeMedicationEffect(med.type);
-                    this.activeMedications.splice(i, 1);
-                }
-            }
-        }
-
-        // Remove medication effect
-        removeMedicationEffect(medType) {
-            switch(medType) {
-                case 'epinephrine':
-                    this.speedMultiplier = 1;
-                    this.jumpMultiplier = 1;
-                    break;
-                case 'benzodiazepine':
-                    this.bulletTime = false;
-                    break;
-                case 'morphine':
-                    this.invincible = false;
-                    break;
-                case 'insulin':
-                    this.sizeScale = 1;
-                    this.width = 50;
-                    this.height = 92;
-                    break;
-                case 'corticosteroid':
-                    this.canDoubleJump = false;
-                    this.canGlide = false;
-                    this.isGliding = false;
-                    break;
-                case 'atropine':
-                    this.hiddenPlatformsVisible = false;
-                    break;
-            }
-        }
-
-    // Handle shooting
-    startShooting() {
-        this.isShooting = true;
-        this.shootTimer = 15;
+    /**
+     * Update medication effects
+     */
+    updateMedications() {
+        this.medication.update();
     }
     
-    // Switch armor
+    /**
+     * Get active medications for UI display
+     */
+    get activeMedications() {
+        return this.medication.activeMedications;
+    }
+
+    /**
+     * Handle shooting
+     */
+    startShooting() {
+        this.animation.startShooting();
+    }
+    
+    /**
+     * Switch armor
+     */
     switchArmor() {
         this.currentArmorIndex = (this.currentArmorIndex + 1) % this.armors.length;
     }
     
-    // Get weapon spawn position for projectiles
+    /**
+     * Get weapon spawn position for projectiles
+     */
     getWeaponSpawnPos() {
         const weaponYOffset = this.crouching ? 20 : 0;
         return {
@@ -596,74 +259,40 @@ export class Player {
         };
     }
     
-    // Render the player
-    render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData) {
-        if (this.dead) return;
-        
-        if (spriteLoaded) {
-            const currentAnimation = spriteAnimations[this.state];
-            const sX = (currentAnimation.startFrame + this.currentFrame) * currentAnimation.width;
-            const sY = currentAnimation.y;
-            const sWidth = currentAnimation.width;
-            const sHeight = currentAnimation.height;
-            
-            ctx.save();
-            
-            let drawX = this.x;
-            if (this.facing === -1) {
-                ctx.scale(-1, 1);
-                drawX = -this.x - this.width;
-            }
-            
-            const yPos = this.crouching ? this.y + (this.height - (this.width * sHeight / sWidth)) : this.y;
-
-            ctx.drawImage(
-                playerSprite,
-                sX, sY,
-                sWidth, sHeight,
-                drawX, yPos,
-                this.width, this.height
-            );
-            
-            ctx.restore();
-        } else {
-            // Fallback rendering without sprite
-            ctx.fillStyle = armorData[this.armors[this.currentArmorIndex]].color;
-            const height = this.crouching ? this.height / 2 : this.height;
-            const yPos = this.crouching ? this.y + this.height / 2 : this.y;
-            ctx.fillRect(this.x, yPos, this.width, height);
-        }
+    /**
+     * Render the player
+     */
+    render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData, overrideX = null) {
+        this.animation.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData, overrideX);
     }
     
-    // Utility method to get current world X (for collision calculations)
-    // This will need to be passed in from game.js
-    getWorldX() {
-        return 0; // This will be overridden by game logic
-    }
-    
-    // Reset player to initial state
+    /**
+     * Reset player to initial state
+     */
     reset(groundY) {
+        // Reset position and movement
         this.x = 100;
         this.y = groundY - this.height;
         this.vx = 0;
         this.vy = 0;
+        
+        // Reset player state
         this.lives = 3;
         this.dead = false;
-        this.isRespawning = false; // Reset respawn flag
+        this.isRespawning = false;
         this.crouching = false;
         this.grounded = true;
         this.onPlatform = null;
-        this.state = 'idle';
-        this.currentFrame = 0;
-        this.animationTimer = 0;
-        this.isShooting = false;
-        this.shootTimer = 0;
         
-        // Clear all medication effects and state
-        this.activeMedications.forEach(med => {
-            this.removeMedicationEffect(med.type);
-        });
-        this.activeMedications = [];
-        this.medicationCooldowns = {};
+        // Reset abilities and effects
+        this.speedMultiplier = 1;
+        this.jumpMultiplier = 1;
+        this.sizeScale = 1;
+        this.width = 50;
+        this.height = 92;
+        
+        // Clear subsystem state
+        this.medication.clearAll();
+        this.animation.reset();
     }
 }
