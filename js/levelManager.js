@@ -5,11 +5,19 @@ class LevelManager {
     }
     
     // Clear all level-specific content arrays to prevent carryover between levels
-    clearLevelContent(platforms, npcs, enemies, chests) {
+    clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups) {
         if (platforms) platforms.length = 0;
         if (npcs) npcs.length = 0;
         if (enemies) enemies.length = 0;
         if (chests) chests.length = 0;
+        if (hazards) hazards.length = 0;
+        if (pits) pits.length = 0;
+        if (powerups) powerups.length = 0;
+        if (medications) medications.length = 0;
+        if (interactionZones) interactionZones.length = 0;
+        if (hiddenPlatforms) hiddenPlatforms.length = 0;
+        if (projectiles) projectiles.length = 0;
+        if (pickups) pickups.length = 0;
     }
     
     async loadLevel(levelId) {

@@ -170,6 +170,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                 
                 if (mouseX >= resumeX && mouseX <= resumeX + buttonWidth && mouseY >= resumeY && mouseY <= resumeY + buttonHeight) gameState = 'playing';
                 if (mouseX >= selectX && mouseX <= selectX + buttonWidth && mouseY >= selectY && mouseY <= selectY + buttonHeight) {
+                    // Clear all level content when returning to level select menu
+                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                    enemyManager.clear();
+                    boss = null;
+                    armorPickup = null;
                     gameState = 'menu';
                     selectedLevel = -1;
                 }
@@ -255,7 +260,6 @@ import { Enemy, EnemyManager } from './enemy.js';
             const groundY = canvas.height - 100;
             player.reset(groundY);
             worldX = 0;
-            projectiles.length = 0; pickups.length = 0; platforms.length = 0; npcs.length = 0; enemies.length = 0; pits.length = 0; chests.length = 0; powerups.length = 0;
             enemyManager.clear();
             currentWeapon = 1;
             screenLocked = false;
@@ -265,19 +269,10 @@ import { Enemy, EnemyManager } from './enemy.js';
             quiz.clearCurrentQuestion();
             canFire = true;
 
-            if (selectedLevel === 1) {
-                // Clear medication-specific arrays
-                medications.length = 0;
-                interactionZones.length = 0;
-                hiddenPlatforms.length = 0;
-            }
-
-            hazards.length = 0;
-
             if (selectedLevel !== -1) {
                 try {
                     // Clear any existing level content to prevent carryover
-                    levelManager.clearLevelContent(platforms, npcs, enemies, chests);
+                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     
                     await levelManager.loadLevel(selectedLevel);
                     const levelDef = levelManager.getLevelData();
@@ -327,10 +322,20 @@ import { Enemy, EnemyManager } from './enemy.js';
                 } catch (error) {
                     console.error("Could not load level:", error);
                     alert("Error: Could not load level data. Please ensure all files are present.");
+                    // Clear level content on error
+                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                    enemyManager.clear();
+                    boss = null;
+                    armorPickup = null;
                     gameState = 'menu';
                     return;
                 }
             } else {
+                // Clear level content when no level selected
+                levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                enemyManager.clear();
+                boss = null;
+                armorPickup = null;
                 gameState = 'menu';
                 return;
             }
@@ -407,6 +412,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                         if (h.deactivatedByNPC) h.activated = true; // Reactivate hazards
                     });
                 } else {
+                    // Clear level content on game over
+                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                    enemyManager.clear();
+                    boss = null;
+                    armorPickup = null;
                     gameState = 'menu'; // Game over
                 }
             }, 2000); // 2-second delay before respawn/game over
@@ -693,7 +703,14 @@ import { Enemy, EnemyManager } from './enemy.js';
                     boss.vx = -boss.vx;
                 }
                 if (player.checkBossCollision(boss)) {
-                    setTimeout(() => { gameState = 'menu'; }, 2000);
+                    setTimeout(() => { 
+                        // Clear level content when boss defeats player
+                        levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                        enemyManager.clear();
+                        boss = null;
+                        armorPickup = null;
+                        gameState = 'menu'; 
+                    }, 2000);
                 }
             }
 
@@ -821,6 +838,10 @@ import { Enemy, EnemyManager } from './enemy.js';
                     armorPickup = null;
                     setTimeout(() => {
                         alert('Level Complete! New Armor Acquired!');
+                        // Clear all level content when completing a level
+                        levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                        enemyManager.clear();
+                        boss = null;
                         gameState = 'menu';
                     }, 500);
                 }
