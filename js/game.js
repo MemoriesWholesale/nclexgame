@@ -263,11 +263,15 @@ import { Enemy, EnemyManager } from './enemy.js';
             enemyManager.clear();
             currentWeapon = 1;
             screenLocked = false;
-            gate = { worldX: testLevelEndX, width: 60, height: 150, hp: 5, maxHp: 5 };
             boss = null;
             armorPickup = null;
             quiz.clearCurrentQuestion();
             canFire = true;
+            
+            // Reset all timers to ensure fresh level start
+            pickupSpawnTimer = 0;
+            medicationSpawnTimer = 0;
+            fireTimer = 0;
 
             if (selectedLevel !== -1) {
                 try {
@@ -282,6 +286,15 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                     
                     testLevelEndX = levelDef.worldLength || 10800;
+                    
+                    // Set gate with correct level end position
+                    gate = { 
+                        worldX: testLevelEndX, 
+                        width: 60, 
+                        height: 150, 
+                        hp: 5, 
+                        maxHp: 5 
+                    };
                     player.x = levelDef.playerStart.x || 100;
                     const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
                     player.y = startY - player.height;
