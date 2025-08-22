@@ -1,5 +1,7 @@
 import { Enemy } from './enemy.js';
 
+const MIN_SPAWN_DISTANCE = 150;
+
 class LevelManager {
     constructor() {
         this.currentLevel = null;
@@ -344,8 +346,12 @@ class LevelManager {
                 wave.triggered = true;
 
                 wave.enemies.forEach(enemyDef => {
+                    let spawnX = enemyDef.x;
+                    if (Math.abs(spawnX - playerWorldX) < MIN_SPAWN_DISTANCE) {
+                        spawnX = playerWorldX + Math.sign(spawnX - playerWorldX || 1) * MIN_SPAWN_DISTANCE;
+                    }
                     const newEnemy = new Enemy(
-                        enemyDef.x,
+                        spawnX,
                         this.parsePosition(enemyDef.y, canvas)
                     );
                     newEnemy.hp = enemyDef.hp || 1;

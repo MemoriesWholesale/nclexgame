@@ -1,5 +1,7 @@
 // Enemy logic goes here
 
+const MIN_SPAWN_DISTANCE = 150;
+
 export class Enemy {
     constructor(worldX, y, width = 40, height = 40) {
         this.worldX = worldX;
@@ -153,11 +155,16 @@ export class EnemyManager {
     spawnEnemy(canvas, worldX, player, gate, boss, testLevelEndX) {
         const playerWorldX = player.x - worldX;
         if (gate === null || boss || playerWorldX > testLevelEndX - canvas.width) return;
-        
-        const spawnX = this.spawnFromRightNext ? 
-            -worldX + canvas.width + 50 : 
+
+        let spawnX = this.spawnFromRightNext ?
+            -worldX + canvas.width + 50 :
             -worldX - 50;
-            
+
+        const dx = spawnX - playerWorldX;
+        if (Math.abs(dx) < MIN_SPAWN_DISTANCE) {
+            spawnX = playerWorldX + Math.sign(dx || 1) * MIN_SPAWN_DISTANCE;
+        }
+
         const newEnemy = new Enemy(spawnX, canvas.height - 100);
         this.enemies.push(newEnemy);
     }
