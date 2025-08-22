@@ -365,11 +365,14 @@ export class Player {
     
     // Check collision with enemies
     checkEnemyCollision(enemy, screenX) {
-        if (!this.dead && this.x < screenX + enemy.width && 
-            this.x + this.width > screenX && 
-            this.y < enemy.y + enemy.height && 
-            this.y + this.height > enemy.y) {
-            
+        const enemyTop = enemy.y - enemy.height;
+        const enemyBottom = enemy.y;
+
+        if (!this.dead && this.x < screenX + enemy.width &&
+            this.x + this.width > screenX &&
+            this.y < enemyBottom &&
+            this.y + this.height > enemyTop) {
+
             this.lives--;
             this.dead = true;
             return true;

@@ -60,31 +60,33 @@ export class Enemy {
     // Check if projectile hits this enemy
     checkProjectileHit(proj, worldX) {
         const enemyScreenX = this.worldX + worldX;
+        const enemyTop = this.y - this.height;
+        const enemyBottom = this.y;
         let hit = false;
-        
-        if (proj.type === 3 || proj.type === 7) { 
+
+        if (proj.type === 3 || proj.type === 7) {
             // Rotating weapons (stethoscope, BP monitor)
             const numChecks = 10;
             for (let k = 0; k <= numChecks; k++) {
                 const t = k / numChecks;
                 const checkX = proj.centerX + Math.cos(proj.angle) * proj.radius * t;
                 const checkY = proj.centerY + Math.sin(proj.angle) * proj.radius * t;
-                if (checkX > enemyScreenX && checkX < enemyScreenX + this.width && 
-                    checkY > this.y && checkY < this.y + this.height) {
+                if (checkX > enemyScreenX && checkX < enemyScreenX + this.width &&
+                    checkY > enemyTop && checkY < enemyBottom) {
                     hit = true;
                     break;
                 }
             }
         } else {
             // Regular projectiles
-            if (!proj.landed && proj.x < enemyScreenX + this.width && 
-                proj.x + (proj.width || proj.size || 20) > enemyScreenX && 
-                proj.y < this.y + this.height && 
-                proj.y + (proj.height || proj.size || 10) > this.y) {
+            if (!proj.landed && proj.x < enemyScreenX + this.width &&
+                proj.x + (proj.width || proj.size || 20) > enemyScreenX &&
+                proj.y < enemyBottom &&
+                proj.y + (proj.height || proj.size || 10) > enemyTop) {
                 hit = true;
             }
         }
-        
+
         return hit;
     }
     
