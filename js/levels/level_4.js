@@ -183,13 +183,13 @@ const level = {
     
     // Hazards
     hazards: [
-        /*{ type: 'pit', x: 1100, width: 200 },
+        { type: 'pit', x: 1100, width: 200 },
         { type: 'pit', x: 2200, width: 600 },
         { type: 'pit', x: 3600, width: 600 },
         { type: 'pit', x: 5000, width: 500 },
         { type: 'pit', x: 6300, width: 700 },
         { type: 'pit', x: 8000, width: 500 },
-        { type: 'pit', x: 9500, width: 500 },*/
+        { type: 'pit', x: 9500, width: 500 },
         
         // Thought bubbles (harmful if touched)
         { id: 'intrusive_thought_1', type: 'thought_bubble', x: 2000, y: 'ground-400', 

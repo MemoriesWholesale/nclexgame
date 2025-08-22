@@ -6,7 +6,7 @@ import { Enemy, EnemyManager } from './enemy.js';
         const levelManager = new LevelManager();
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
+
         const playerSprite = new Image();
         playerSprite.src = 'assets/nurse_sprites.png';
         let spriteLoaded = false;
@@ -20,10 +20,10 @@ import { Enemy, EnemyManager } from './enemy.js';
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
-        
+
         let gameState = 'menu';
         let selectedLevel = -1;
-        
+
         const levelData = [
             { name: "Coordinated Care", color: '#87CEEB', file: 'data/coordinated_care.json' },
             { name: "Pharm. Therapies", color: '#98FB98', file: 'data/pharma_therapies.json' },
@@ -34,7 +34,7 @@ import { Enemy, EnemyManager } from './enemy.js';
             { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
             { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' }
         ];
-        
+
         // NEW: Precise animation map based on the 372x345 sprite sheet
         const spriteAnimations = {
             walk:       { y: 0,   frames: 4, width: 62, height: 115, startFrame: 0 },
@@ -47,13 +47,13 @@ import { Enemy, EnemyManager } from './enemy.js';
             crouchShoot:{ y: 230, frames: 2, width: 62, height: 115, startFrame: 1 },
             idle:       { y: 0,   frames: 1, width: 62, height: 115, startFrame: 0 }
         };
-        
+
         // Create player instance
         const player = new Player(canvas);
-        
+
         // Create quiz instance
         const quiz = new Quiz();
-        
+
         // Create enemy manager
         const enemyManager = new EnemyManager();
 
@@ -68,20 +68,19 @@ import { Enemy, EnemyManager } from './enemy.js';
             { name: "Adapt. Armor", color: '#FFC0CB' },
             { name: "Health Promo Armor", color: '#A52A2A' }
         ];
-        
+
         let worldX = 0;
         let groundY = 0;
         let testLevelEndX = 10800;
-        
+
         let gate = null;
         let boss = null;
         let screenLocked = false;
         let armorPickup = null;
-        
+
         const projectiles = [];
         const platforms = [];
         const npcs = [];
-        const enemies = [];
         const pickups = [];
         let pickupSpawnTimer = 0;
         const pits = [];
@@ -93,16 +92,16 @@ import { Enemy, EnemyManager } from './enemy.js';
         let medicationSpawnTimer = 0;
 
         const hazards = [];
-        
+
         let currentWeapon = 1;
         const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
         const weaponColors = ['#ffffff', '#00bfff', '#32cd32', '#ffa500', '#ff69b4', '#9370db', '#20b2aa', '#ff4500'];
         let fireTimer = 0;
         const fireCooldowns = [10, 5, 20, 25, 30, 40, 25, 45];
-        
+
         const keys = {};
         let canFire = true;
-        
+
         document.addEventListener('keydown', (e) => {
             keys[e.key] = true;
             if (e.key === 'Enter' && gameState === 'playing') gameState = 'paused';
@@ -111,11 +110,11 @@ import { Enemy, EnemyManager } from './enemy.js';
             if ((e.key === 'q' || e.key === 'Q') && gameState === 'playing' && !player.dead) {
                 player.switchArmor();
             }
-            
+
             if ((e.key === 'e' || e.key === 'E') && gameState === 'playing' && !player.dead) {
                 handleInteraction();
             }
-            
+
             if (e.key === ' ' && canFire) {
                 if (gameState === 'playing' && !player.dead) {
                     fireWeapon();
@@ -124,32 +123,32 @@ import { Enemy, EnemyManager } from './enemy.js';
                 canFire = false;
             }
         });
-        
+
         document.addEventListener('keyup', (e) => {
             keys[e.key] = false;
             if (e.key === ' ') {
                 canFire = true;
             }
         });
-        
+
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
-            
+
             if (gameState === 'menu') {
                 const buttonsPerRow = 4;
                 const buttonWidth = 150;
                 const buttonHeight = 80;
                 const startX = (canvas.width - (buttonsPerRow * buttonWidth + (buttonsPerRow - 1) * 20)) / 2;
                 const startY = canvas.height * 0.3;
-                
+
                 for (let i = 0; i < levelData.length; i++) {
                     const row = Math.floor(i / buttonsPerRow);
                     const col = i % buttonsPerRow;
                     const btnX = startX + col * (buttonWidth + 20);
                     const btnY = startY + row * (buttonHeight + 20);
-                    
+
                     if (mouseX >= btnX && mouseX <= btnX + buttonWidth && mouseY >= btnY && mouseY <= btnY + buttonHeight) {
                         selectedLevel = i;
                         startGame();
@@ -167,11 +166,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                 const resumeY = panelY + 60;
                 const selectX = resumeX;
                 const selectY = resumeY + buttonHeight + 20;
-                
+
                 if (mouseX >= resumeX && mouseX <= resumeX + buttonWidth && mouseY >= resumeY && mouseY <= resumeY + buttonHeight) gameState = 'playing';
                 if (mouseX >= selectX && mouseX <= selectX + buttonWidth && mouseY >= selectY && mouseY <= selectY + buttonHeight) {
                     // Clear all level content when returning to level select menu
-                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                    levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     enemyManager.clear();
                     boss = null;
                     armorPickup = null;
@@ -189,12 +188,12 @@ import { Enemy, EnemyManager } from './enemy.js';
                                 targetPlatform.activated = true;
                             }
                         });
-                        
+
                         // Handle chest opening
                         const targetChest = chests.find(c => c.id === currentQuestion.interactionId);
                         if (targetChest) {
                             targetChest.state = 'open';
-                            
+
                             // Create appropriate reward based on chest contents
                             if (targetChest.contains === 'medication') {
                                 // Spawn medication
@@ -224,7 +223,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                                 });
                             }
                         }
-                        
+
                         // Handle NPC medication rewards
                         const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.originalInteractionId);
                         if (interactingNpc && interactingNpc.givesItem) {
@@ -238,12 +237,12 @@ import { Enemy, EnemyManager } from './enemy.js';
                             });
                             interactingNpc.isLeaving = true;
                         }
-                        
+
                     } else {
                         const interactingNpc = npcs.find(n => n.interactionId === currentQuestion.originalInteractionId);
                         if(interactingNpc) interactingNpc.isLeaving = true;
                     }
-                    
+
                     quiz.clearCurrentQuestion();
                     gameState = 'playing';
                 } else {
@@ -267,7 +266,7 @@ import { Enemy, EnemyManager } from './enemy.js';
             armorPickup = null;
             quiz.clearCurrentQuestion();
             canFire = true;
-            
+
             // Reset all timers to ensure fresh level start
             pickupSpawnTimer = 0;
             medicationSpawnTimer = 0;
@@ -276,48 +275,48 @@ import { Enemy, EnemyManager } from './enemy.js';
             if (selectedLevel !== -1) {
                 try {
                     // Clear any existing level content to prevent carryover
-                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
-                    
+                    levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+
                     await levelManager.loadLevel(selectedLevel);
                     const levelDef = levelManager.getLevelData();
-                    
+
                     if (!levelDef) {
                         throw new Error("Failed to load level definition");
                     }
-                    
+
                     testLevelEndX = levelDef.worldLength || 10800;
-                    
+
                     // Set gate with correct level end position
-                    gate = { 
-                        worldX: testLevelEndX, 
-                        width: 60, 
-                        height: 150, 
-                        hp: 5, 
-                        maxHp: 5 
+                    gate = {
+                        worldX: testLevelEndX,
+                        width: 60,
+                        height: 150,
+                        hp: 5,
+                        maxHp: 5
                     };
                     player.x = levelDef.playerStart.x || 100;
                     const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
                     player.y = startY - player.height;
-                    
-                    gate = { 
-                        worldX: testLevelEndX, 
-                        width: 60, 
-                        height: 150, 
-                        hp: 5, 
-                        maxHp: 5 
+
+                    gate = {
+                        worldX: testLevelEndX,
+                        width: 60,
+                        height: 150,
+                        hp: 5,
+                        maxHp: 5
                     };
-                    
+
                     if (levelDef.hazards) {
                         levelDef.hazards.forEach(hazard => {
                             if (hazard.type === 'pit') {
-                                pits.push({ 
-                                    worldX: hazard.x, 
-                                    width: hazard.width 
+                                pits.push({
+                                    worldX: hazard.x,
+                                    width: hazard.width
                                 });
                             }
                         });
                     }
-                    
+
                     // Load special zones for level 1 after level data is available
                     if (selectedLevel === 1) {
                         if (levelDef.interactionZones) {
@@ -327,16 +326,16 @@ import { Enemy, EnemyManager } from './enemy.js';
                             hiddenPlatforms.push(...levelDef.hiddenPlatforms);
                         }
                     }
-                    
+
                     const response = await fetch(levelDef.questionFile || levelData[selectedLevel].file);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     await quiz.loadQuestions(levelDef.questionFile || levelData[selectedLevel].file);
-                    
+
                 } catch (error) {
                     console.error("Could not load level:", error);
                     alert("Error: Could not load level data. Please ensure all files are present.");
                     // Clear level content on error
-                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                    levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     enemyManager.clear();
                     boss = null;
                     armorPickup = null;
@@ -345,7 +344,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             } else {
                 // Clear level content when no level selected
-                levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                 enemyManager.clear();
                 boss = null;
                 armorPickup = null;
@@ -375,7 +374,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             }
         }
-        
+
         function spawnPickup() {
             const playerWorldX = player.x - worldX;
             if (gate === null || boss || playerWorldX > testLevelEndX - canvas.width) return;
@@ -385,7 +384,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 weaponId: 2 + Math.floor(Math.random() * 7)
             });
         }
-        
+
         function fireWeapon() {
             if (fireTimer > 0) return;
             if (currentWeapon === 3 || currentWeapon === 7) {
@@ -394,10 +393,10 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             }
             fireTimer = fireCooldowns[currentWeapon - 1];
-            
+
             const weaponPos = player.getWeaponSpawnPos();
             const weaponYOffset = player.crouching ? 20 : 0;
-            
+
             switch(currentWeapon) {
                 case 2: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 3 + weaponYOffset, vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 }); break;
                 case 3: projectiles.push({ centerX: weaponPos.centerX, centerY: weaponPos.centerY + weaponYOffset, radius: 120, angle: 0, rotSpeed: 0.2, type: 3 }); break;
@@ -409,7 +408,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 case 1: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -20), y: player.y + player.height / 2 - 5 + weaponYOffset, vx: player.facing * 8, vy: -8, width: 20, height: 10, type: 1 }); break;
             }
         }
-        
+
         // [NEW] Central function to handle player death and respawn
         function handlePlayerDeath() {
             if (player.isRespawning) return; // Prevent this from running multiple times
@@ -426,7 +425,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     });
                 } else {
                     // Clear level content on game over
-                    levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                    levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     enemyManager.clear();
                     boss = null;
                     armorPickup = null;
@@ -437,23 +436,23 @@ import { Enemy, EnemyManager } from './enemy.js';
 
         function update() {
             if (gameState !== 'playing') return;
-            
+
             groundY = canvas.height - 100;
 
             if (levelManager.currentLevel) {
-                levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests, hazards);
+                levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, chests, hazards, enemyManager);
                 function applyPsychZoneEffects() {
                     if (!levelManager.currentLevel || !levelManager.currentLevel.psychZones) return;
-                    
+
                     const playerWorldX = player.x - worldX;
-                    
+
                     // Reset effects first
                     player.invertedControls = false;
                     player.hasTwin = false;
                     player.gravityFlipped = false;
                     player.tunnelVision = 0;
                     player.speedMultiplier = 1;
-                    
+
                     // Apply active zone effects
                     for (const zone of levelManager.currentLevel.psychZones) {
                         if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
@@ -487,7 +486,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     applyPsychZoneEffects();
                 }
             };
-            
+
             if (fireTimer > 0) fireTimer--;
             pickupSpawnTimer++;
 
@@ -501,10 +500,10 @@ import { Enemy, EnemyManager } from './enemy.js';
             for (let i = medications.length - 1; i >= 0; i--) {
                 const med = medications[i];
                 const screenX = med.worldX + worldX;
-                
+
                 if (player.x < screenX + med.width && player.x + player.width > screenX &&
                     player.y < med.y + med.height && player.y + player.height > med.y) {
-                    
+
                     const result = player.applyMedication(med.type);
                     if (result.success) {
                         medications.splice(i, 1);
@@ -526,7 +525,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     const screenX = zone.worldX + worldX;
                     if (player.x < screenX + zone.width && player.x + player.width > screenX &&
                         player.y < zone.y + zone.height && player.y + zone.height > zone.y) {
-                        
+
                         if (player.activeMedications.length >= 2) {
                             player.lives--;
                             player.invincible = true; // Brief immunity
@@ -560,25 +559,25 @@ import { Enemy, EnemyManager } from './enemy.js';
                         const cycleTime = haz.timing.onTime + haz.timing.offTime;
                         const timeInCycle = (now - (haz.timing.offset || 0)) % cycleTime;
                         haz.isOn = timeInCycle < haz.timing.onTime;
-                        
+
                         if (haz.isOn && !player.dead && player.x < screenX + haz.width && player.x + player.width > screenX && player.y + player.height > haz.y - haz.height) {
                            if(!player.invincible) player.die();
                         }
                         break;
-                    
+
                     case 'spill_slick':
                         if (player.grounded && player.x + player.width > screenX && player.x < screenX + haz.width && player.y + player.height > haz.y) {
                             onSpill = true;
                         }
                         break;
-                    
+
                     case 'falling_object':
                         // Handle falling object timing and spawning
                         if (!haz.instances) haz.instances = [];
-                        
+
                         const fallNow = Date.now();
                         const timeSinceStart = (fallNow - (haz.timing.offset || 0)) % haz.timing.interval;
-                        
+
                         // Spawn new falling object at interval
                         if (timeSinceStart < 50 && !haz.lastSpawned) { // 50ms window to prevent double spawning
                             haz.instances.push({
@@ -593,16 +592,16 @@ import { Enemy, EnemyManager } from './enemy.js';
                         } else if (timeSinceStart > 100) {
                             haz.lastSpawned = false;
                         }
-                        
+
                         // Update existing falling objects
                         for (let i = haz.instances.length - 1; i >= 0; i--) {
                             const obj = haz.instances[i];
                             if (!obj.active) continue;
-                            
+
                             // Apply gravity
                             obj.vy += 0.6;
                             obj.y += obj.vy;
-                            
+
                             // Check collision with player
                             const objScreenX = obj.x + worldX;
                             if (objScreenX + obj.width > player.x && objScreenX < player.x + player.width &&
@@ -611,28 +610,28 @@ import { Enemy, EnemyManager } from './enemy.js';
                                     player.die();
                                 }
                             }
-                            
+
                             // Remove if off screen
                             if (obj.y > canvas.height + 100) {
                                 haz.instances.splice(i, 1);
                             }
                         }
                         break;
-                    
+
                     case 'rushing_hazard':
                         // Handle rushing hazard horizontal movement
                         if (!haz.currentX) haz.currentX = haz.worldX;
                         if (!haz.direction) haz.direction = haz.speed > 0 ? 1 : -1;
-                        
+
                         // Move horizontally
                         haz.currentX += haz.speed;
-                        
+
                         // Reverse direction at boundaries (assuming 200px movement range)
                         if (Math.abs(haz.currentX - haz.worldX) > 200) {
                             haz.speed = -haz.speed;
                             haz.direction = -haz.direction;
                         }
-                        
+
                         // Check collision with player and apply push
                         const rushScreenX = haz.currentX + worldX;
                         if (rushScreenX + haz.width > player.x && rushScreenX < player.x + player.width &&
@@ -645,7 +644,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                             }
                         }
                         break;
-                    
+
                     // Add cases for other hazards like 'sparking_hazard' here later
                 }
             });
@@ -674,7 +673,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                             speed: 2
                         });
                         platform.enemiesSpawned = true;
-                        
+
                         // Reset after 5 seconds to allow retriggering
                         setTimeout(() => {
                             platform.alarmTriggered = false;
@@ -684,18 +683,18 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                 }
             });
-            
+
             enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
 
-            if (pickupSpawnTimer > 450) { 
-                spawnPickup(); 
-                pickupSpawnTimer = 0; 
+            if (pickupSpawnTimer > 450) {
+                spawnPickup();
+                pickupSpawnTimer = 0;
             }
-            
+
             player.handleInput(keys, onSpill);
             player.updateState(spriteAnimations);
             player.updatePhysics(groundY, platforms, pits, worldX);
-            
+
             if (player.checkFallDeath()) {
                 player.die();
             }
@@ -704,25 +703,25 @@ import { Enemy, EnemyManager } from './enemy.js';
             if (player.dead) {
                 handlePlayerDeath();
             }
-            
+
             const deltaX = player.updateScreenPosition(worldX, screenLocked, testLevelEndX, gate);
             if (deltaX !== 0) {
                 worldX -= deltaX;
             }
-            
+
             if (boss) {
                 boss.x += boss.vx;
                 if (boss.x <= 100 || boss.x >= canvas.width - 100 - boss.width) {
                     boss.vx = -boss.vx;
                 }
                 if (player.checkBossCollision(boss)) {
-                    setTimeout(() => { 
+                    setTimeout(() => {
                         // Clear level content when boss defeats player
-                        levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                        levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                         enemyManager.clear();
                         boss = null;
                         armorPickup = null;
-                        gameState = 'menu'; 
+                        gameState = 'menu';
                     }, 2000);
                 }
             }
@@ -739,7 +738,7 @@ import { Enemy, EnemyManager } from './enemy.js';
 
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 const proj = projectiles[i];
-                
+
                 switch(proj.type) {
                     case 3: proj.centerX = player.x + player.width/2; proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); proj.angle += proj.rotSpeed; if (proj.angle > Math.PI * 2) { projectiles.splice(i, 1); continue; } break;
                     case 7: proj.centerX = player.x + player.width/2; proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); proj.angle += proj.rotSpeed * proj.direction; if ((proj.direction === 1 && proj.angle >= Math.PI * 2)) { proj.direction = -1; } else if (proj.direction === -1 && proj.angle <= 0) { projectiles.splice(i, 1); continue; } break;
@@ -754,12 +753,12 @@ import { Enemy, EnemyManager } from './enemy.js';
                 // **FIX**: Corrected Boss Gate and Boss Spawn Logic
                 if (gate && gate.hp > 0 && !proj.landed) {
                     const gateScreenX = gate.worldX + worldX;
-                    
+
                     // Gate can only be damaged if it's on screen
                     if (gateScreenX < canvas.width) {
                         const gateY = groundY - gate.height;
                         let hitGate = false;
-                        if (proj.type === 3 || proj.type === 7) { 
+                        if (proj.type === 3 || proj.type === 7) {
                             const numChecks = 10;
                             for (let k = 0; k <= numChecks; k++) {
                                 const t = k / numChecks;
@@ -778,7 +777,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                             if (gate.hp <= 0) {
                                 gate = null; // Gate is destroyed
                                 screenLocked = true; // Lock the screen for the boss fight
-                                
+
                                 // Spawn the boss *only* now
                                 boss = {
                                     x: canvas.width - 200, y: groundY - 120,
@@ -792,7 +791,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                         }
                     }
                 }
-                
+
                 if (boss && boss.hp > 0 && !proj.landed) {
                     let hitBoss = false;
                     if (proj.type === 3 || proj.type === 7) {
@@ -826,7 +825,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
 
                 const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
-                
+
                 for (const result of hitResults) {
                     if (result.projectileType !== 3 && result.projectileType !== 7) {
                         projectiles.splice(result.projectileIndex, 1);
@@ -845,14 +844,14 @@ import { Enemy, EnemyManager } from './enemy.js';
                     pickups.splice(i, 1);
                 }
             }
-            
+
             if (armorPickup) {
                 if (player.checkArmorPickupCollision(armorPickup)) {
                     armorPickup = null;
                     setTimeout(() => {
                         alert('Level Complete! New Armor Acquired!');
                         // Clear all level content when completing a level
-                        levelManager.clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+                        levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                         enemyManager.clear();
                         boss = null;
                         gameState = 'menu';
@@ -864,12 +863,12 @@ import { Enemy, EnemyManager } from './enemy.js';
                 const powerup = powerups[i];
                 powerup.vy += 0.4;
                 powerup.y += powerup.vy;
-                
+
                 if (powerup.y > groundY - 20) {
                     powerup.y = groundY - 20;
                     powerup.vy = 0;
                 }
-                
+
                 const screenX = powerup.worldX + worldX;
                 const powerupType = player.checkPowerupCollision(powerup, screenX);
                 if (powerupType) {
@@ -877,31 +876,31 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
             }
         }
-        
+
         function draw() {
             ctx.fillStyle = selectedLevel >= 0 ? levelData[selectedLevel].color : '#333';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             if (gameState === 'menu') {
                 ctx.fillStyle = '#fff'; ctx.font = '48px Arial'; ctx.textAlign = 'center';
                 ctx.fillText('Select a Level', canvas.width / 2, 100);
-                
+
                 const buttonsPerRow = 4;
                 const buttonWidth = 150;
                 const buttonHeight = 80;
                 const startX = (canvas.width - (buttonsPerRow * buttonWidth + (buttonsPerRow - 1) * 20)) / 2;
                 const startY = canvas.height * 0.3;
-                
+
                 for (let i = 0; i < levelData.length; i++) {
                     const level = levelData[i];
                     const row = Math.floor(i / buttonsPerRow);
                     const col = i % buttonsPerRow;
                     const x = startX + col * (buttonWidth + 20);
                     const y = startY + row * (buttonHeight + 20);
-                    
+
                     ctx.fillStyle = level.color; ctx.fillRect(x, y, buttonWidth, buttonHeight);
                     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(x, y, buttonWidth, buttonHeight);
-                    
+
                     ctx.fillStyle = '#000'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
                     const words = level.name.split(' ');
                     if (words.length > 1) {
@@ -927,7 +926,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 if(currentDrawX < canvas.width) {
                     ctx.fillRect(currentDrawX, groundY, canvas.width - currentDrawX, canvas.height - groundY);
                 }
-                
+
                 ctx.strokeStyle = '#8B4513';
                 ctx.lineWidth = 2;
                 for (let x = (worldX % 40); x < canvas.width; x += 40) {
@@ -951,7 +950,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     const screenX = p.worldX + worldX;
                     if (screenX > -p.width && screenX < canvas.width) {
                         ctx.globalAlpha = !p.activated ? 0.3 : 1.0;
-                        
+
                         // Different colors for different platform types
                         switch(p.type) {
                             case 'malfunctioning':
@@ -973,9 +972,9 @@ import { Enemy, EnemyManager } from './enemy.js';
                                 ctx.fillStyle = '#808080'; // Default gray
                                 break;
                         }
-                        
+
                         ctx.fillRect(screenX, p.y, p.width, p.height);
-                        
+
                         // Add visual indicators
                         if (p.type === 'malfunctioning') {
                             ctx.fillStyle = '#FFFFFF';
@@ -984,11 +983,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                             ctx.fillText('!', screenX + p.width/2, p.y - 5);
                         } else if (p.type === 'alarm') {
                             ctx.fillStyle = '#000000';
-                            ctx.font = '12px Arial'; 
+                            ctx.font = '12px Arial';
                             ctx.textAlign = 'center';
                             ctx.fillText('⚠', screenX + p.width/2, p.y - 5);
                         }
-                        
+
                         ctx.globalAlpha = 1.0;
                     }
                 }
@@ -1026,7 +1025,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                             ctx.ellipse(screenX + haz.width / 2, haz.y, haz.width / 2, 8, 0, 0, Math.PI * 2);
                             ctx.fill();
                             break;
-                        
+
                         case 'falling_object':
                             // Draw falling object instances
                             if (haz.instances) {
@@ -1043,14 +1042,14 @@ import { Enemy, EnemyManager } from './enemy.js';
                                 });
                             }
                             break;
-                        
+
                         case 'rushing_hazard':
                             // Draw rushing hazard with movement animation
                             const rushScreenX = (haz.currentX || haz.worldX) + worldX;
                             if (rushScreenX > -haz.width && rushScreenX < canvas.width) {
                                 ctx.fillStyle = '#FF6B6B'; // Red for danger
                                 ctx.fillRect(rushScreenX, haz.y, haz.width, haz.height);
-                                
+
                                 // Add motion lines to show movement
                                 ctx.strokeStyle = '#FF4444';
                                 ctx.lineWidth = 2;
@@ -1082,7 +1081,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                         'corticosteroid': '#E6E6FA',
                         'atropine': '#FF4500'
                     };
-                    
+
                     ctx.fillStyle = colors[med.type] || '#FFF';
                     ctx.beginPath();
                     ctx.arc(screenX + 15, med.y + 15, 15, 0, Math.PI * 2);
@@ -1090,7 +1089,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     ctx.strokeStyle = '#000';
                     ctx.lineWidth = 2;
                     ctx.stroke();
-                    
+
                     // Draw medication initial
                     ctx.fillStyle = '#000';
                     ctx.font = 'bold 16px Arial';
@@ -1120,7 +1119,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 ctx.font = '14px Arial';
                 ctx.textAlign = 'left';
                 ctx.fillText('Active Medications:', 20, 140);
-                
+
                 player.activeMedications.forEach((med, index) => {
                     const timeLeft = Math.ceil((med.duration - (Date.now() - med.startTime)) / 1000);
                     ctx.fillText(`${med.type}: ${timeLeft}s`, 20, 160 + index * 20);
@@ -1140,7 +1139,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 ctx.fillStyle = 'rgba(0, 0, 255, 0.1)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
-                
+
                 for (const npc of npcs) {
                     const screenX = npc.worldX + worldX;
                     if (screenX > -npc.width && screenX < canvas.width) {
@@ -1158,8 +1157,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                 for (const chest of chests) {
                     const screenX = chest.worldX + worldX;
                     if (screenX > -chest.width && screenX < canvas.width) {
-                        if (chest.state === 'closed') { ctx.fillStyle = '#8B4513'; } 
-                        else if (chest.state === 'open') { ctx.fillStyle = '#D2B48C'; } 
+                        if (chest.state === 'closed') { ctx.fillStyle = '#8B4513'; }
+                        else if (chest.state === 'open') { ctx.fillStyle = '#D2B48C'; }
                         else { ctx.fillStyle = '#555555'; }
                         ctx.beginPath();
                         ctx.arc(screenX + chest.width / 2, chest.y, chest.width / 2, Math.PI, 0);
@@ -1183,7 +1182,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                         }
                     }
                 }
-                
+
                 if (gate && gate.hp > 0) {
                     const gateScreenX = gate.worldX + worldX;
                     const gateY = groundY - gate.height;
@@ -1193,13 +1192,13 @@ import { Enemy, EnemyManager } from './enemy.js';
                     ctx.fillStyle = `rgb(${red}, ${gray}, ${gray})`;
                     ctx.fillRect(gateScreenX, gateY, gate.width, gate.height);
                 }
-                
+
                 if (armorPickup) {
                     const armorDef = armorData[armorPickup.armorId];
                     ctx.fillStyle = armorDef.color; ctx.fillRect(armorPickup.x, armorPickup.y, armorPickup.width, armorPickup.height);
                     ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.strokeRect(armorPickup.x, armorPickup.y, armorPickup.width, armorPickup.height);
                 }
-                
+
                 if (boss) {
                     ctx.fillStyle = '#4B0082'; ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
                     const barWidth = 300, barHeight = 20, barX = (canvas.width - barWidth) / 2, barY = 50;
@@ -1217,7 +1216,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                         ctx.fillText(pickup.weaponId.toString(), screenX + 15, pickup.y + 20);
                     }
                 }
-                
+
                 enemyManager.render(ctx, worldX);
 
                 for (const proj of projectiles) {
@@ -1232,9 +1231,9 @@ import { Enemy, EnemyManager } from './enemy.js';
                         case 1: ctx.fillStyle = '#FFD700'; ctx.beginPath(); ctx.ellipse(proj.x + proj.width/2, proj.y + proj.height/2, proj.width/2, proj.height/2, 0, 0, Math.PI * 2); ctx.fill(); break;
                     }
                 }
-                
+
                 player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData);
-                
+
                 if (selectedLevel === 4) {
                     drawPsychZoneEffects();
                 }
@@ -1252,7 +1251,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 ctx.fillText(`Armor: ${currentArmorName}`, 20, 35);
                 ctx.fillText(`Weapon: ${weaponNames[currentWeapon - 1]}`, 20, 60);
                 ctx.fillText(`Lives: ${player.lives}`, 20, 85);
-                
+
                 if (player.dead) {
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
                     ctx.fillRect(0, canvas.height / 2 - 50, canvas.width, 100);
@@ -1266,13 +1265,13 @@ import { Enemy, EnemyManager } from './enemy.js';
 
                 function drawPsychZoneEffects() {
                     const playerWorldX = player.x - worldX;
-                    
+
                     // Tunnel vision effect (anxiety)
                     if (player.tunnelVision > 0) {
                         const gradient = ctx.createRadialGradient(
-                            player.x + player.width/2, player.y + player.height/2, 
-                            100, 
-                            player.x + player.width/2, player.y + player.height/2, 
+                            player.x + player.width/2, player.y + player.height/2,
+                            100,
+                            player.x + player.width/2, player.y + player.height/2,
                             canvas.width
                         );
                         gradient.addColorStop(0, 'rgba(0,0,0,0)');
@@ -1280,13 +1279,13 @@ import { Enemy, EnemyManager } from './enemy.js';
                         ctx.fillStyle = gradient;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                     }
-                    
+
                     // Depression fog
                     if (player.depressionFog > 0) {
                         ctx.fillStyle = `rgba(50, 50, 70, ${player.depressionFog})`;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                     }
-                    
+
                     // Draw mirror twin
                     if (player.hasTwin) {
                         ctx.save();
@@ -1295,7 +1294,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                         player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData, player.twinX);
                         ctx.restore();
                     }
-                    
+
                     // Upside down effect
                     if (player.gravityFlipped) {
                         ctx.save();
@@ -1336,29 +1335,29 @@ import { Enemy, EnemyManager } from './enemy.js';
         // Debugging function to draw spatial axes
         function drawSpatialAxes() {
             if (gameState !== 'playing') return;
-            
+
             const axisColor = 'rgba(255, 255, 255, 0.8)';
             const tickColor = 'rgba(255, 255, 255, 0.6)';
             const textColor = 'rgba(255, 255, 255, 0.9)';
-            
+
             ctx.save();
             ctx.strokeStyle = axisColor;
             ctx.fillStyle = textColor;
             ctx.font = '12px monospace';
             ctx.lineWidth = 1;
-            
+
             // X-axis (horizontal) - shows world coordinates
             const xAxisY = canvas.height - 40; // 40 pixels from bottom
             ctx.beginPath();
             ctx.moveTo(0, xAxisY);
             ctx.lineTo(canvas.width, xAxisY);
             ctx.stroke();
-            
+
             // X-axis tick marks and labels
             const playerWorldX = player.x - worldX; // Current player world position
             const tickInterval = 200; // Every 200 world units
             const startWorldX = Math.floor((-worldX - 100) / tickInterval) * tickInterval;
-            
+
             for (let worldX_pos = startWorldX; worldX_pos <= -worldX + canvas.width + 100; worldX_pos += tickInterval) {
                 const screenX = worldX_pos + worldX;
                 if (screenX >= 0 && screenX <= canvas.width) {
@@ -1368,14 +1367,14 @@ import { Enemy, EnemyManager } from './enemy.js';
                     ctx.moveTo(screenX, xAxisY - 5);
                     ctx.lineTo(screenX, xAxisY + 5);
                     ctx.stroke();
-                    
+
                     // Draw label
                     ctx.fillStyle = textColor;
                     ctx.textAlign = 'center';
                     ctx.fillText(worldX_pos.toString(), screenX, xAxisY + 18);
                 }
             }
-            
+
             // Y-axis (vertical) - shows pixel coordinates from ground
             const yAxisX = 30; // 30 pixels from left
             ctx.strokeStyle = axisColor;
@@ -1383,25 +1382,25 @@ import { Enemy, EnemyManager } from './enemy.js';
             ctx.moveTo(yAxisX, 50); // Start 50px from top
             ctx.lineTo(yAxisX, groundY + 10); // End 10px below ground
             ctx.stroke();
-            
+
             // Y-axis tick marks and labels (every 100 pixels)
             const yTickInterval = 100;
             for (let y = groundY; y >= 50; y -= yTickInterval) {
                 const groundOffset = groundY - y; // Distance above ground level
-                
+
                 // Draw tick mark
                 ctx.strokeStyle = tickColor;
                 ctx.beginPath();
                 ctx.moveTo(yAxisX - 5, y);
                 ctx.lineTo(yAxisX + 5, y);
                 ctx.stroke();
-                
+
                 // Draw label (showing distance above ground)
                 ctx.fillStyle = textColor;
                 ctx.textAlign = 'right';
                 ctx.fillText(groundOffset.toString(), yAxisX - 8, y + 4);
             }
-            
+
             // Draw axis labels
             ctx.fillStyle = textColor;
             ctx.font = '14px monospace';
@@ -1413,14 +1412,14 @@ import { Enemy, EnemyManager } from './enemy.js';
             ctx.textAlign = 'center';
             ctx.fillText('Y (Height)', 0, 0);
             ctx.restore();
-            
+
             // Show current player position
             ctx.fillStyle = 'rgba(255, 255, 0, 0.9)';
             ctx.font = '12px monospace';
             ctx.textAlign = 'left';
             const playerY = groundY - player.y - player.height;
             ctx.fillText(`Player: (${Math.round(playerWorldX)}, ${Math.round(playerY)})`, canvas.width - 200, 20);
-            
+
             ctx.restore();
         }
 
@@ -1430,11 +1429,10 @@ import { Enemy, EnemyManager } from './enemy.js';
             drawSpatialAxes(); // Add debugging axes overlay
             requestAnimationFrame(gameLoop);
         }
-        
+
         gameLoop();
 export function initGame() {
     // TODO: Import/init player, enemies, UI, etc.
     // TODO: Set up canvas, start game loop
     console.log('Game initialized');
   }
-

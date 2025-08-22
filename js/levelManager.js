@@ -1,14 +1,15 @@
+import { Enemy } from './enemy.js';
+
 class LevelManager {
     constructor() {
         this.currentLevel = null;
         this.levelDefinitions = {};
     }
-    
+
     // Clear all level-specific content arrays to prevent carryover between levels
-    clearLevelContent(platforms, npcs, enemies, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups) {
+    clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups) {
         if (platforms) platforms.length = 0;
         if (npcs) npcs.length = 0;
-        if (enemies) enemies.length = 0;
         if (chests) chests.length = 0;
         if (hazards) hazards.length = 0;
         if (pits) pits.length = 0;
@@ -19,17 +20,17 @@ class LevelManager {
         if (projectiles) projectiles.length = 0;
         if (pickups) pickups.length = 0;
     }
-    
+
     async loadLevel(levelId) {
         console.log('Attempting to load level:', levelId);
-        
+
         try {
             let module;
-            
+
             // Try different import paths to see which works
             const levelPath = `./levels/level_${levelId}.js`;
             console.log('Import path:', levelPath);
-            
+
             switch(levelId) {
                 case 0:
                     // Try the import
@@ -38,7 +39,7 @@ class LevelManager {
                         console.log('Successfully imported level_0.js:', module);
                     } catch (e) {
                         console.error('Failed to import level_0.js:', e);
-                        
+
                         // Try alternative path
                         try {
                             module = await import('../js/levels/level_0.js');
@@ -49,7 +50,7 @@ class LevelManager {
                         }
                     }
                     break;
-                    
+
                     case 1:
                         try {
                             module = await import('./levels/level_1.js');
@@ -58,7 +59,7 @@ class LevelManager {
                             console.error('Failed to import level_1.js:', e);
                             throw e;
                         }
-                        break;                
+                        break;
                     case 2:
                         try {
                             module = await import('./levels/level_2.js');
@@ -91,19 +92,19 @@ class LevelManager {
                         items: []
                     };
                     return this.currentLevel;
-                    
+
                 default:
                     throw new Error('Invalid level ID: ' + levelId);
             }
-            
+
             if (module && module.default) {
-                this.currentLevel = module.default;
+                this.currentLevel = JSON.parse(JSON.stringify(module.default));
                 console.log('Level loaded successfully:', this.currentLevel);
                 return this.currentLevel;
             } else {
                 throw new Error('Module loaded but no default export found');
             }
-            
+
         } catch (error) {
             console.error('Error loading level:', error);
             console.error('Error details:', {
@@ -111,18 +112,18 @@ class LevelManager {
                 currentLocation: window.location.href,
                 error: error.message
             });
-            
+
             // Return null instead of throwing
             return null;
         }
     }
-    
+
     // Helper to parse relative positions
     parsePosition(pos, canvas) {
         const groundY = canvas.height - 100;
-        
+
         if (typeof pos === 'number') return pos;
-        
+
         // Parse "ground-120" format (ground minus 120 pixels up)
         if (typeof pos === 'string' && pos.startsWith('ground')) {
             const match = pos.match(/ground-(\d+)/);
@@ -132,32 +133,32 @@ class LevelManager {
             }
             return groundY;
         }
-        
+
         // Parse "center" format
         if (pos === 'center-x') return canvas.width / 2;
         if (pos === 'center-y') return canvas.height / 2;
-        
-        // Parse percentage format "50%" 
+
+        // Parse percentage format "50%"
         if (typeof pos === 'string' && pos.endsWith('%')) {
             const percent = parseInt(pos) / 100;
             return canvas.height * percent;
         }
-        
+
         return pos;
     }
-    
-    spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests, hazards) {
+
+    spawnLevelContent(worldX, canvas, platforms, npcs, chests, hazards, enemyManager) {
         if (!this.currentLevel) return;
-        
+
         const level = this.currentLevel;
         const visibleLeft = -worldX - 200;
         const visibleRight = -worldX + canvas.width + 200;
-        
+
         // Spawn platforms
         level.platforms?.forEach(plat => {
             // Check if already spawned
             if (platforms.some(p => p.id === plat.id)) return;
-            
+
             // Check if in visible range
             if (plat.x > visibleLeft && plat.x < visibleRight) {
                 const newPlatform = {
@@ -171,7 +172,7 @@ class LevelManager {
                     newPlatform.startY = this.parsePosition(plat.startY, canvas);
                     newPlatform.endY = this.parsePosition(plat.endY, canvas);
                 }
-                
+
                 // **FIX**: Initialize orbiting platforms
                 if (plat.type === 'orbiting' && plat.orbit) {
                     newPlatform.orbit.centerY = this.parsePosition(plat.orbit.centerY, canvas);
@@ -181,12 +182,12 @@ class LevelManager {
                 platforms.push(newPlatform);
             }
         });
-        
+
         // Spawn NPCs
         level.npcs?.forEach(npc => {
             // Check if already spawned
             if (npcs.some(n => n.id === npc.id)) return;
-            
+
             // Check if in visible range
             if (npc.x > visibleLeft && npc.x < visibleRight) {
                 npcs.push({
@@ -200,21 +201,21 @@ class LevelManager {
                 });
             }
         });
-        
+
         // Spawn chests
         level.items?.forEach(item => {
             if (item.type !== 'chest') return;
-            
+
             // Create consistent chest ID
             const chestId = `chest_${item.x}`;
-            
+
             // Check if already spawned using proper ID
             if (chests.some(c => c.id === chestId)) return;
-            
+
             // Check if in visible range
             if (item.x > visibleLeft && item.x < visibleRight) {
                 let yPos = this.parsePosition(item.y, canvas);
-                
+
                 // Handle relative positioning to platforms
                 if (typeof item.y === 'string' && item.y.includes('-top')) {
                     const platId = item.y.replace('-top', '');
@@ -223,7 +224,7 @@ class LevelManager {
                         yPos = platform.y;
                     }
                 }
-                
+
                 chests.push({
                     worldX: item.x,
                     y: yPos,
@@ -242,7 +243,7 @@ class LevelManager {
         level.hazards?.forEach(haz => {
             // Check if already spawned
             if (hazards.some(h => h.id === haz.id)) return;
-            
+
             // Check if in visible range
             if (haz.x > visibleLeft && haz.x < visibleRight) {
                 const newHazard = {
@@ -253,51 +254,46 @@ class LevelManager {
                 hazards.push(newHazard);
             }
         });
-        
+
         // Spawn enemy waves when triggered
         level.enemyWaves?.forEach(wave => {
             // Check if already triggered
             if (wave.triggered) return;
-            
+
             // Check if player has reached trigger point
             const playerWorldX = -worldX + canvas.width / 2;
             if (playerWorldX >= wave.triggerX) {
                 wave.triggered = true;
-                
+
                 wave.enemies.forEach(enemyDef => {
-                    enemies.push({
-                        worldX: enemyDef.x,
-                        y: this.parsePosition(enemyDef.y, canvas),
-                        vy: 0,
-                        width: enemyDef.width || 40,
-                        height: enemyDef.height || 40,
-                        vx: 0,
-                        hp: enemyDef.hp || 1,
-                        type: enemyDef.type || 'basic',
-                        falling: false
-                    });
+                    const newEnemy = new Enemy(
+                        enemyDef.x,
+                        this.parsePosition(enemyDef.y, canvas)
+                    );
+                    newEnemy.hp = enemyDef.hp || 1;
+                    enemyManager.enemies.push(newEnemy);
                 });
             }
         });
     }
-    
+
     // Get level-specific data
     getLevelData() {
         return this.currentLevel || null;
     }
-    
+
     // Check if boss should spawn
     shouldSpawnBoss(worldX, canvas) {
         if (!this.currentLevel || !this.currentLevel.boss) return false;
-        
+
         const playerWorldX = -worldX + canvas.width / 2;
         return playerWorldX >= this.currentLevel.boss.triggerX;
     }
-    
+
     // Get boss configuration
     getBossConfig(canvas) {
         if (!this.currentLevel || !this.currentLevel.boss) return null;
-        
+
         const boss = this.currentLevel.boss;
         return {
             x: canvas.width - 200,
