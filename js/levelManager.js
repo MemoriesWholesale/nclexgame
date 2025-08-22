@@ -1,6 +1,5 @@
 import { Enemy } from './enemy.js';
-
-const MIN_SPAWN_DISTANCE = 150;
+import { MIN_SPAWN_DISTANCE, LEVEL_DATA } from './constants.js';
 
 class LevelManager {
     constructor() {
@@ -8,16 +7,7 @@ class LevelManager {
         this.levelDefinitions = {};
         
         // Level metadata for fallback cases
-        this.levelData = [
-            { name: "Coordinated Care", color: '#87CEEB', file: 'data/coordinated_care.json' },
-            { name: "Pharm. Therapies", color: '#98FB98', file: 'data/pharma_therapies.json' },
-            { name: "Safety/Infection", color: '#FFD700', file: 'data/safety_infection_control.json' },
-            { name: "Risk Reduction", color: '#FFB6C1', file: 'data/reduction_of_risk_potential.json' },
-            { name: "Psychosocial Int.", color: '#ADD8E6', file: 'data/psychosocial_integrity.json' },
-            { name: "Basic Care", color: '#FFA07A', file: 'data/basic_care_and_comfort.json' },
-            { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
-            { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' }
-        ];
+        this.levelData = LEVEL_DATA;
     }
 
     // Clear all level-specific content arrays to prevent carryover between levels

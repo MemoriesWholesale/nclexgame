@@ -1,6 +1,6 @@
 // Enemy logic goes here
 
-const MIN_SPAWN_DISTANCE = 150;
+import { MIN_SPAWN_DISTANCE } from './constants.js';
 
 export class Enemy {
     constructor(worldX, y, width = 40, height = 40) {
