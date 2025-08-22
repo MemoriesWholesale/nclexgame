@@ -94,17 +94,17 @@ export class Enemy {
         
         // Body
         ctx.fillStyle = '#8B008B';
-        ctx.fillRect(screenX, this.y, this.width, this.height);
+        ctx.fillRect(screenX, this.y - this.height, this.width, this.height);
         
         // Eyes (white)
         ctx.fillStyle = '#fff';
-        ctx.fillRect(screenX + 8, this.y + 10, 8, 8);
-        ctx.fillRect(screenX + 24, this.y + 10, 8, 8);
+        ctx.fillRect(screenX + 8, this.y - this.height + 10, 8, 8);
+        ctx.fillRect(screenX + 24, this.y - this.height + 10, 8, 8);
         
         // Pupils (black)
         ctx.fillStyle = '#000';
-        ctx.fillRect(screenX + 10, this.y + 12, 4, 4);
-        ctx.fillRect(screenX + 26, this.y + 12, 4, 4);
+        ctx.fillRect(screenX + 10, this.y - this.height + 12, 4, 4);
+        ctx.fillRect(screenX + 26, this.y - this.height + 12, 4, 4);
     }
 }
 
@@ -156,7 +156,7 @@ export class EnemyManager {
             -worldX + canvas.width + 50 : 
             -worldX - 50;
             
-        const newEnemy = new Enemy(spawnX, canvas.height - 140);
+        const newEnemy = new Enemy(spawnX, canvas.height - 100);
         this.enemies.push(newEnemy);
     }
     
