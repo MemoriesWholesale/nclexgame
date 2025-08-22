@@ -2,8 +2,16 @@ import { Player } from './player.js';
 import LevelManager from './levelManager.js';
 import { Quiz } from './quiz.js';
 import { Enemy, EnemyManager } from './enemy.js';
+import {
+    MIN_SPAWN_DISTANCE,
+    LEVEL_DATA,
+    SPRITE_ANIMATIONS,
+    ARMOR_DATA,
+    WEAPON_NAMES,
+    WEAPON_COLORS,
+    FIRE_COOLDOWNS
+} from './constants.js';
 
-        const MIN_SPAWN_DISTANCE = 150;
         const levelManager = new LevelManager();
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -25,30 +33,6 @@ import { Enemy, EnemyManager } from './enemy.js';
         let gameState = 'menu';
         let selectedLevel = -1;
 
-        const levelData = [
-            { name: "Coordinated Care", color: '#87CEEB', file: 'data/coordinated_care.json' },
-            { name: "Pharm. Therapies", color: '#98FB98', file: 'data/pharma_therapies.json' },
-            { name: "Safety/Infection", color: '#FFD700', file: 'data/safety_infection_control.json' },
-            { name: "Risk Reduction", color: '#FFB6C1', file: 'data/reduction_of_risk_potential.json' },
-            { name: "Psychosocial Int.", color: '#ADD8E6', file: 'data/psychosocial_integrity.json' },
-            { name: "Basic Care", color: '#FFA07A', file: 'data/basic_care_and_comfort.json' },
-            { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
-            { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' }
-        ];
-
-        // NEW: Precise animation map based on the 372x345 sprite sheet
-        const spriteAnimations = {
-            walk:       { y: 0,   frames: 4, width: 62, height: 115, startFrame: 0 },
-            walkShoot:  { y: 0,   frames: 1, width: 62, height: 115, startFrame: 4 },
-            idleShoot:  { y: 0,   frames: 1, width: 62, height: 115, startFrame: 5 },
-            jumpUp:     { y: 115, frames: 1, width: 62, height: 115, startFrame: 0 },
-            jumpDown:   { y: 115, frames: 1, width: 62, height: 115, startFrame: 1 },
-            jumpShoot:  { y: 115, frames: 1, width: 62, height: 115, startFrame: 2 },
-            crouch:     { y: 230, frames: 1, width: 62, height: 115, startFrame: 0 },
-            crouchShoot:{ y: 230, frames: 2, width: 62, height: 115, startFrame: 1 },
-            idle:       { y: 0,   frames: 1, width: 62, height: 115, startFrame: 0 }
-        };
-
         // Create player instance
         const player = new Player(canvas);
 
@@ -57,18 +41,6 @@ import { Enemy, EnemyManager } from './enemy.js';
 
         // Create enemy manager
         const enemyManager = new EnemyManager();
-
-        const armorData = [
-            { name: 'Default', color: '#FF0000' },
-            { name: "Coord. Care Armor", color: '#0000FF' },
-            { name: "Pharm. Armor", color: '#FFFF00' },
-            { name: "Safety Armor", color: '#00FF00' },
-            { name: "Risk Armor", color: '#FFA500' },
-            { name: "Psych. Armor", color: '#800080' },
-            { name: "Basic Care Armor", color: '#00FFFF' },
-            { name: "Adapt. Armor", color: '#FFC0CB' },
-            { name: "Health Promo Armor", color: '#A52A2A' }
-        ];
 
         let worldX = 0;
         let groundY = 0;
@@ -95,10 +67,7 @@ import { Enemy, EnemyManager } from './enemy.js';
         const hazards = [];
 
         let currentWeapon = 1;
-        const weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
-        const weaponColors = ['#ffffff', '#00bfff', '#32cd32', '#ffa500', '#ff69b4', '#9370db', '#20b2aa', '#ff4500'];
         let fireTimer = 0;
-        const fireCooldowns = [10, 5, 20, 25, 30, 40, 25, 45];
 
         const keys = {};
         let canFire = true;
@@ -144,7 +113,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 const startX = (canvas.width - (buttonsPerRow * buttonWidth + (buttonsPerRow - 1) * 20)) / 2;
                 const startY = canvas.height * 0.3;
 
-                for (let i = 0; i < levelData.length; i++) {
+                for (let i = 0; i < LEVEL_DATA.length; i++) {
                     const row = Math.floor(i / buttonsPerRow);
                     const col = i % buttonsPerRow;
                     const btnX = startX + col * (buttonWidth + 20);
@@ -328,9 +297,9 @@ import { Enemy, EnemyManager } from './enemy.js';
                         }
                     }
 
-                    const response = await fetch(levelDef.questionFile || levelData[selectedLevel].file);
+                    const response = await fetch(levelDef.questionFile || LEVEL_DATA[selectedLevel].file);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    await quiz.loadQuestions(levelDef.questionFile || levelData[selectedLevel].file);
+                    await quiz.loadQuestions(levelDef.questionFile || LEVEL_DATA[selectedLevel].file);
 
                 } catch (error) {
                     console.error("Could not load level:", error);
@@ -393,7 +362,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     if (proj.type === currentWeapon) return;
                 }
             }
-            fireTimer = fireCooldowns[currentWeapon - 1];
+            fireTimer = FIRE_COOLDOWNS[currentWeapon - 1];
 
             const weaponPos = player.getWeaponSpawnPos();
             const weaponYOffset = player.crouching ? 20 : 0;
@@ -938,7 +907,7 @@ import { Enemy, EnemyManager } from './enemy.js';
             }
 
             player.handleInput(keys, onSpill);
-            player.updateState(spriteAnimations);
+            player.updateState(SPRITE_ANIMATIONS);
             player.updatePhysics(groundY, platforms, pits, worldX);
 
             if (player.checkFallDeath()) {
@@ -1123,7 +1092,7 @@ import { Enemy, EnemyManager } from './enemy.js';
         }
 
         function draw() {
-            ctx.fillStyle = selectedLevel >= 0 ? levelData[selectedLevel].color : '#333';
+            ctx.fillStyle = selectedLevel >= 0 ? LEVEL_DATA[selectedLevel].color : '#333';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (gameState === 'menu') {
@@ -1136,8 +1105,8 @@ import { Enemy, EnemyManager } from './enemy.js';
                 const startX = (canvas.width - (buttonsPerRow * buttonWidth + (buttonsPerRow - 1) * 20)) / 2;
                 const startY = canvas.height * 0.3;
 
-                for (let i = 0; i < levelData.length; i++) {
-                    const level = levelData[i];
+                for (let i = 0; i < LEVEL_DATA.length; i++) {
+                    const level = LEVEL_DATA[i];
                     const row = Math.floor(i / buttonsPerRow);
                     const col = i % buttonsPerRow;
                     const x = startX + col * (buttonWidth + 20);
@@ -1585,7 +1554,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 }
 
                 if (armorPickup) {
-                    const armorDef = armorData[armorPickup.armorId];
+                    const armorDef = ARMOR_DATA[armorPickup.armorId];
                     ctx.fillStyle = armorDef.color; ctx.fillRect(armorPickup.x, armorPickup.y, armorPickup.width, armorPickup.height);
                     ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.strokeRect(armorPickup.x, armorPickup.y, armorPickup.width, armorPickup.height);
                 }
@@ -1601,7 +1570,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                 for (const pickup of pickups) {
                     const screenX = pickup.worldX + worldX;
                     if (screenX > -30 && screenX < canvas.width + 30) {
-                        ctx.fillStyle = weaponColors[pickup.weaponId - 1]; ctx.fillRect(screenX, pickup.y, 30, 30);
+                        ctx.fillStyle = WEAPON_COLORS[pickup.weaponId - 1]; ctx.fillRect(screenX, pickup.y, 30, 30);
                         ctx.strokeStyle = '#000'; ctx.strokeRect(screenX, pickup.y, 30, 30);
                         ctx.fillStyle = '#000'; ctx.font = '16px Arial'; ctx.textAlign = 'center';
                         ctx.fillText(pickup.weaponId.toString(), screenX + 15, pickup.y + 20);
@@ -1623,7 +1592,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                     }
                 }
 
-                player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData);
+                player.render(ctx, playerSprite, spriteLoaded, SPRITE_ANIMATIONS, ARMOR_DATA);
 
                 if (selectedLevel === 4) {
                     drawPsychZoneEffects();
@@ -1723,9 +1692,9 @@ import { Enemy, EnemyManager } from './enemy.js';
                 ctx.fillRect(10, 10, 220, 105);
                 ctx.fillStyle = '#fff'; ctx.font = '18px Arial'; ctx.textAlign = 'left';
                 const currentArmorId = player.armors[player.currentArmorIndex];
-                const currentArmorName = armorData[currentArmorId].name;
+                const currentArmorName = ARMOR_DATA[currentArmorId].name;
                 ctx.fillText(`Armor: ${currentArmorName}`, 20, 35);
-                ctx.fillText(`Weapon: ${weaponNames[currentWeapon - 1]}`, 20, 60);
+                ctx.fillText(`Weapon: ${WEAPON_NAMES[currentWeapon - 1]}`, 20, 60);
                 ctx.fillText(`Lives: ${player.lives}`, 20, 85);
 
                 if (player.dead) {
@@ -1769,7 +1738,7 @@ import { Enemy, EnemyManager } from './enemy.js';
                         ctx.save();
                         ctx.globalAlpha = 0.5;
                         // Draw semi-transparent twin at mirrored position
-                        player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData, player.twinX);
+                        player.render(ctx, playerSprite, spriteLoaded, SPRITE_ANIMATIONS, ARMOR_DATA, player.twinX);
                         ctx.restore();
                     }
 

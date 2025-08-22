@@ -1,3 +1,5 @@
+import { WEAPON_NAMES, WEAPON_COLORS, FIRE_COOLDOWNS } from '../constants.js';
+
 /**
  * GameState - Manages game state transitions and current game mode
  */
@@ -33,9 +35,9 @@ export class GameState {
         
         // Weapon system
         this.currentWeapon = 1;
-        this.weaponNames = ['Pill', 'Syringe', 'Stethoscope', 'Bandage', 'Shears', 'Hammer', 'BP Monitor', 'Bottle'];
-        this.weaponColors = ['#ffffff', '#00bfff', '#32cd32', '#ffa500', '#ff69b4', '#9370db', '#20b2aa', '#ff4500'];
-        this.fireCooldowns = [10, 5, 20, 25, 30, 40, 25, 45];
+        this.weaponNames = WEAPON_NAMES;
+        this.weaponColors = WEAPON_COLORS;
+        this.fireCooldowns = FIRE_COOLDOWNS;
         
         // Level settings
         this.testLevelEndX = 10800;
