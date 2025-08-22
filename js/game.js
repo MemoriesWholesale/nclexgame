@@ -823,14 +823,13 @@ import { Enemy, EnemyManager } from './enemy.js';
                         }
                     }
                 }
+            }
 
-                const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
-
-                for (const result of hitResults) {
-                    if (result.projectileType !== 3 && result.projectileType !== 7) {
-                        projectiles.splice(result.projectileIndex, 1);
-                        break;
-                    }
+            const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
+            hitResults.sort((a, b) => b.projectileIndex - a.projectileIndex);
+            for (const result of hitResults) {
+                if (result.projectileType !== 3 && result.projectileType !== 7) {
+                    projectiles.splice(result.projectileIndex, 1);
                 }
             }
 
