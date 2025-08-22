@@ -255,6 +255,9 @@ import { Enemy, EnemyManager } from './enemy.js';
         });
 
         async function startGame() {
+            // **FIX**: Clear all level content arrays right at the start.
+            levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+
             gameState = 'playing';
             const groundY = canvas.height - 100;
             player.reset(groundY);
@@ -274,9 +277,6 @@ import { Enemy, EnemyManager } from './enemy.js';
 
             if (selectedLevel !== -1) {
                 try {
-                    // Clear any existing level content to prevent carryover
-                    levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
-
                     await levelManager.loadLevel(selectedLevel);
                     const levelDef = levelManager.getLevelData();
 
