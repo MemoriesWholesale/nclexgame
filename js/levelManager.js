@@ -4,10 +4,27 @@ class LevelManager {
     constructor() {
         this.currentLevel = null;
         this.levelDefinitions = {};
+        
+        // Level metadata for fallback cases
+        this.levelData = [
+            { name: "Coordinated Care", color: '#87CEEB', file: 'data/coordinated_care.json' },
+            { name: "Pharm. Therapies", color: '#98FB98', file: 'data/pharma_therapies.json' },
+            { name: "Safety/Infection", color: '#FFD700', file: 'data/safety_infection_control.json' },
+            { name: "Risk Reduction", color: '#FFB6C1', file: 'data/reduction_of_risk_potential.json' },
+            { name: "Psychosocial Int.", color: '#ADD8E6', file: 'data/psychosocial_integrity.json' },
+            { name: "Basic Care", color: '#FFA07A', file: 'data/basic_care_and_comfort.json' },
+            { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
+            { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' }
+        ];
     }
 
     // Clear all level-specific content arrays to prevent carryover between levels
     clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups) {
+        // Reset dynamic states before clearing arrays to ensure clean state
+        if (platforms && platforms.length > 0) this.resetPlatformStates(platforms);
+        if (hazards && hazards.length > 0) this.resetHazardStates(hazards);
+        
+        // Clear all content arrays
         if (platforms) platforms.length = 0;
         if (npcs) npcs.length = 0;
         if (chests) chests.length = 0;
@@ -19,6 +36,63 @@ class LevelManager {
         if (hiddenPlatforms) hiddenPlatforms.length = 0;
         if (projectiles) projectiles.length = 0;
         if (pickups) pickups.length = 0;
+        
+        // Reset the current level to prevent any references to old level data
+        this.currentLevel = null;
+    }
+
+    // Reset enemy wave trigger states to ensure they can spawn again in fresh level loads
+    resetEnemyWaveStates() {
+        if (!this.currentLevel || !this.currentLevel.enemyWaves) return;
+        
+        this.currentLevel.enemyWaves.forEach(wave => {
+            wave.triggered = false;
+        });
+    }
+
+    // Reset all dynamic platform states that can accumulate during gameplay
+    resetPlatformStates(platforms) {
+        platforms.forEach(platform => {
+            // Reset alarm platform states
+            if (platform.type === 'alarm') {
+                platform.alarmTriggered = false;
+                platform.alarmTime = null;
+                platform.enemiesSpawned = false;
+            }
+            
+            // Reset malfunctioning platform states
+            if (platform.type === 'malfunctioning') {
+                platform.isActiveMalfunction = false;
+                platform.lastMalfunctionTime = 0;
+            }
+            
+            // Reset any orbiting platform positions
+            if (platform.type === 'orbiting' && platform.orbit) {
+                platform.orbit.currentAngle = platform.orbit.startAngle || 0;
+            }
+        });
+    }
+
+    // Reset all dynamic hazard states that can accumulate during gameplay
+    resetHazardStates(hazards) {
+        hazards.forEach(hazard => {
+            // Reset falling object hazard instances
+            if (hazard.type === 'falling_object') {
+                hazard.instances = [];
+                hazard.lastSpawned = false;
+            }
+            
+            // Reset rushing hazard position and direction
+            if (hazard.type === 'rushing_hazard') {
+                hazard.currentX = hazard.worldX;
+                hazard.direction = hazard.speed > 0 ? 1 : -1;
+            }
+            
+            // Reset any timing states
+            if (hazard.timing) {
+                delete hazard.lastTriggerTime;
+            }
+        });
     }
 
     async loadLevel(levelId) {
@@ -83,14 +157,16 @@ class LevelManager {
                         id: levelId,
                         name: `Level ${levelId}`,
                         color: '#87CEEB',
-                        questionFile: levelData[levelId].file,
+                        questionFile: this.levelData[levelId].file,
                         worldLength: 10800,
                         playerStart: { x: 100, y: 'ground-0' },
                         platforms: [],
                         npcs: [],
                         hazards: [],
-                        items: []
+                        items: [],
+                        enemyWaves: []
                     };
+                    this.resetEnemyWaveStates();
                     return this.currentLevel;
 
                 default:
@@ -99,6 +175,8 @@ class LevelManager {
 
             if (module && module.default) {
                 this.currentLevel = JSON.parse(JSON.stringify(module.default));
+                // Reset all enemy wave triggers to ensure fresh level state
+                this.resetEnemyWaveStates();
                 console.log('Level loaded successfully:', this.currentLevel);
                 return this.currentLevel;
             } else {
