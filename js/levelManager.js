@@ -205,8 +205,11 @@ class LevelManager {
         level.items?.forEach(item => {
             if (item.type !== 'chest') return;
             
-            // Check if already spawned
-            if (chests.some(c => c.worldX === item.x)) return;
+            // Create consistent chest ID
+            const chestId = `chest_${item.x}`;
+            
+            // Check if already spawned using proper ID
+            if (chests.some(c => c.id === chestId)) return;
             
             // Check if in visible range
             if (item.x > visibleLeft && item.x < visibleRight) {
@@ -226,7 +229,7 @@ class LevelManager {
                     y: yPos,
                     width: 50,
                     height: 25,
-                    id: `chest_${item.x}`,
+                    id: chestId,
                     state: 'closed',
                     contains: item.contains,
                     subtype: item.subtype, // For medications
