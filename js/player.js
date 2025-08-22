@@ -61,6 +61,19 @@ export class Player {
             this.crouching = false;
             return;
         }
+
+            // Handle inverted controls
+            let leftKey = keys['ArrowLeft'] || keys['a'] || keys['A'];
+            let rightKey = keys['ArrowRight'] || keys['d'] || keys['D'];
+            let upKey = keys['ArrowUp'] || keys['w'] || keys['W'];
+            let downKey = keys['ArrowDown'] || keys['s'] || keys['S'];
+            
+            if (this.invertedControls) {
+                // Swap left/right
+                [leftKey, rightKey] = [rightKey, leftKey];
+                // Swap up/down
+                [upKey, downKey] = [downKey, upKey];
+            }
         
         // Apply speed multiplier from medications
         const currentSpeed = this.baseSpeed * this.speedMultiplier;

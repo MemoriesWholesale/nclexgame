@@ -63,6 +63,8 @@ class LevelManager {
                             module = await import('./levels/level_3.js');
                             break;
                 case 4:
+                            module = await import('./levels/level_4.js');
+                            break;
                 case 5:
                 case 6:
                 case 7:

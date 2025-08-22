@@ -419,6 +419,50 @@ import { Enemy, EnemyManager } from './enemy.js';
 
             if (levelManager.currentLevel) {
                 levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, enemies, chests, hazards);
+                function applyPsychZoneEffects() {
+                    if (!levelManager.currentLevel || !levelManager.currentLevel.psychZones) return;
+                    
+                    const playerWorldX = player.x - worldX;
+                    
+                    // Reset effects first
+                    player.invertedControls = false;
+                    player.hasTwin = false;
+                    player.gravityFlipped = false;
+                    player.tunnelVision = 0;
+                    player.speedMultiplier = 1;
+                    
+                    // Apply active zone effects
+                    for (const zone of levelManager.currentLevel.psychZones) {
+                        if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                            switch(zone.effect) {
+                                case 'tunnel_vision':
+                                    player.tunnelVision = zone.intensity;
+                                    break;
+                                case 'inverted_controls':
+                                    player.invertedControls = true;
+                                    break;
+                                case 'mirror_twin':
+                                    player.hasTwin = true;
+                                    player.twinX = canvas.width - player.x; // Mirror position
+                                    break;
+                                case 'upside_down':
+                                    player.gravityFlipped = true;
+                                    break;
+                                case 'speed_up':
+                                    player.speedMultiplier = zone.intensity;
+                                    break;
+                                case 'darkness_slowness':
+                                    player.speedMultiplier = 0.5;
+                                    player.depressionFog = zone.intensity;
+                                    break;
+                            }
+                            break; // Only apply one zone at a time
+                        }
+                    }
+                }
+                if (selectedLevel === 4 && levelManager.currentLevel.psychZones) {
+                    applyPsychZoneEffects();
+                }
             };
             
             if (fireTimer > 0) fireTimer--;
@@ -1157,6 +1201,10 @@ import { Enemy, EnemyManager } from './enemy.js';
                 
                 player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData);
                 
+                if (selectedLevel === 4) {
+                    drawPsychZoneEffects();
+                }
+
                 if (player.dead) {
                     ctx.fillStyle = `rgba(255, 0, 0, ${Math.sin(Date.now() * 0.01) * 0.5 + 0.5})`;
                     ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -1179,6 +1227,50 @@ import { Enemy, EnemyManager } from './enemy.js';
                         ctx.fillText('YOU DIED! Respawning...', canvas.width / 2, canvas.height / 2);
                     } else {
                         ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+                    }
+                }
+
+                function drawPsychZoneEffects() {
+                    const playerWorldX = player.x - worldX;
+                    
+                    // Tunnel vision effect (anxiety)
+                    if (player.tunnelVision > 0) {
+                        const gradient = ctx.createRadialGradient(
+                            player.x + player.width/2, player.y + player.height/2, 
+                            100, 
+                            player.x + player.width/2, player.y + player.height/2, 
+                            canvas.width
+                        );
+                        gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                        gradient.addColorStop(1, `rgba(0,0,0,${player.tunnelVision})`);
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+                    
+                    // Depression fog
+                    if (player.depressionFog > 0) {
+                        ctx.fillStyle = `rgba(50, 50, 70, ${player.depressionFog})`;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+                    
+                    // Draw mirror twin
+                    if (player.hasTwin) {
+                        ctx.save();
+                        ctx.globalAlpha = 0.5;
+                        // Draw semi-transparent twin at mirrored position
+                        player.render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData, player.twinX);
+                        ctx.restore();
+                    }
+                    
+                    // Upside down effect
+                    if (player.gravityFlipped) {
+                        ctx.save();
+                        ctx.translate(canvas.width/2, canvas.height/2);
+                        ctx.rotate(Math.PI);
+                        ctx.translate(-canvas.width/2, -canvas.height/2);
+                        // The entire world would need to be redrawn here
+                        // Or you could apply this transformation at the start of draw()
+                        ctx.restore();
                     }
                 }
 
