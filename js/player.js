@@ -333,6 +333,14 @@ export class Player {
         this.isRespawning = false;
         this.x = 100;
         this.y = groundY - this.height;
+        this.vx = 0;
+        this.vy = 0;
+        
+        // Clear medication effects on respawn
+        this.activeMedications.forEach(med => {
+            this.removeMedicationEffect(med.type);
+        });
+        this.activeMedications = [];
     }
     
     // Handle screen boundaries and world scrolling
@@ -373,8 +381,7 @@ export class Player {
             this.y < enemyBottom &&
             this.y + this.height > enemyTop) {
 
-            this.lives--;
-            this.dead = true;
+            this.die(); // Use consistent die() method
             return true;
         }
         return false;
@@ -386,8 +393,9 @@ export class Player {
             this.x < boss.x + boss.width && this.x + this.width > boss.x && 
             this.y < boss.y + boss.height && this.y + this.height > boss.y) {
             
-            this.lives = 0;
-            this.dead = true;
+            // Boss instantly kills player (set lives to 1 so die() reduces it to 0)
+            this.lives = 1;
+            this.die();
             return true;
         }
         return false;
@@ -641,6 +649,7 @@ export class Player {
         this.vy = 0;
         this.lives = 3;
         this.dead = false;
+        this.isRespawning = false; // Reset respawn flag
         this.crouching = false;
         this.grounded = true;
         this.onPlatform = null;
@@ -649,5 +658,12 @@ export class Player {
         this.animationTimer = 0;
         this.isShooting = false;
         this.shootTimer = 0;
+        
+        // Clear all medication effects and state
+        this.activeMedications.forEach(med => {
+            this.removeMedicationEffect(med.type);
+        });
+        this.activeMedications = [];
+        this.medicationCooldowns = {};
     }
 }

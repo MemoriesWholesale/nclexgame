@@ -424,6 +424,10 @@ import { Enemy, EnemyManager } from './enemy.js';
                         if (h.deactivatedByNPC) h.activated = true; // Reactivate hazards
                     });
                 } else {
+                    // **FIX**: Reset respawn flag even on game over to prevent stuck state
+                    player.isRespawning = false;
+                    player.dead = false; // Reset dead state for clean menu transition
+                    
                     // Clear level content on game over
                     levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     enemyManager.clear();
@@ -700,7 +704,7 @@ import { Enemy, EnemyManager } from './enemy.js';
             }
 
                         // [NEW] Central Death Handler - This now manages all respawns
-            if (player.dead) {
+            if (player.dead && !player.isRespawning) {
                 handlePlayerDeath();
             }
 
