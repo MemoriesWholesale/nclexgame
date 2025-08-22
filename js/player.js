@@ -63,34 +63,34 @@ export class Player {
         }
 
             // Handle inverted controls
-            let leftKey = keys['ArrowLeft'] || keys['a'] || keys['A'];
-            let rightKey = keys['ArrowRight'] || keys['d'] || keys['D'];
-            let upKey = keys['ArrowUp'] || keys['w'] || keys['W'];
-            let downKey = keys['ArrowDown'] || keys['s'] || keys['S'];
-            
-            if (this.invertedControls) {
-                // Swap left/right
-                [leftKey, rightKey] = [rightKey, leftKey];
-                // Swap up/down
-                [upKey, downKey] = [downKey, upKey];
-            }
+        let leftKey = keys['ArrowLeft'] || keys['a'] || keys['A'];
+        let rightKey = keys['ArrowRight'] || keys['d'] || keys['D'];
+        let upKey = keys['ArrowUp'] || keys['w'] || keys['W'];
+        let downKey = keys['ArrowDown'] || keys['s'] || keys['S'];
+
+        if (this.invertedControls) {
+            // Swap left/right
+            [leftKey, rightKey] = [rightKey, leftKey];
+            // Swap up/down
+            [upKey, downKey] = [downKey, upKey];
+        }
         
         // Apply speed multiplier from medications
         const currentSpeed = this.baseSpeed * this.speedMultiplier;
         
         // Horizontal movement
-        if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+        if (leftKey) {
             this.vx = -currentSpeed;
             this.facing = -1;
-        } else if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+        } else if (rightKey) {
             this.vx = currentSpeed;
             this.facing = 1;
         } else {
             if (!onSpill) { this.vx *= 0.8; }
         }
-        
+
         // Enhanced jumping with medication effects
-        const jumpPressed = keys['ArrowUp'] || keys['w'] || keys['W'];
+        const jumpPressed = upKey;
         const currentJumpPower = this.baseJumpPower * this.jumpMultiplier;
         
         if (jumpPressed) {
@@ -107,16 +107,16 @@ export class Player {
         
         // Gliding mechanic (from corticosteroid)
         if (this.canGlide && !this.grounded && this.vy > 0) {
-            if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+            if (upKey) {
                 this.isGliding = true;
                 this.vy = Math.min(this.vy, 2); // Slow fall
             } else {
                 this.isGliding = false;
             }
         }
-        
+
         // Crouching (modified for size changes)
-        this.crouching = (keys['ArrowDown'] || keys['s'] || keys['S']) && this.grounded;
+        this.crouching = downKey && this.grounded;
     }
     
     // Update player state and animation
