@@ -3,6 +3,7 @@ import LevelManager from './levelManager.js';
 import { Quiz } from './quiz.js';
 import { Enemy, EnemyManager } from './enemy.js';
 
+        const MIN_SPAWN_DISTANCE = 150;
         const levelManager = new LevelManager();
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -664,7 +665,11 @@ import { Enemy, EnemyManager } from './enemy.js';
                     const elapsed = Date.now() - platform.alarmTime;
                     if (elapsed > (platform.alarmDelay || 1000) && !platform.enemiesSpawned) {
                         // Spawn enemies near the alarm platform
-                        const spawnX = platform.worldX + platform.width + 100;
+                        let spawnX = platform.worldX + platform.width + 100;
+                        const playerWorldX = player.x - worldX;
+                        if (Math.abs(spawnX - playerWorldX) < MIN_SPAWN_DISTANCE) {
+                            spawnX = playerWorldX + Math.sign(spawnX - playerWorldX || 1) * MIN_SPAWN_DISTANCE;
+                        }
                         enemyManager.enemies.push({
                             worldX: spawnX,
                             y: platform.y - 40,
