@@ -109,11 +109,11 @@ const level = {
         { type: 'pit', x: 2700, width: 150 }, // **FIX**: Narrowed from 200 to 150 to prevent glitchy double jump
         { type: 'pit', x: 3300, width: 150 },
         // **FIX**: Reduced from 550px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 4500, width: 250 }, 
+        { type: 'pit', x: 4500, width: 200 },
         { type: 'pit', x: 6200, width: 250 },
         // **FIX**: Split the 800px pit into two smaller pits with a platform between
-        { type: 'pit', x: 6900, width: 250 },
-        { type: 'pit', x: 7400, width: 250 }
+        { type: 'pit', x: 6900, width: 200 },
+        { type: 'pit', x: 7400, width: 200 }
     ],
     
     // Items (chests, pickups)
