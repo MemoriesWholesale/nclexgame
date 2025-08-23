@@ -4,6 +4,7 @@
 import { Enemy } from './enemy.js';
 import { LevelPlatforms } from './systems/LevelPlatforms.js';
 import { LevelZones } from './systems/LevelZones.js';
+import { LevelPathValidator } from './systems/LevelPathValidator.js';
 import { MIN_SPAWN_DISTANCE, LEVEL_DATA } from './constants.js';
 
 class LevelManager {
@@ -17,6 +18,7 @@ class LevelManager {
         // Initialize subsystems
         this.platforms = new LevelPlatforms(this);
         this.zones = new LevelZones(this);
+        this.pathValidator = new LevelPathValidator();
     }
     
     /**
@@ -93,6 +95,10 @@ class LevelManager {
                 this.currentLevel = JSON.parse(JSON.stringify(module.default));
                 this.resetEnemyWaveStates();
                 this.zones.initializeZones(this.currentLevel);
+                
+                // Validate level accessibility (development mode only)
+                this.validateLevelAccessibility();
+                
                 console.log('Level loaded successfully:', this.currentLevel);
                 return this.currentLevel;
             } else {
@@ -429,6 +435,44 @@ class LevelManager {
             type: boss.type,
             phases: boss.phases
         };
+    }
+    
+    /**
+     * Validate level accessibility for game design compliance
+     */
+    validateLevelAccessibility() {
+        if (!this.currentLevel) return;
+        
+        // Create a mock canvas for validation (typical game canvas dimensions)
+        const mockCanvas = { width: 1024, height: 768 };
+        
+        const validation = this.pathValidator.validateLevel(this.currentLevel, mockCanvas);
+        
+        if (!validation.isValid) {
+            console.warn(`⚠️ Level ${this.currentLevel.id} has accessibility issues:`);
+            validation.issues.forEach(issue => {
+                console.warn(`  • ${issue}`);
+            });
+        }
+        
+        if (validation.recommendations.length > 0) {
+            console.log(`💡 Level ${this.currentLevel.id} recommendations:`);
+            validation.recommendations.forEach(rec => {
+                console.log(`  • ${rec}`);
+            });
+        }
+        
+        if (validation.isValid && validation.recommendations.length === 0) {
+            console.log(`✅ Level ${this.currentLevel.id} accessibility validation passed`);
+        }
+    }
+    
+    /**
+     * Generate detailed validation report for a level
+     */
+    generateValidationReport(canvas = { width: 1024, height: 768 }) {
+        if (!this.currentLevel) return 'No level loaded';
+        return this.pathValidator.generateReport(this.currentLevel, canvas);
     }
     
     /**
