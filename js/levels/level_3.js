@@ -149,11 +149,16 @@ const level = {
     hazards: [
         // Pits representing fall risks
         { type: 'pit', x: 1350, width: 150 },
-        { type: 'pit', x: 2100, width: 400 },
-        { type: 'pit', x: 3100, width: 400 },
-        { type: 'pit', x: 4300, width: 300 },
-        { type: 'pit', x: 6100, width: 400 },
-        { type: 'pit', x: 6950, width: 550 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 2100, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 3100, width: 250 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 4300, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 6100, width: 250 },
+        // **FIX**: Reduced from 550px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 6950, width: 250 },
         { type: 'pit', x: 7950, width: 250 },
         
         // Falling objects (deactivatable by NPCs)

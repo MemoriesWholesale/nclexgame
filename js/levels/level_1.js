@@ -61,6 +61,9 @@ const level = {
         { id: 'barrier_platform_2', x: 4950, y: 'ground-300', width: 100, height: 20, type: 'static', activated: false },
         { id: 'barrier_platform_3', x: 5100, y: 'ground-400', width: 100, height: 20, type: 'static', activated: false },
         
+        // **FIX**: Bridge platform to connect barrier section to withdrawal section without requiring NPC
+        { id: 'barrier_withdrawal_bridge', x: 5250, y: 'ground-200', width: 120, height: 20, type: 'static', activated: true },
+        
         // Withdrawal platforms - only solid when NO medications active
         { id: 'withdrawal_1', x: 5400, y: 'ground-150', width: 100, height: 20, type: 'withdrawal', activated: true },
         { id: 'withdrawal_2', x: 5550, y: 'ground-250', width: 100, height: 20, type: 'withdrawal', activated: true },
@@ -133,12 +136,16 @@ const level = {
     // Hazards
     hazards: [
         { type: 'pit', x: 1450, width: 150 },
-        { type: 'pit', x: 2400, width: 400 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 2400, width: 250 },
         { type: 'pit', x: 3900, width: 100 },
-        { type: 'pit', x: 4500, width: 300 },
+        // **FIX**: Reduced from 300px to 250px to ensure it's jumpable
+        { type: 'pit', x: 4500, width: 250 },
         { type: 'pit', x: 5850, width: 150 },
-        { type: 'pit', x: 7700, width: 300 },
-        { type: 'pit', x: 8700, width: 300 }
+        // **FIX**: Reduced from 300px to 250px to ensure it's jumpable
+        { type: 'pit', x: 7700, width: 250 },
+        // **FIX**: Reduced from 300px to 250px to ensure it's jumpable
+        { type: 'pit', x: 8700, width: 250 }
     ],
     
     // Special zones

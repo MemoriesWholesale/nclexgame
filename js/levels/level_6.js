@@ -204,12 +204,18 @@ const level = {
     // Hazards
     hazards: [
         { type: 'pit', x: 1300, width: 200 },
-        { type: 'pit', x: 2600, width: 400 },
-        { type: 'pit', x: 4100, width: 400 },
-        { type: 'pit', x: 5600, width: 400 },
-        { type: 'pit', x: 7100, width: 400 },
-        { type: 'pit', x: 8600, width: 400 },
-        { type: 'pit', x: 10100, width: 400 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 2600, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 4100, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 5600, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 7100, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 8600, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 10100, width: 250 },
         
         // Acid-base imbalance zones
         { id: 'acidosis_zone', type: 'pH_hazard', x: 7800, y: 'ground-0', 

@@ -210,14 +210,22 @@ const level = {
     
     // Hazards
     hazards: [
-        { type: 'pit', x: 1600, width: 400 },
-        { type: 'pit', x: 3100, width: 400 },
-        { type: 'pit', x: 4600, width: 400 },
-        { type: 'pit', x: 6100, width: 400 },
-        { type: 'pit', x: 7600, width: 400 },
-        { type: 'pit', x: 9100, width: 300 },
-        { type: 'pit', x: 10600, width: 400 },
-        { type: 'pit', x: 11900, width: 300 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 1600, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 3100, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 4600, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 6100, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 7600, width: 250 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 9100, width: 250 },
+        // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 10600, width: 250 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 11900, width: 250 },
         
         // Lifecycle-specific hazards
         { id: 'teratogen_1', type: 'teratogen', x: 900, y: 'ground-300', 
