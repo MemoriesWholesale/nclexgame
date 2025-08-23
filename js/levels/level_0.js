@@ -112,8 +112,8 @@ const level = {
         { type: 'pit', x: 4500, width: 250 }, 
         { type: 'pit', x: 6200, width: 250 },
         // **FIX**: Split the 800px pit into two smaller pits with a platform between
-        { type: 'pit', x: 6900, width: 300 },
-        { type: 'pit', x: 7400, width: 300 }
+        { type: 'pit', x: 6900, width: 250 },
+        { type: 'pit', x: 7400, width: 250 }
     ],
     
     // Items (chests, pickups)
