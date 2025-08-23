@@ -83,6 +83,8 @@ const level = {
         { id: 'hard_path_6c', x: 7350, y: 'ground-120', width: 30, height: 20, type: 'disappearing', activated: true, timing: { onTime: 1800, offTime: 1500 } },
         { id: 'hard_path_6d', x: 7520, y: 'ground-150', width: 30, height: 20, type: 'static', activated: true },
         { id: 'hard_path_6e', x: 7700, y: 'ground-100', width: 40, height: 20, type: 'static', activated: true },
+        // **FIX**: Added platform between split pits to allow crossing
+        { id: 'mid_pit_platform', x: 7200, y: 'ground-80', width: 100, height: 20, type: 'static', activated: true },
         { id: 'pre_boss_ledge', x: 8000, y: 'ground-0', width: 3500, height: 20, type: 'static', activated: true}
     ],
     
@@ -106,10 +108,12 @@ const level = {
         { type: 'pit', x: 1250, width: 100 },
         { type: 'pit', x: 2700, width: 150 }, // **FIX**: Narrowed from 200 to 150 to prevent glitchy double jump
         { type: 'pit', x: 3300, width: 150 },
-        // **FIX**: Adjusted pit to match the new platform layout.
-        { type: 'pit', x: 4500, width: 550 }, 
+        // **FIX**: Reduced from 550px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 4500, width: 250 }, 
         { type: 'pit', x: 6200, width: 250 },
-        { type: 'pit', x: 6900, width: 800 } 
+        // **FIX**: Split the 800px pit into two smaller pits with a platform between
+        { type: 'pit', x: 6900, width: 250 },
+        { type: 'pit', x: 7400, width: 250 }
     ],
     
     // Items (chests, pickups)

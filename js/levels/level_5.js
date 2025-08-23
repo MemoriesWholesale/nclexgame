@@ -186,13 +186,19 @@ const level = {
     
     // Hazards
     hazards: [
-        { type: 'pit', x: 1200, width: 300 },
-        { type: 'pit', x: 2400, width: 600 },
-        { type: 'pit', x: 4200, width: 300 },
-        { type: 'pit', x: 5500, width: 500 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 1200, width: 250 },
+        // **FIX**: Reduced from 600px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 2400, width: 250 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 4200, width: 250 },
+        // **FIX**: Reduced from 500px to 250px to make it jumpable without NPC help
+        { type: 'pit', x: 5500, width: 250 },
         { type: 'pit', x: 7200, width: 200 },
-        { type: 'pit', x: 8500, width: 300 },
-        { type: 'pit', x: 9700, width: 300 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 8500, width: 250 },
+        // **FIX**: Reduced from 300px to 250px for consistency
+        { type: 'pit', x: 9700, width: 250 },
         
         // Pressure ulcer zones (damage if stay too long)
         { id: 'pressure_zone_1', type: 'pressure_ulcer', x: 3400, y: 'ground-0', 
