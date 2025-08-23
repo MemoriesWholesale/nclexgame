@@ -185,17 +185,17 @@ const level = {
     hazards: [
         { type: 'pit', x: 1100, width: 200 },
         // **FIX**: Reduced from 600px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 2200, width: 250 },
+        { type: 'pit', x: 2200, width: 200 },
         // **FIX**: Reduced from 600px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 3600, width: 250 },
+        { type: 'pit', x: 3600, width: 200 },
         // **FIX**: Reduced from 500px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 5000, width: 250 },
+        { type: 'pit', x: 5000, width: 200 },
         // **FIX**: Reduced from 700px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 6300, width: 250 },
+        { type: 'pit', x: 6300, width: 200 },
         // **FIX**: Reduced from 500px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 8000, width: 250 },
+        { type: 'pit', x: 8000, width: 200 },
         // **FIX**: Reduced from 500px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 9500, width: 250 },
+        { type: 'pit', x: 9500, width: 200 },
         
         // Thought bubbles (harmful if touched)
         { id: 'intrusive_thought_1', type: 'thought_bubble', x: 2000, y: 'ground-400', 
