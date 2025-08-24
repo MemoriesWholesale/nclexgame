@@ -324,7 +324,11 @@ import {
         }
 
         function askQuestion(interactionId, originalId) {
-            quiz.askQuestion(interactionId, originalId);
+            quiz.askQuestion(interactionId);
+            // Set the originalInteractionId after the question is created
+            if (quiz.currentQuestion) {
+                quiz.currentQuestion.originalInteractionId = originalId;
+            }
             gameState = 'quiz';
         }
 

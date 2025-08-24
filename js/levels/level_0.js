@@ -15,20 +15,20 @@ const level = {
     // Platforms
     platforms: [
         // --- SECTION 1: TUTORIAL AND FIRST NPC ---
-        { id: 'tut_1', x: 300, y: 'ground-150', width: 120, height: 20, type: 'static', activated: true },
+        { id: 'tut_1', x: 300, y: 'ground-125', width: 120, height: 20, type: 'static', activated: true },
         { id: 'tut_2', x: 500, y: 'ground-200', width: 100, height: 20, type: 'static', activated: true },
         { id: 'elevator_1', x: 800, y: 'ground-108', width: 120, height: 20, type: 'elevator', activated: false, startY: 'ground-108', endY: 'ground-350', speed: -1 },
         { id: 'high_ledge_1', x: 920, y: 'ground-350', width: 500, height: 20, type: 'ledge', activated: true },
         { id: 'hard_path_1', x: 950, y: 'ground-120', width: 80, height: 20, type: 'static', activated: true },
-
+        { id: 'reward', x: 1400, y: 'ground-150', width: 80, height: 20, type: 'static', activated: true},
         // --- SECTION 2: DELEGATION CHAIN ---
         { id: 'moving_1', x: 1500, y: 'ground-200', width: 100, height: 20, type: 'moving', activated: true, movement: { startX: 1500, endX: 1700, speed: 1, horizontal: true } },
         { id: 'moving_2_fixed', x: 1800, y: 'ground-150', width: 100, height: 20, type: 'elevator', activated: true, startY: 'ground-100', endY: 'ground-250', speed: -1 },
         { id: 'deleg_1', x: 2200, y: 'ground-150', width: 80, height: 20, type: 'timed', activated: false, activeTime: 5000 },
         { id: 'deleg_2', x: 2350, y: 'ground-250', width: 80, height: 20, type: 'timed', activated: false, activeTime: 5000, requiresPrevious: 'deleg_1' },
-        { id: 'deleg_3', x: 2500, y: 'ground-350', width: 100, height: 20, type: 'static', activated: false, requiresPrevious: 'deleg_2' },
+        { id: 'deleg_3', x: 2500, y: 'ground-350', width: 150, height: 20, type: 'static', activated: false, requiresPrevious: 'deleg_2' },
         { id: 'hard_path_2a', x: 2250, y: 'ground-80', width: 70, height: 20, type: 'static', activated: true },
-        { id: 'hard_path_2b', x: 2450, y: 'ground-80', width: 70, height: 20, type: 'static', activated: true },
+        { id: 'hard_path_2b', x: 2750, y: 'ground-150', width: 70, height: 20, type: 'static', activated: true },
 
         // --- SECTION 3: VERTICAL LABYRINTH ---
         { id: 'vert_ledge_1', x: 3600, y: 'ground-500', width: 400, height: 20, type: 'ledge', activated: true },
@@ -41,10 +41,9 @@ const level = {
         { id: 'hard_path_3d', x: 3600, y: 'ground-420', width: 50, height: 20, type: 'static', activated: true },
 
         // --- SECTION 4: THE GREAT PIT (PLAYTESTED AND FIXED) ---
-        // **FIX**: Added a proper launch platform before the pit.
-        { id: 'pre_pit_4_ledge', x: 4300, y: 'ground-0', width: 150, height: 20, type: 'static', activated: true },
         // NPC Benefit: The bridge now correctly spans the chasm, providing a safe and easy path.
-        { id: 'collab_bridge_1', x: 4350, y: 'ground-150', width: 150, height: 20, type: 'moving', activated: false, movement: { startX: 4350, endX: 5100, speed: 2, horizontal: true } },
+        { id: 'reward_2', x: 4200, y: 'ground-300', width: 100, height: 20, type: 'static', activated: true},
+        { id: 'collab_bridge_1', x: 4350, y: 'ground-250', width: 150, height: 20, type: 'moving', activated: true, movement: { startX: 4350, endX: 5100, speed: -2, horizontal: true } },
         // **FIX**: Repositioned the hard path platforms and added a new one to make the jump sequence possible.
         { id: 'hard_path_4a', x: 4600, y: 'ground-100', width: 50, height: 20, type: 'static', activated: true },
         { id: 'hard_path_4b', x: 4780, y: 'ground-150', width: 50, height: 20, type: 'static', activated: true }, // Added platform
@@ -95,7 +94,7 @@ const level = {
         { id: 'doctor_1', type: 'doctor', x: 2300, y: 'ground-60', dialogue: "Good! Now continue the chain of command.", activates: 'deleg_2', requiresPrevious: 'nurse_1' },
         { id: 'specialist_1', type: 'specialist', x: 2450, y: 'ground-60', dialogue: "Excellent coordination! Final platform activated!", activates: 'deleg_3', requiresPrevious: 'doctor_1' },
         { id: 'pt_1', type: 'physical_therapist', x: 3900, y: 'ground-60', dialogue: "Rehabilitation is a climb! Let's get you moving.", activates: 'timed_climb_1,timed_climb_2,timed_climb_3' },
-        { id: 'dietitian_1', type: 'dietitian', x: 3650, y: 'vert_ledge_1-top', dialogue: "Good nutrition provides the bridge to recovery. Well done!", activates: 'collab_bridge_1', requiresPrevious: 'pt_1' },
+        { id: 'dietitian_1', type: 'dietitian', x: 3650, y: 'vert_ledge_1-top', dialogue: "Good nutrition provides the bridge to recovery. Well done!", activates: 'collab_bridge_1' },
         { id: 'ot_1', type: 'occupational_therapist', x: 5550, y: 'tower_base-top', dialogue: "Let's get you functional! These platforms will help you adapt.", activates: 'orbit_1,orbit_2' },
         { id: 'charge_nurse_1', type: 'charge_nurse', x: 5750, y: 'tower_base-top', dialogue: "Good progress. I'll give you a lift to the top.", activates: 'elevator_2', requiresPrevious: 'ot_1' },
         { id: 'respiratory_therapist_1', type: 'respiratory_therapist', x: 6050, y: 'hard_path_5d-top', dialogue: "That pit ahead looks dangerous! Let me help you breathe easier with a safe path.", activates: 'pit6_bridge_1,pit6_bridge_2,pit6_reward_platform' },
@@ -109,7 +108,7 @@ const level = {
         { type: 'pit', x: 2700, width: 150 }, // **FIX**: Narrowed from 200 to 150 to prevent glitchy double jump
         { type: 'pit', x: 3300, width: 150 },
         // **FIX**: Reduced from 550px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 4500, width: 200 },
+        { type: 'pit', x: 4500, width: 500 },
         { type: 'pit', x: 6200, width: 250 },
         // **FIX**: Split the 800px pit into two smaller pits with a platform between
         { type: 'pit', x: 6900, width: 200 },
@@ -130,12 +129,12 @@ const level = {
     
     // Enemy waves (triggered by position)
     enemyWaves: [
-        { triggerX: 500, enemies: [ { type: 'basic', x: 550, y: 'ground-0' }, { type: 'basic', x: 600, y: 'ground-0' } ] },
-        { triggerX: 1500, enemies: [ { type: 'basic', x: 1550, y: 'ground-0' }, { type: 'nurse_zombie', x: 1650, y: 'ground-0', hp: 2 } ] },
-        { triggerX: 2800, enemies: [ { type: 'basic', x: 2850, y: 'ground-0' }, { type: 'basic', x: 2900, y: 'ground-0' }, { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 } ] },
-        { triggerX: 3500, enemies: [ { type: 'basic', x: 3550, y: 'ground-0' }, { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 }, { type: 'basic', x: 4100, y: 'ground-0' } ] },
-        { triggerX: 5600, enemies: [ { type: 'nurse_zombie', x: 5650, y: 'ground-0', hp: 2 }, { type: 'nurse_zombie', x: 5800, y: 'ground-0', hp: 2 } ] },
-        { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
+        // { triggerX: 500, enemies: [ { type: 'basic', x: 550, y: 'ground-0' }, { type: 'basic', x: 600, y: 'ground-0' } ] },
+        // { triggerX: 1500, enemies: [ { type: 'basic', x: 1550, y: 'ground-0' }, { type: 'nurse_zombie', x: 1650, y: 'ground-0', hp: 2 } ] },
+        // { triggerX: 2800, enemies: [ { type: 'basic', x: 2850, y: 'ground-0' }, { type: 'basic', x: 2900, y: 'ground-0' }, { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 } ] },
+        // { triggerX: 3500, enemies: [ { type: 'basic', x: 3550, y: 'ground-0' }, { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 }, { type: 'basic', x: 4100, y: 'ground-0' } ] },
+        // { triggerX: 5600, enemies: [ { type: 'nurse_zombie', x: 5650, y: 'ground-0', hp: 2 }, { type: 'nurse_zombie', x: 5800, y: 'ground-0', hp: 2 } ] },
+        // { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
     ],
     
     // Boss configuration

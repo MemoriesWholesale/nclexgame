@@ -50,17 +50,17 @@ export class PlayerPhysics {
     
     updateMovingPlatforms(platforms) {
         const currentPlatform = this.player.onPlatform;
-        if (!currentPlatform) return;
         
         for (const platform of platforms) {
-            if (platform !== currentPlatform || !platform.activated) continue;
+            if (!platform.activated) continue;
             
             const prevY = platform.y;
             const prevX = platform.worldX || platform.x;
             
+            // Update platform movement regardless of player position
             this.updatePlatformMovement(platform);
             
-            // Move player with platform if they're standing on it
+            // Move player with platform only if they're standing on it
             if (currentPlatform === platform) {
                 this.movePlayerWithPlatform(platform, prevX, prevY);
             }
@@ -183,12 +183,15 @@ export class PlayerPhysics {
     }
     
     isPlatformSolid(platform) {
-        return platform.activated || 
-               platform.type === 'ledge' || 
-               platform.type === 'static' || 
-               platform.type === 'malfunctioning' || 
-               platform.type === 'alarm' || 
-               (platform.type === 'disappearing' && platform.visible);
+        // All platforms must be activated to be solid (collision-enabled)
+        if (!platform.activated) return false;
+        
+        // Additional checks for special platform types
+        if (platform.type === 'disappearing') {
+            return platform.visible !== false; // Must be visible to be solid
+        }
+        
+        return true; // All other activated platforms are solid
     }
     
     checkPlatformCollision(screenX, platform, prevY) {

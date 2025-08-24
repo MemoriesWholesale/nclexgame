@@ -693,10 +693,23 @@ class LevelManager {
 
             // Check if in visible range
             if (npc.x > visibleLeft && npc.x < visibleRight) {
+                let yPos = this.parsePosition(npc.y, canvas);
+
+                // Handle relative positioning to platforms
+                if (typeof npc.y === 'string' && npc.y.includes('-top')) {
+                    const platId = npc.y.replace('-top', '');
+                    const platform = platforms.find(p => p.id === platId);
+                    if (platform) {
+                        // Position NPC on top of platform (like player positioning)
+                        const npcHeight = npc.height || 60;
+                        yPos = platform.y - npcHeight;
+                    }
+                }
+
                 npcs.push({
                     ...npc,
                     worldX: npc.x,
-                    y: this.parsePosition(npc.y, canvas),
+                    y: yPos,
                     width: npc.width || 40,
                     height: npc.height || 60,
                     interactionId: npc.id, // Use unique NPC id for tracking
@@ -724,6 +737,7 @@ class LevelManager {
                     const platId = item.y.replace('-top', '');
                     const platform = platforms.find(p => p.id === platId);
                     if (platform) {
+                        // Position chest on top of platform
                         yPos = platform.y;
                     }
                 }

@@ -226,7 +226,7 @@ class LevelManager {
         
         // Spawn different types of content
         this.spawnPlatforms(level, visibleBounds, platforms, canvas);
-        this.spawnNPCs(level, visibleBounds, npcs, canvas);
+        this.spawnNPCs(level, visibleBounds, npcs, platforms, canvas);
         this.spawnChests(level, visibleBounds, chests, platforms, canvas);
         this.spawnHazards(level, visibleBounds, hazards, canvas);
         this.spawnEnemyWaves(level, worldX, canvas, enemyManager);
@@ -258,12 +258,12 @@ class LevelManager {
     /**
      * Spawn NPCs in visible area
      */
-    spawnNPCs(level, visibleBounds, npcs, canvas) {
+    spawnNPCs(level, visibleBounds, npcs, platforms, canvas) {
         level.npcs?.forEach(npc => {
             if (npcs.some(n => n.id === npc.id)) return;
             if (!this.isInVisibleArea(npc.x, visibleBounds)) return;
             
-            const newNPC = this.createNPC(npc, canvas);
+            const newNPC = this.createNPC(npc, platforms, canvas);
             npcs.push(newNPC);
         });
     }
@@ -335,11 +335,24 @@ class LevelManager {
         return newPlatform;
     }
     
-    createNPC(npc, canvas) {
+    createNPC(npc, platforms, canvas) {
+        let yPos = this.parsePosition(npc.y, canvas);
+        
+        // Handle relative positioning to platforms
+        if (typeof npc.y === 'string' && npc.y.includes('-top')) {
+            const platId = npc.y.replace('-top', '');
+            const platform = platforms.find(p => p.id === platId);
+            if (platform) {
+                // Position NPC on top of platform (like player positioning)
+                const npcHeight = npc.height || 60;
+                yPos = platform.y - npcHeight;
+            }
+        }
+        
         return {
             ...npc,
             worldX: npc.x,
-            y: this.parsePosition(npc.y, canvas),
+            y: yPos,
             width: npc.width || 40,
             height: npc.height || 60,
             interactionId: npc.id,
@@ -355,6 +368,7 @@ class LevelManager {
             const platId = item.y.replace('-top', '');
             const platform = platforms.find(p => p.id === platId);
             if (platform) {
+                // Position chest on top of platform
                 yPos = platform.y;
             }
         }
