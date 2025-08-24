@@ -30,7 +30,7 @@ export class Quiz {
     }
     
     // Get a random question and prepare it for display
-    askQuestion(interactionId) {
+    askQuestion(interactionId, originalInteractionId = null) {
         if (this.availableQuestions.length === 0) {
             this.availableQuestions = [...this.questionBank];
         }
@@ -49,9 +49,10 @@ export class Quiz {
             answered: false,
             isCorrect: false,
             playerAnswer: null,
-            interactionId: interactionId
+            interactionId: interactionId,
+            originalInteractionId: originalInteractionId
         };
-        
+
         return this.currentQuestion;
     }
     

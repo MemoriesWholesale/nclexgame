@@ -205,18 +205,20 @@ export class GameActions {
      * Handle correct quiz answer
      */
     handleCorrectAnswer(currentQuestion) {
-        // Activate platforms
-        const activationIds = currentQuestion.interactionId.split(',');
-        activationIds.forEach(id => {
-            const targetPlatform = this.gameState.platforms.find(p => p.id === id);
-            if (targetPlatform) {
-                targetPlatform.activated = true;
-            }
-        });
-        
+        // Activate platforms if any are specified
+        if (currentQuestion.interactionId) {
+            const activationIds = currentQuestion.interactionId.split(',');
+            activationIds.forEach(id => {
+                const targetPlatform = this.gameState.platforms.find(p => p.id === id);
+                if (targetPlatform) {
+                    targetPlatform.activated = true;
+                }
+            });
+        }
+
         // Handle chest rewards
         this.handleChestReward(currentQuestion);
-        
+
         // Handle NPC medication rewards
         this.handleNPCReward(currentQuestion);
     }
