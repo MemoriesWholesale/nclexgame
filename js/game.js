@@ -151,13 +151,15 @@ import {
                 const currentQuestion = quiz.getCurrentQuestion();
                 if (currentQuestion.answered) {
                     if (currentQuestion.isCorrect) {
-                        const activationIds = currentQuestion.interactionId.split(',');
-                        activationIds.forEach(id => {
-                            const targetPlatform = platforms.find(p => p.id === id);
-                            if (targetPlatform) {
-                                targetPlatform.activated = true;
-                            }
-                        });
+                        if (currentQuestion.interactionId) {
+                            const activationIds = currentQuestion.interactionId.split(',');
+                            activationIds.forEach(id => {
+                                const targetPlatform = platforms.find(p => p.id === id);
+                                if (targetPlatform) {
+                                    targetPlatform.activated = true;
+                                }
+                            });
+                        }
 
                         // Handle chest opening
                         const targetChest = chests.find(c => c.id === currentQuestion.interactionId);
@@ -324,11 +326,8 @@ import {
         }
 
         function askQuestion(interactionId, originalId) {
-            quiz.askQuestion(interactionId);
-            // Set the originalInteractionId after the question is created
-            if (quiz.currentQuestion) {
-                quiz.currentQuestion.originalInteractionId = originalId;
-            }
+            // Pass both identifiers so the quiz system knows which object triggered the question
+            quiz.askQuestion(interactionId, originalId);
             gameState = 'quiz';
         }
 
