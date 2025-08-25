@@ -2,10 +2,13 @@ import { Player } from './player.js';
 import LevelManager from './levelManager.js';
 import { Quiz } from './quiz.js';
 import { Enemy, EnemyManager } from './enemy.js';
+import { Boss } from './systems/Boss.js';
 import {
     MIN_SPAWN_DISTANCE,
     LEVEL_DATA,
     SPRITE_ANIMATIONS,
+    BOSS_ANIMATIONS,
+    BOSS_DATA,
     ARMOR_DATA,
     WEAPON_NAMES,
     WEAPON_COLORS,
@@ -928,11 +931,65 @@ import {
             }
 
             if (boss) {
-                boss.x += boss.vx;
-                if (boss.x <= 100 || boss.x >= canvas.width - 100 - boss.width) {
-                    boss.vx = -boss.vx;
+                boss.update(player, canvas);
+                
+                // Handle boss projectiles
+                if (boss.pendingProjectile) {
+                    const proj = boss.pendingProjectile;
+                    const dx = proj.targetX - proj.x;
+                    const dy = proj.targetY - proj.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const vx = (dx / distance) * proj.speed;
+                    const vy = (dy / distance) * proj.speed;
+                    
+                    projectiles.push({
+                        x: proj.x,
+                        y: proj.y,
+                        vx: vx,
+                        vy: vy,
+                        width: 20,
+                        height: 20,
+                        type: 'boss_projectile',
+                        isBossProjectile: true
+                    });
+                    
+                    boss.pendingProjectile = null;
                 }
-                if (player.checkBossCollision(boss)) {
+                
+                // Handle boss area attacks
+                if (boss.pendingAreaAttack) {
+                    const attack = boss.pendingAreaAttack;
+                    // Check if player is in area attack
+                    if (player.x < attack.x + attack.width &&
+                        player.x + player.width > attack.x &&
+                        player.y < attack.y + attack.height &&
+                        player.y + player.height > attack.y) {
+                        if (!player.invincible && !player.dead) {
+                            player.die();
+                        }
+                    }
+                    
+                    // Decrement attack duration
+                    attack.duration--;
+                    if (attack.duration <= 0) {
+                        boss.pendingAreaAttack = null;
+                    }
+                }
+                
+                // Check if boss is destroyed
+                if (boss.isDestroyed) {
+                    const armorId = selectedLevel + 1;
+                    armorPickup = {
+                        x: boss.x + boss.width / 2 - 20,
+                        y: boss.y + boss.height / 2 - 20,
+                        width: 40,
+                        height: 40,
+                        armorId: armorId
+                    };
+                    boss = null;
+                }
+                
+                if (boss && player.checkBossCollision(boss)) {
                     setTimeout(() => {
                         // Clear level content when boss defeats player
                         levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
@@ -965,6 +1022,29 @@ import {
                     case 6: proj.x += proj.vx; proj.angle += proj.rotSpeed; break;
                     case 8: if (!proj.landed) { proj.x += proj.vx; proj.vy += 0.6; proj.y += proj.vy; if (proj.dropsLeft > 0 && Math.abs(proj.x - proj.lastDropX) > 80) { projectiles.push({ worldX: proj.x - worldX, y: proj.y, vx: 0, vy: 0, width: 20, height: 10, type: 1 }); proj.lastDropX = proj.x; proj.dropsLeft--; } if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                     case 2: proj.x += proj.vx; break;
+                    case 'boss_projectile':
+                        proj.x += proj.vx;
+                        proj.y += proj.vy;
+                        
+                        // Check collision with player
+                        if (proj.x < player.x + player.width &&
+                            proj.x + proj.width > player.x &&
+                            proj.y < player.y + player.height &&
+                            proj.y + proj.height > player.y) {
+                            if (!player.invincible && !player.dead) {
+                                player.die();
+                            }
+                            projectiles.splice(i, 1);
+                            continue;
+                        }
+                        
+                        // Remove if off-screen
+                        if (proj.x < -100 || proj.x > canvas.width + 100 || 
+                            proj.y < -100 || proj.y > canvas.height + 100) {
+                            projectiles.splice(i, 1);
+                            continue;
+                        }
+                        break;
                     default: if (!proj.landed) { if (proj.worldX !== undefined) { proj.x = proj.worldX + worldX; } else if (proj.vx !== 0) { proj.x += proj.vx; } proj.vy += 0.6; proj.y += proj.vy; if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; if (proj.worldX === undefined) proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { if (proj.worldX !== undefined) proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                 }
 
@@ -997,10 +1077,13 @@ import {
                                 screenLocked = true; // Lock the screen for the boss fight
 
                                 // Spawn the boss *only* now
-                                boss = {
-                                    x: canvas.width - 200, y: groundY - 120,
-                                    width: 80, height: 120, vx: -2, hp: 10, maxHp: 10
-                                };
+                                boss = new Boss(
+                                    selectedLevel,
+                                    canvas.width - 200,
+                                    groundY - 120,
+                                    BOSS_DATA[selectedLevel],
+                                    BOSS_ANIMATIONS
+                                );
                             }
                             if (proj.type !== 3 && proj.type !== 7) {
                                 projectiles.splice(i, 1);
@@ -1026,15 +1109,7 @@ import {
                         hitBoss = true;
                     }
                     if (hitBoss) {
-                        boss.hp--;
-                        if (boss.hp <= 0) {
-                            const armorId = selectedLevel + 1;
-                            armorPickup = {
-                                x: boss.x + boss.width / 2 - 20, y: boss.y + boss.height / 2 - 20,
-                                width: 40, height: 40, armorId: armorId
-                            };
-                            boss = null;
-                        }
+                        boss.takeDamage(1);
                         if (proj.type !== 3 && proj.type !== 7) {
                             projectiles.splice(i, 1);
                             continue;
@@ -1563,11 +1638,33 @@ import {
                 }
 
                 if (boss) {
-                    ctx.fillStyle = '#4B0082'; ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+                    // Render boss area attack if active
+                    if (boss.pendingAreaAttack) {
+                        const attack = boss.pendingAreaAttack;
+                        const alpha = attack.duration / 60; // Fade out over time
+                        ctx.fillStyle = `rgba(255, 0, 0, ${alpha * 0.3})`;
+                        ctx.fillRect(attack.x, attack.y, attack.width, attack.height);
+                        ctx.strokeStyle = `rgba(255, 0, 0, ${alpha})`;
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([10, 5]);
+                        ctx.strokeRect(attack.x, attack.y, attack.width, attack.height);
+                        ctx.setLineDash([]);
+                    }
+                    
+                    // Render boss with sprite
+                    boss.render(ctx);
+                    
+                    // Render boss health bar
                     const barWidth = 300, barHeight = 20, barX = (canvas.width - barWidth) / 2, barY = 50;
                     ctx.fillStyle = '#333'; ctx.fillRect(barX, barY, barWidth, barHeight);
                     ctx.fillStyle = '#ff0000'; ctx.fillRect(barX, barY, barWidth * (boss.hp / boss.maxHp), barHeight);
                     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(barX, barY, barWidth, barHeight);
+                    
+                    // Boss name display
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 18px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(boss.name, canvas.width / 2, barY - 10);
                 }
 
                 for (const pickup of pickups) {
@@ -1592,6 +1689,7 @@ import {
                         case 8: ctx.fillStyle = '#ff4500'; ctx.beginPath(); ctx.arc(proj.x + proj.height/2, proj.y + proj.height/2, proj.height/2, Math.PI/2, Math.PI*1.5); ctx.arc(proj.x + proj.width - proj.height/2, proj.y + proj.height/2, proj.height/2, Math.PI*1.5, Math.PI/2); ctx.closePath(); ctx.fill(); break;
                         case 2: ctx.fillStyle = '#00bfff'; ctx.fillRect(proj.x, proj.y, proj.width, proj.height); break;
                         case 1: ctx.fillStyle = '#FFD700'; ctx.beginPath(); ctx.ellipse(proj.x + proj.width/2, proj.y + proj.height/2, proj.width/2, proj.height/2, 0, 0, Math.PI * 2); ctx.fill(); break;
+                        case 'boss_projectile': ctx.fillStyle = '#8B00FF'; ctx.beginPath(); ctx.arc(proj.x + proj.width/2, proj.y + proj.height/2, proj.width/2, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#4B0082'; ctx.lineWidth = 2; ctx.stroke(); break;
                     }
                 }
 

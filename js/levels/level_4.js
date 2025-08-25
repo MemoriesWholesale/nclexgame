@@ -20,7 +20,7 @@ const level = {
           effect: 'darkness_slowness', intensity: 0.8 },
         { id: 'mania_rush', startX: 4200, endX: 5000, type: 'mania', 
           effect: 'speed_up', intensity: 2.0 },
-        { id: 'confusion_zone', startX: 5500, endX: 6300, type: 'confusion', 
+        { id: 'confusion_zone', startX: 5500, endX: 6500, type: 'confusion', 
           effect: 'inverted_controls', intensity: 1.0 },
         { id: 'dissociation_realm', startX: 7000, endX: 8000, type: 'dissociation', 
           effect: 'mirror_twin', intensity: 1.0 },
