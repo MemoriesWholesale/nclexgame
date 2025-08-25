@@ -129,12 +129,12 @@ const level = {
     
     // Enemy waves (triggered by position)
     enemyWaves: [
-        // { triggerX: 500, enemies: [ { type: 'basic', x: 550, y: 'ground-0' }, { type: 'basic', x: 600, y: 'ground-0' } ] },
-        // { triggerX: 1500, enemies: [ { type: 'basic', x: 1550, y: 'ground-0' }, { type: 'nurse_zombie', x: 1650, y: 'ground-0', hp: 2 } ] },
-        // { triggerX: 2800, enemies: [ { type: 'basic', x: 2850, y: 'ground-0' }, { type: 'basic', x: 2900, y: 'ground-0' }, { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 } ] },
-        // { triggerX: 3500, enemies: [ { type: 'basic', x: 3550, y: 'ground-0' }, { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 }, { type: 'basic', x: 4100, y: 'ground-0' } ] },
-        // { triggerX: 5600, enemies: [ { type: 'nurse_zombie', x: 5650, y: 'ground-0', hp: 2 }, { type: 'nurse_zombie', x: 5800, y: 'ground-0', hp: 2 } ] },
-        // { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
+        { triggerX: 500, enemies: [ { type: 'basic', x: 550, y: 'ground-0' }, { type: 'basic', x: 600, y: 'ground-0' } ] },
+        { triggerX: 1500, enemies: [ { type: 'basic', x: 1550, y: 'ground-0' }, { type: 'nurse_zombie', x: 1650, y: 'ground-0', hp: 2 } ] },
+        { triggerX: 2800, enemies: [ { type: 'basic', x: 2850, y: 'ground-0' }, { type: 'basic', x: 2900, y: 'ground-0' }, { type: 'nurse_zombie', x: 2950, y: 'ground-0', hp: 2 } ] },
+        { triggerX: 3500, enemies: [ { type: 'basic', x: 3550, y: 'ground-0' }, { type: 'nurse_zombie', x: 3700, y: 'ground-0', hp: 2 }, { type: 'basic', x: 4100, y: 'ground-0' } ] },
+        { triggerX: 5600, enemies: [ { type: 'nurse_zombie', x: 5650, y: 'ground-0', hp: 2 }, { type: 'nurse_zombie', x: 5800, y: 'ground-0', hp: 2 } ] },
+        { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
     ],
     
     // Boss configuration
