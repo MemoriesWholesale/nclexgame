@@ -175,8 +175,7 @@ class Game {
     updateEnemies() {
         this.enemyManager.update(
             this.canvas, this.gameState.worldX, this.player,
-            this.gameState.pits, this.gameState.gate, this.gameState.boss,
-            this.gameState.testLevelEndX
+            this.gameState.pits
         );
     }
     

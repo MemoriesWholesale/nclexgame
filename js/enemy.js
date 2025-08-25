@@ -1,6 +1,7 @@
 // Enemy logic goes here
 
-import { MIN_SPAWN_DISTANCE } from './constants.js';
+// Removed automatic enemy spawning; enemies now only appear via level scripts
+// that directly manage when and where enemies are created.
 
 export class Enemy {
     constructor(worldX, y, width = 40, height = 40) {
@@ -115,27 +116,14 @@ export class Enemy {
 export class EnemyManager {
     constructor() {
         this.enemies = [];
-        this.spawnTimer = 0;
-        this.spawnFromRightNext = true;
-        this.spawnInterval = 300; // frames between spawns
     }
-    
-    // Update spawn timer and spawn enemies
-    update(canvas, worldX, player, pits, gate, boss, testLevelEndX) {
-        this.spawnTimer++;
-        
-        // Spawn new enemy if conditions are met
-        if (this.spawnTimer > this.spawnInterval) {
-            this.spawnEnemy(canvas, worldX, player, gate, boss, testLevelEndX);
-            this.spawnFromRightNext = !this.spawnFromRightNext;
-            this.spawnTimer = 0;
-        }
-        
-        // Update all enemies
+
+    // Update all enemies and handle player collisions
+    update(canvas, worldX, player, pits) {
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const enemy = this.enemies[i];
             const shouldRemove = enemy.update(canvas, worldX, player, pits);
-            
+
             if (shouldRemove) {
                 this.enemies.splice(i, 1);
                 continue;
@@ -143,30 +131,11 @@ export class EnemyManager {
             
             // Check collision with player
             if (enemy.checkCollisionWithPlayer(player, worldX)) {
-                // Handle player death in the game loop
                 return { playerHit: true };
             }
         }
-        
+
         return { playerHit: false };
-    }
-    
-    // Spawn a new enemy
-    spawnEnemy(canvas, worldX, player, gate, boss, testLevelEndX) {
-        const playerWorldX = player.x - worldX;
-        if (gate === null || boss || playerWorldX > testLevelEndX - canvas.width) return;
-
-        let spawnX = this.spawnFromRightNext ?
-            -worldX + canvas.width + 50 :
-            -worldX - 50;
-
-        const dx = spawnX - playerWorldX;
-        if (Math.abs(dx) < MIN_SPAWN_DISTANCE) {
-            spawnX = playerWorldX + Math.sign(dx || 1) * MIN_SPAWN_DISTANCE;
-        }
-
-        const newEnemy = new Enemy(spawnX, canvas.height - 100);
-        this.enemies.push(newEnemy);
     }
     
     // Check projectile collisions with all enemies

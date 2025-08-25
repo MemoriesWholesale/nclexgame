@@ -902,7 +902,7 @@ import {
                 }
             });
 
-            enemyManager.update(canvas, worldX, player, pits, gate, boss, testLevelEndX);
+            enemyManager.update(canvas, worldX, player, pits);
 
             if (pickupSpawnTimer > 450) {
                 spawnPickup();
