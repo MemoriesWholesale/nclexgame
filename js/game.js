@@ -70,6 +70,11 @@ import {
 
         const hazards = [];
 
+        // Performance tuning constants
+        const SPAWN_CHECK_DISTANCE = 200; // pixels between spawn checks
+        let lastSpawnX = null;
+        const DEBUG_DRAW_AXES = false;
+
         let currentWeapon = 1;
         let fireTimer = 0;
 
@@ -410,62 +415,68 @@ import {
             }, 2000); // 2-second delay before respawn/game over
         }
 
+        // Psychological zone effects (Level 4)
+        function applyPsychZoneEffects(playerWorldX) {
+            if (!levelManager.currentLevel || !levelManager.currentLevel.psychZones) return;
+
+            // Reset effects first
+            player.invertedControls = false;
+            player.hasTwin = false;
+            player.gravityFlipped = false;
+            player.tunnelVision = 0;
+            player.speedMultiplier = 1;
+            player.depressionFog = 0;
+
+            // Apply active zone effects
+            for (const zone of levelManager.currentLevel.psychZones) {
+                if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                    if (player.preventedEffects && player.preventedEffects.has(zone.effect)) {
+                        continue;
+                    }
+                    switch(zone.effect) {
+                        case 'tunnel_vision':
+                            player.tunnelVision = zone.intensity;
+                            break;
+                        case 'inverted_controls':
+                            player.invertedControls = true;
+                            break;
+                        case 'mirror_twin':
+                            player.hasTwin = true;
+                            player.twinX = canvas.width - player.x; // Mirror position
+                            break;
+                        case 'upside_down':
+                            player.gravityFlipped = true;
+                            break;
+                        case 'speed_up':
+                            player.speedMultiplier = zone.intensity;
+                            break;
+                        case 'darkness_slowness':
+                            player.speedMultiplier = 0.5;
+                            player.depressionFog = zone.intensity;
+                            break;
+                    }
+                    break; // Only apply one zone at a time
+                }
+            }
+        }
+
         function update() {
             if (gameState !== 'playing') return;
 
             groundY = canvas.height - 100;
 
+            const playerWorldX = player.x - worldX;
+
             if (levelManager.currentLevel) {
-                levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, chests, hazards, enemyManager);
-                function applyPsychZoneEffects() {
-                    if (!levelManager.currentLevel || !levelManager.currentLevel.psychZones) return;
-
-                    const playerWorldX = player.x - worldX;
-
-                    // Reset effects first
-                    player.invertedControls = false;
-                    player.hasTwin = false;
-                    player.gravityFlipped = false;
-                    player.tunnelVision = 0;
-                    player.speedMultiplier = 1;
-                    player.depressionFog = 0;
-
-                    // Apply active zone effects
-                    for (const zone of levelManager.currentLevel.psychZones) {
-                        if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
-                            if (player.preventedEffects && player.preventedEffects.has(zone.effect)) {
-                                continue;
-                            }
-                            switch(zone.effect) {
-                                case 'tunnel_vision':
-                                    player.tunnelVision = zone.intensity;
-                                    break;
-                                case 'inverted_controls':
-                                    player.invertedControls = true;
-                                    break;
-                                case 'mirror_twin':
-                                    player.hasTwin = true;
-                                    player.twinX = canvas.width - player.x; // Mirror position
-                                    break;
-                                case 'upside_down':
-                                    player.gravityFlipped = true;
-                                    break;
-                                case 'speed_up':
-                                    player.speedMultiplier = zone.intensity;
-                                    break;
-                                case 'darkness_slowness':
-                                    player.speedMultiplier = 0.5;
-                                    player.depressionFog = zone.intensity;
-                                    break;
-                            }
-                            break; // Only apply one zone at a time
-                        }
-                    }
+                if (lastSpawnX === null || Math.abs(worldX - lastSpawnX) > SPAWN_CHECK_DISTANCE) {
+                    levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, chests, hazards, enemyManager);
+                    lastSpawnX = worldX;
                 }
+
                 if (selectedLevel === 4 && levelManager.currentLevel.psychZones) {
-                    applyPsychZoneEffects();
+                    applyPsychZoneEffects(playerWorldX);
                 }
-            };
+            }
 
             // Update platform states for new mechanics
         if (levelManager.currentLevel) {
@@ -2155,7 +2166,7 @@ import {
         function gameLoop() {
             update();
             draw();
-            drawSpatialAxes(); // Add debugging axes overlay
+            if (DEBUG_DRAW_AXES) drawSpatialAxes();
             requestAnimationFrame(gameLoop);
         }
 
