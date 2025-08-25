@@ -144,10 +144,13 @@ import {
                     const btnY = startY + row * (buttonHeight + 20);
 
                     if (mouseX >= btnX && mouseX <= btnX + buttonWidth && mouseY >= btnY && mouseY <= btnY + buttonHeight) {
-                        const previousLevel = selectedLevel;
                         selectedLevel = i;
-                        // If we had a previous level selected, this is a level change
-                        startGame(previousLevel !== -1);
+                        // Check if persistence system has saved data (indicates level change)
+                        const hasSavedState = playerPersistence.getState().lives !== 3 || 
+                                            playerPersistence.getState().currentWeapon !== 1 ||
+                                            playerPersistence.getState().armors.length > 1;
+                        console.log('Level selection - Has saved state:', hasSavedState);
+                        startGame(hasSavedState);
                         break;
                     }
                 }
@@ -166,6 +169,7 @@ import {
                 if (mouseX >= resumeX && mouseX <= resumeX + buttonWidth && mouseY >= resumeY && mouseY <= resumeY + buttonHeight) gameState = 'playing';
                 if (mouseX >= selectX && mouseX <= selectX + buttonWidth && mouseY >= selectY && mouseY <= selectY + buttonHeight) {
                     // Save current player state before returning to level select
+                    console.log('Saving state to persistence - Lives:', player.lives, 'Weapon:', player.currentWeapon);
                     playerPersistence.saveState(player, player.currentWeapon);
                     
                     // Clear all level content when returning to level select menu
@@ -266,12 +270,15 @@ import {
             
             // Use persistence for level changes, fresh start otherwise
             if (isLevelChange) {
-                // Save current state before changing levels
-                playerPersistence.saveState(player, player.currentWeapon);
-                player.reset(groundY, true); // Preserve persistent state
-                // Restore weapon from persistence (already handled in reset)
+                // Level change - restore from persistence system
+                console.log('Level change detected - restoring persistent state');
+                console.log('Before restore - Lives:', player.lives, 'Weapon:', player.currentWeapon);
+                player.reset(groundY, false); // Reset to clean state first
+                playerPersistence.restoreState(player); // Then restore persistent data
+                console.log('After restore - Lives:', player.lives, 'Weapon:', player.currentWeapon);
             } else {
                 // Fresh start - reset persistence and player
+                console.log('Fresh start - resetting all state');
                 playerPersistence.resetToInitial();
                 player.reset(groundY, false); // Don't preserve state
             }

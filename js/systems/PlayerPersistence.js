@@ -30,6 +30,7 @@ export class PlayerPersistence {
      */
     restoreState(player) {
         player.lives = this.persistentState.lives;
+        player.currentWeapon = this.persistentState.currentWeapon;
         player.armors = [...this.persistentState.armors]; // Deep copy
         player.currentArmorIndex = this.persistentState.currentArmorIndex;
         
