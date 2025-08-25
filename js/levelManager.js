@@ -1,4 +1,7 @@
 import { Enemy } from './enemy.js';
+import { LevelPlatforms } from './systems/LevelPlatforms.js';
+import { LevelZones } from './systems/LevelZones.js';
+import { LevelPathValidator } from './systems/LevelPathValidator.js';
 import { MIN_SPAWN_DISTANCE, LEVEL_DATA } from './constants.js';
 
 class LevelManager {
@@ -8,26 +11,27 @@ class LevelManager {
         
         // Level metadata for fallback cases
         this.levelData = LEVEL_DATA;
+        
+        // Initialize subsystems
+        this.platforms = new LevelPlatforms(this);
+        this.zones = new LevelZones(this);
+        this.pathValidator = new LevelPathValidator();
     }
 
-    // Clear all level-specific content arrays to prevent carryover between levels
+    /**
+     * Clear all level-specific content arrays to prevent carryover between levels
+     */
     clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups) {
-        // Reset dynamic states before clearing arrays to ensure clean state
-        if (platforms && platforms.length > 0) this.resetPlatformStates(platforms);
-        if (hazards && hazards.length > 0) this.resetHazardStates(hazards);
+        // Reset dynamic states before clearing arrays
+        if (platforms && platforms.length > 0) {
+            this.platforms.resetStates(platforms);
+        }
+        if (hazards && hazards.length > 0) {
+            this.resetHazardStates(hazards);
+        }
         
         // Clear all content arrays
-        if (platforms) platforms.length = 0;
-        if (npcs) npcs.length = 0;
-        if (chests) chests.length = 0;
-        if (hazards) hazards.length = 0;
-        if (pits) pits.length = 0;
-        if (powerups) powerups.length = 0;
-        if (medications) medications.length = 0;
-        if (interactionZones) interactionZones.length = 0;
-        if (hiddenPlatforms) hiddenPlatforms.length = 0;
-        if (projectiles) projectiles.length = 0;
-        if (pickups) pickups.length = 0;
+        this.clearArrays([platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups]);
         
         // Reset the current level to prevent any references to old level data
         this.currentLevel = null;
@@ -41,7 +45,13 @@ class LevelManager {
             wave.triggered = false;
         });
     }
+    /**
+     * Update platform states (delegated to platform system)
+     */
     updatePlatformStates(platforms, worldX, player, canvas) {
+        this.platforms.updateStates(platforms, worldX, player, canvas);
+        
+        // Keep legacy platform update logic for backwards compatibility
         const now = Date.now();
         
         platforms.forEach(platform => {
@@ -397,8 +407,12 @@ class LevelManager {
 
             if (module && module.default) {
                 this.currentLevel = JSON.parse(JSON.stringify(module.default));
-                // Reset all enemy wave triggers to ensure fresh level state
                 this.resetEnemyWaveStates();
+                this.zones.initializeZones(this.currentLevel);
+                
+                // Validate level accessibility (development mode only)
+                this.validateLevelAccessibility();
+                
                 console.log('Level loaded successfully:', this.currentLevel);
                 return this.currentLevel;
             } else {
@@ -447,7 +461,13 @@ class LevelManager {
         return pos;
     }
 
+    /**
+     * Initialize level zones (delegated to zones system)
+     */
     initializeLevelZones(level) {
+        this.zones.initializeZones(level);
+        
+        // Keep legacy zone initialization for backwards compatibility
         // Level 5: Comfort Zones
         if (level.comfortZones) {
             level.comfortZones.forEach(zone => {
@@ -503,7 +523,13 @@ class LevelManager {
         }
     }
 
+    /**
+     * Apply zone effects to player (delegated to zones system)
+     */
     applyZoneEffects(player, worldX, canvas) {
+        this.zones.applyEffects(player, worldX, canvas);
+        
+        // Keep legacy zone effects for backwards compatibility
         const level = this.currentLevel;
         if (!level) return;
         
@@ -828,9 +854,56 @@ class LevelManager {
             phases: boss.phases
         };
     }
+    
+    /**
+     * Validate level accessibility for game design compliance
+     */
+    validateLevelAccessibility() {
+        if (!this.currentLevel) return;
+        
+        // Create a mock canvas for validation (typical game canvas dimensions)
+        const mockCanvas = { width: 1024, height: 768 };
+        
+        const validation = this.pathValidator.validateLevel(this.currentLevel, mockCanvas);
+        
+        if (!validation.isValid) {
+            console.warn(`⚠️ Level ${this.currentLevel.id} has accessibility issues:`);
+            validation.issues.forEach(issue => {
+                console.warn(`  • ${issue}`);
+            });
+        }
+        
+        if (validation.recommendations.length > 0) {
+            console.log(`💡 Level ${this.currentLevel.id} recommendations:`);
+            validation.recommendations.forEach(rec => {
+                console.log(`  • ${rec}`);
+            });
+        }
+        
+        if (validation.isValid && validation.recommendations.length === 0) {
+            console.log(`✅ Level ${this.currentLevel.id} accessibility validation passed`);
+        }
+    }
+    
+    /**
+     * Generate detailed validation report for a level
+     */
+    generateValidationReport(canvas = { width: 1024, height: 768 }) {
+        if (!this.currentLevel) return 'No level loaded';
+        return this.pathValidator.generateReport(this.currentLevel, canvas);
+    }
+    
+    /**
+     * Utility method to clear multiple arrays
+     */
+    clearArrays(arrays) {
+        arrays.forEach(arr => {
+            if (arr && arr.length !== undefined) {
+                arr.length = 0;
+            }
+        });
+    }
 }
-
-
 
 // Export the class
 export default LevelManager;
