@@ -3,6 +3,7 @@ import LevelManager from './levelManager.js';
 import { Quiz } from './quiz.js';
 import { Enemy, EnemyManager } from './enemy.js';
 import { Boss } from './systems/Boss.js';
+import { ItemSpawner } from './systems/ItemSpawner.js';
 import {
     MIN_SPAWN_DISTANCE,
     LEVEL_DATA,
@@ -42,8 +43,9 @@ import {
         // Create quiz instance
         const quiz = new Quiz();
 
-        // Create enemy manager
+        // Create enemy manager and item spawner
         const enemyManager = new EnemyManager();
+        const itemSpawner = new ItemSpawner();
 
         let worldX = 0;
         let groundY = 0;
@@ -58,7 +60,6 @@ import {
         const platforms = [];
         const npcs = [];
         const pickups = [];
-        let pickupSpawnTimer = 0;
         const pits = [];
         const chests = [];
         const powerups = [];
@@ -145,6 +146,7 @@ import {
                     // Clear all level content when returning to level select menu
                     levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     enemyManager.clear();
+                    itemSpawner.reset();
                     boss = null;
                     armorPickup = null;
                     gameState = 'menu';
@@ -232,6 +234,7 @@ import {
         async function startGame() {
             // **FIX**: Clear all level content arrays right at the start.
             levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+            itemSpawner.reset();
 
             gameState = 'playing';
             const groundY = canvas.height - 100;
@@ -246,7 +249,6 @@ import {
             canFire = true;
 
             // Reset all timers to ensure fresh level start
-            pickupSpawnTimer = 0;
             medicationSpawnTimer = 0;
             fireTimer = 0;
 
@@ -260,6 +262,9 @@ import {
                     }
 
                     testLevelEndX = levelDef.worldLength || 10800;
+                    
+                    // Initialize item spawner with level data
+                    itemSpawner.initializeLevel(levelDef);
 
                     // Set gate with correct level end position
                     gate = {
@@ -351,15 +356,6 @@ import {
             }
         }
 
-        function spawnPickup() {
-            const playerWorldX = player.x - worldX;
-            if (gate === null || boss || playerWorldX > testLevelEndX - canvas.width) return;
-            pickups.push({
-                worldX: -worldX + canvas.width / 2 + Math.random() * canvas.width / 2,
-                y: canvas.height - 130,
-                weaponId: 2 + Math.floor(Math.random() * 7)
-            });
-        }
 
         function fireWeapon() {
             if (fireTimer > 0) return;
@@ -705,10 +701,27 @@ import {
         }
 
             if (fireTimer > 0) fireTimer--;
-            pickupSpawnTimer++;
 
             // Update player medications
             player.updateMedications();
+            
+            // Check for fixed spawn points and update existing items
+            const playerWorldX = player.x - worldX;
+            const newFixedItems = itemSpawner.checkFixedSpawnPoints(playerWorldX, worldX, canvas);
+            
+            // Add new fixed spawn items to pickups array
+            for (const item of newFixedItems) {
+                pickups.push(item);
+            }
+            
+            // Update all pickup items (physics, timers)
+            for (let i = pickups.length - 1; i >= 0; i--) {
+                const item = pickups[i];
+                const shouldKeep = itemSpawner.updateItem(item, groundY, platforms);
+                if (!shouldKeep) {
+                    pickups.splice(i, 1);
+                }
+            }
 
             // Medication spawning disabled for level 1 - medications only from NPCs/chests
             // Level 1 medications are now only available through quiz interactions
@@ -906,11 +919,6 @@ import {
             });
 
             enemyManager.update(canvas, worldX, player, pits);
-
-            if (pickupSpawnTimer > 450) {
-                spawnPickup();
-                pickupSpawnTimer = 0;
-            }
 
             player.handleInput(keys, onSpill);
             player.updateState(SPRITE_ANIMATIONS);
@@ -1121,6 +1129,20 @@ import {
             const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
             hitResults.sort((a, b) => b.projectileIndex - a.projectileIndex);
             for (const result of hitResults) {
+                // Handle enemy drops
+                if (result.destroyedEnemy) {
+                    const droppedItem = itemSpawner.handleEnemyDeath(
+                        result.destroyedEnemy, 
+                        worldX, 
+                        result.enemyType
+                    );
+                    
+                    if (droppedItem) {
+                        pickups.push(droppedItem);
+                    }
+                }
+                
+                // Remove projectile (except for persistent ones)
                 if (result.projectileType !== 3 && result.projectileType !== 7) {
                     projectiles.splice(result.projectileIndex, 1);
                 }
@@ -1130,10 +1152,67 @@ import {
                 const pickup = pickups[i];
                 const screenX = pickup.worldX + worldX;
                 if (screenX < -100) { pickups.splice(i, 1); continue; }
-                const weaponId = player.checkPickupCollision(pickup, screenX);
-                if (weaponId) {
-                    currentWeapon = weaponId;
-                    pickups.splice(i, 1);
+                
+                // Check collision with player
+                if (player.x < screenX + pickup.width && 
+                    player.x + player.width > screenX && 
+                    player.y < pickup.y + pickup.height && 
+                    player.y + player.height > pickup.y) {
+                    
+                    // Handle different item types
+                    let itemCollected = false;
+                    
+                    switch (pickup.subtype) {
+                        case 'weapon':
+                            if (pickup.weaponId) {
+                                currentWeapon = pickup.weaponId;
+                                itemCollected = true;
+                            }
+                            break;
+                        case 'powerup':
+                            if (pickup.powerupType === 'life') {
+                                player.lives++;
+                                itemCollected = true;
+                            } else if (pickup.powerupType === 'speed_boost') {
+                                player.speedMultiplier *= 1.5;
+                                setTimeout(() => { player.speedMultiplier /= 1.5; }, 10000);
+                                itemCollected = true;
+                            } else if (pickup.powerupType === 'jump_boost') {
+                                player.jumpMultiplier *= 1.3;
+                                setTimeout(() => { player.jumpMultiplier /= 1.3; }, 10000);
+                                itemCollected = true;
+                            }
+                            break;
+                        case 'medication':
+                            const result = player.applyMedication(pickup.medicationType);
+                            if (result.success) {
+                                itemCollected = true;
+                            }
+                            break;
+                        case 'rare':
+                            if (pickup.rareType === 'armor_repair') {
+                                // Repair current armor or grant temporary invincibility
+                                player.invincible = true;
+                                setTimeout(() => { player.invincible = false; }, 5000);
+                                itemCollected = true;
+                            } else if (pickup.rareType === 'invincibility') {
+                                player.invincible = true;
+                                setTimeout(() => { player.invincible = false; }, 8000);
+                                itemCollected = true;
+                            }
+                            break;
+                        default:
+                            // Legacy weapon pickup support
+                            if (pickup.weaponId) {
+                                currentWeapon = pickup.weaponId;
+                                itemCollected = true;
+                            }
+                            break;
+                    }
+                    
+                    if (itemCollected) {
+                        pickups.splice(i, 1);
+                    }
                 }
             }
 
@@ -1669,11 +1748,107 @@ import {
 
                 for (const pickup of pickups) {
                     const screenX = pickup.worldX + worldX;
-                    if (screenX > -30 && screenX < canvas.width + 30) {
-                        ctx.fillStyle = WEAPON_COLORS[pickup.weaponId - 1]; ctx.fillRect(screenX, pickup.y, 30, 30);
-                        ctx.strokeStyle = '#000'; ctx.strokeRect(screenX, pickup.y, 30, 30);
-                        ctx.fillStyle = '#000'; ctx.font = '16px Arial'; ctx.textAlign = 'center';
-                        ctx.fillText(pickup.weaponId.toString(), screenX + 15, pickup.y + 20);
+                    if (screenX > -50 && screenX < canvas.width + 50) {
+                        // Add glow effect for rare items
+                        if (pickup.glowEffect || pickup.subtype === 'rare') {
+                            const time = Date.now() * 0.005;
+                            const glowAlpha = 0.3 + 0.2 * Math.sin(time);
+                            ctx.fillStyle = `rgba(255, 215, 0, ${glowAlpha})`;
+                            ctx.fillRect(screenX - 5, pickup.y - 5, pickup.width + 10, pickup.height + 10);
+                        }
+                        
+                        // Render based on item type
+                        switch (pickup.subtype) {
+                            case 'weapon':
+                                ctx.fillStyle = WEAPON_COLORS[pickup.weaponId - 1] || '#888';
+                                ctx.fillRect(screenX, pickup.y, pickup.width, pickup.height);
+                                ctx.strokeStyle = '#000'; 
+                                ctx.strokeRect(screenX, pickup.y, pickup.width, pickup.height);
+                                ctx.fillStyle = '#000'; 
+                                ctx.font = '14px Arial'; 
+                                ctx.textAlign = 'center';
+                                ctx.fillText(pickup.weaponId.toString(), screenX + pickup.width/2, pickup.y + pickup.height/2 + 5);
+                                break;
+                                
+                            case 'powerup':
+                                if (pickup.powerupType === 'life') {
+                                    ctx.fillStyle = '#FF0000';
+                                    ctx.font = '20px Arial';
+                                    ctx.textAlign = 'center';
+                                    ctx.fillText('♥', screenX + pickup.width/2, pickup.y + pickup.height/2 + 7);
+                                } else if (pickup.powerupType === 'speed_boost') {
+                                    ctx.fillStyle = '#00FF00';
+                                    ctx.fillRect(screenX, pickup.y, pickup.width, pickup.height);
+                                    ctx.fillStyle = '#FFF';
+                                    ctx.font = '12px Arial';
+                                    ctx.textAlign = 'center';
+                                    ctx.fillText('SPD', screenX + pickup.width/2, pickup.y + pickup.height/2 + 4);
+                                } else if (pickup.powerupType === 'jump_boost') {
+                                    ctx.fillStyle = '#0080FF';
+                                    ctx.fillRect(screenX, pickup.y, pickup.width, pickup.height);
+                                    ctx.fillStyle = '#FFF';
+                                    ctx.font = '12px Arial';
+                                    ctx.textAlign = 'center';
+                                    ctx.fillText('JMP', screenX + pickup.width/2, pickup.y + pickup.height/2 + 4);
+                                }
+                                break;
+                                
+                            case 'medication':
+                                const medColors = {
+                                    'epinephrine': '#FF69B4',
+                                    'morphine': '#FFD700',
+                                    'insulin': '#90EE90'
+                                };
+                                ctx.fillStyle = medColors[pickup.medicationType] || '#FFF';
+                                ctx.beginPath();
+                                ctx.arc(screenX + pickup.width/2, pickup.y + pickup.height/2, pickup.width/2, 0, Math.PI * 2);
+                                ctx.fill();
+                                ctx.strokeStyle = '#000';
+                                ctx.lineWidth = 2;
+                                ctx.stroke();
+                                ctx.fillStyle = '#000';
+                                ctx.font = 'bold 12px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(pickup.medicationType[0].toUpperCase(), screenX + pickup.width/2, pickup.y + pickup.height/2 + 4);
+                                break;
+                                
+                            case 'rare':
+                                ctx.fillStyle = '#FFD700';
+                                ctx.fillRect(screenX, pickup.y, pickup.width, pickup.height);
+                                ctx.strokeStyle = '#FF4500';
+                                ctx.lineWidth = 3;
+                                ctx.strokeRect(screenX, pickup.y, pickup.width, pickup.height);
+                                ctx.fillStyle = '#000';
+                                ctx.font = 'bold 16px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText('★', screenX + pickup.width/2, pickup.y + pickup.height/2 + 6);
+                                break;
+                                
+                            default:
+                                // Legacy weapon rendering
+                                if (pickup.weaponId) {
+                                    ctx.fillStyle = WEAPON_COLORS[pickup.weaponId - 1] || '#888';
+                                    ctx.fillRect(screenX, pickup.y, pickup.width || 30, pickup.height || 30);
+                                    ctx.strokeStyle = '#000';
+                                    ctx.strokeRect(screenX, pickup.y, pickup.width || 30, pickup.height || 30);
+                                    ctx.fillStyle = '#000';
+                                    ctx.font = '14px Arial';
+                                    ctx.textAlign = 'center';
+                                    ctx.fillText(pickup.weaponId.toString(), screenX + (pickup.width || 30)/2, pickup.y + (pickup.height || 30)/2 + 5);
+                                } else {
+                                    // Generic item
+                                    ctx.fillStyle = '#888';
+                                    ctx.fillRect(screenX, pickup.y, pickup.width || 20, pickup.height || 20);
+                                }
+                                break;
+                        }
+                        
+                        // Show despawn timer for temporary items
+                        if (pickup.despawnTimer > 0 && pickup.despawnTimer < 180) { // Show warning in last 3 seconds
+                            const alpha = 0.5 + 0.5 * Math.sin(Date.now() * 0.01);
+                            ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
+                            ctx.fillRect(screenX - 2, pickup.y - 2, pickup.width + 4, pickup.height + 4);
+                        }
                     }
                 }
 

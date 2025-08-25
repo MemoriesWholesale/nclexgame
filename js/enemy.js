@@ -149,11 +149,16 @@ export class EnemyManager {
                 const proj = projectiles[i];
                 
                 if (enemy.checkProjectileHit(proj, worldX)) {
+                    // Store enemy data before removing it for item drops
+                    const destroyedEnemy = { ...enemy };
                     this.enemies.splice(j, 1);
+                    
                     hitResults.push({
                         enemyIndex: j,
                         projectileIndex: i,
-                        projectileType: proj.type
+                        projectileType: proj.type,
+                        destroyedEnemy: destroyedEnemy,
+                        enemyType: enemy.enemyType || 'basic' // Default to basic if not specified
                     });
                     break; // Break inner loop since enemy is destroyed
                 }

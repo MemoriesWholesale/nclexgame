@@ -137,6 +137,63 @@ const level = {
         { triggerX: 7000, enemies: [ { type: 'basic', x: 7050, y: 'ground-0' }, { type: 'basic', x: 7200, y: 'ground-0' }, { type: 'nurse_zombie', x: 7500, y: 'ground-0', hp: 3 } ] }
     ],
     
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Early game weapon upgrade
+        { 
+            id: 'weapon_1', 
+            x: 1450, 
+            y: 'ground-30', 
+            triggerX: 1400,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 2,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Mid-level health boost
+        { 
+            id: 'health_1', 
+            x: 2800, 
+            y: 'ground-30', 
+            triggerX: 2750,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        },
+        // Hidden weapon on high platform
+        { 
+            id: 'secret_weapon', 
+            x: 3950, 
+            y: 'ground-520', 
+            triggerX: 3900,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 4,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        },
+        // Pre-boss medication
+        { 
+            id: 'boss_prep', 
+            x: 11200, 
+            y: 'ground-30', 
+            triggerX: 11000,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'epinephrine',
+            width: 30,
+            height: 30,
+            persistent: false
+        }
+    ],
+
     // Boss configuration
     boss: {
         triggerX: 11500,
