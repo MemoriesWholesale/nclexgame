@@ -52,6 +52,9 @@ export class Player {
         this.armors = [0];
         this.currentArmorIndex = 0;
         
+        // Weapon system
+        this.currentWeapon = 1;
+        
         // Animation properties
         this.isShooting = false;
         this.shootTimer = 0;
@@ -101,7 +104,7 @@ export class Player {
     }
     
     /**
-     * Respawn the player
+     * Respawn the player (preserves lives, weapon, and armor)
      */
     respawn(groundY) {
         this.dead = false;
@@ -121,6 +124,8 @@ export class Player {
 
         // Clear medication effects on respawn
         this.medication.clearAll();
+        
+        // Note: Weapon, armor, and lives are preserved during respawn
     }
     
     // Handle screen boundaries and world scrolling
@@ -278,7 +283,16 @@ export class Player {
     /**
      * Reset player to initial state
      */
-    reset(groundY) {
+    reset(groundY, preservePersistentState = false) {
+        // Store persistent state if preserving
+        let savedLives, savedArmors, savedArmorIndex, savedWeapon;
+        if (preservePersistentState) {
+            savedLives = this.lives;
+            savedArmors = [...this.armors];
+            savedArmorIndex = this.currentArmorIndex;
+            savedWeapon = this.currentWeapon;
+        }
+
         // Reset position and movement
         this.x = 100;
         this.y = groundY - this.height;
@@ -286,7 +300,7 @@ export class Player {
         this.vy = 0;
         
         // Reset player state
-        this.lives = 3;
+        this.lives = preservePersistentState ? savedLives : 3;
         this.dead = false;
         this.isRespawning = false;
         this.crouching = false;
@@ -307,6 +321,18 @@ export class Player {
         this.tunnelVision = 0;
         this.depressionFog = 0;
         this.preventedEffects.clear();
+        
+        // Restore persistent state if preserving
+        if (preservePersistentState) {
+            this.armors = savedArmors;
+            this.currentArmorIndex = savedArmorIndex;
+            this.currentWeapon = savedWeapon;
+        } else {
+            // Reset armor and weapon to initial state
+            this.armors = [0];
+            this.currentArmorIndex = 0;
+            this.currentWeapon = 1;
+        }
         
         // Clear subsystem state
         this.medication.clearAll();

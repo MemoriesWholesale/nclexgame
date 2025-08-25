@@ -4,6 +4,7 @@ import { Quiz } from './quiz.js';
 import { Enemy, EnemyManager } from './enemy.js';
 import { Boss } from './systems/Boss.js';
 import { ItemSpawner } from './systems/ItemSpawner.js';
+import { PlayerPersistence } from './systems/PlayerPersistence.js';
 import {
     MIN_SPAWN_DISTANCE,
     LEVEL_DATA,
@@ -39,13 +40,28 @@ import {
 
         // Create player instance
         const player = new Player(canvas);
+        
+        // Create player persistence system
+        const playerPersistence = new PlayerPersistence();
 
         // Create quiz instance
         const quiz = new Quiz();
 
         // Create enemy manager and item spawner
         const enemyManager = new EnemyManager();
-        const itemSpawner = new ItemSpawner();
+        let itemSpawner;
+        try {
+            itemSpawner = new ItemSpawner();
+        } catch (error) {
+            console.error('Error creating ItemSpawner:', error);
+            itemSpawner = {
+                initializeLevel: () => {},
+                checkFixedSpawnPoints: () => [],
+                updateItem: () => true,
+                handleEnemyDeath: () => null,
+                reset: () => {}
+            };
+        }
 
         let worldX = 0;
         let groundY = 0;
@@ -75,7 +91,6 @@ import {
         let lastSpawnX = null;
         const DEBUG_DRAW_AXES = false;
 
-        let currentWeapon = 1;
         let fireTimer = 0;
 
         const keys = {};
@@ -129,8 +144,10 @@ import {
                     const btnY = startY + row * (buttonHeight + 20);
 
                     if (mouseX >= btnX && mouseX <= btnX + buttonWidth && mouseY >= btnY && mouseY <= btnY + buttonHeight) {
+                        const previousLevel = selectedLevel;
                         selectedLevel = i;
-                        startGame();
+                        // If we had a previous level selected, this is a level change
+                        startGame(previousLevel !== -1);
                         break;
                     }
                 }
@@ -148,6 +165,9 @@ import {
 
                 if (mouseX >= resumeX && mouseX <= resumeX + buttonWidth && mouseY >= resumeY && mouseY <= resumeY + buttonHeight) gameState = 'playing';
                 if (mouseX >= selectX && mouseX <= selectX + buttonWidth && mouseY >= selectY && mouseY <= selectY + buttonHeight) {
+                    // Save current player state before returning to level select
+                    playerPersistence.saveState(player, player.currentWeapon);
+                    
                     // Clear all level content when returning to level select menu
                     levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
                     enemyManager.clear();
@@ -236,17 +256,28 @@ import {
             }
         });
 
-        async function startGame() {
+        async function startGame(isLevelChange = false) {
             // **FIX**: Clear all level content arrays right at the start.
             levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
             itemSpawner.reset();
 
             gameState = 'playing';
             const groundY = canvas.height - 100;
-            player.reset(groundY);
+            
+            // Use persistence for level changes, fresh start otherwise
+            if (isLevelChange) {
+                // Save current state before changing levels
+                playerPersistence.saveState(player, player.currentWeapon);
+                player.reset(groundY, true); // Preserve persistent state
+                // Restore weapon from persistence (already handled in reset)
+            } else {
+                // Fresh start - reset persistence and player
+                playerPersistence.resetToInitial();
+                player.reset(groundY, false); // Don't preserve state
+            }
+            
             worldX = 0;
             enemyManager.clear();
-            currentWeapon = 1;
             screenLocked = false;
             boss = null;
             armorPickup = null;
@@ -269,7 +300,11 @@ import {
                     testLevelEndX = levelDef.worldLength || 10800;
                     
                     // Initialize item spawner with level data
-                    itemSpawner.initializeLevel(levelDef);
+                    try {
+                        itemSpawner.initializeLevel(levelDef);
+                    } catch (error) {
+                        console.error('Error initializing ItemSpawner with level data:', error);
+                    }
 
                     // Set gate with correct level end position
                     gate = {
@@ -315,6 +350,10 @@ import {
                     const response = await fetch(levelDef.questionFile || LEVEL_DATA[selectedLevel].file);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     await quiz.loadQuestions(levelDef.questionFile || LEVEL_DATA[selectedLevel].file);
+
+                    // **FIX**: Initial spawn of level content to prevent delay
+                    levelManager.spawnLevelContent(worldX, canvas, platforms, npcs, chests, hazards, enemyManager);
+                    lastSpawnX = worldX;
 
                 } catch (error) {
                     console.error("Could not load level:", error);
@@ -364,17 +403,17 @@ import {
 
         function fireWeapon() {
             if (fireTimer > 0) return;
-            if (currentWeapon === 3 || currentWeapon === 7) {
+            if (player.currentWeapon === 3 || player.currentWeapon === 7) {
                 for (const proj of projectiles) {
-                    if (proj.type === currentWeapon) return;
+                    if (proj.type === player.currentWeapon) return;
                 }
             }
-            fireTimer = FIRE_COOLDOWNS[currentWeapon - 1];
+            fireTimer = FIRE_COOLDOWNS[player.currentWeapon - 1];
 
             const weaponPos = player.getWeaponSpawnPos();
             const weaponYOffset = player.crouching ? 20 : 0;
 
-            switch(currentWeapon) {
+            switch(player.currentWeapon) {
                 case 2: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 3 + weaponYOffset, vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 }); break;
                 case 3: projectiles.push({ centerX: weaponPos.centerX, centerY: weaponPos.centerY + weaponYOffset, radius: 120, angle: 0, rotSpeed: 0.2, type: 3 }); break;
                 case 4: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 5 + weaponYOffset, vx: player.facing * 6, vy: -10, width: 30, height: 10, wavePhase: 0, type: 4 }); break;
@@ -401,6 +440,9 @@ import {
                         if (h.deactivatedByNPC) h.activated = true; // Reactivate hazards
                     });
                 } else {
+                    // Game over - reset persistent state and return to menu
+                    playerPersistence.resetToInitial();
+                    
                     // **FIX**: Reset respawn flag even on game over to prevent stuck state
                     player.isRespawning = false;
                     player.dead = false; // Reset dead state for clean menu transition
@@ -411,6 +453,7 @@ import {
                     boss = null;
                     armorPickup = null;
                     gameState = 'menu'; // Game over
+                    selectedLevel = -1; // Reset selected level
                 }
             }, 2000); // 2-second delay before respawn/game over
         }
@@ -721,21 +764,25 @@ import {
             player.updateMedications();
             
             // Check for fixed spawn points and update existing items
-            const playerWorldX = player.x - worldX;
-            const newFixedItems = itemSpawner.checkFixedSpawnPoints(playerWorldX, worldX, canvas);
-            
-            // Add new fixed spawn items to pickups array
-            for (const item of newFixedItems) {
-                pickups.push(item);
-            }
-            
-            // Update all pickup items (physics, timers)
-            for (let i = pickups.length - 1; i >= 0; i--) {
-                const item = pickups[i];
-                const shouldKeep = itemSpawner.updateItem(item, groundY, platforms);
-                if (!shouldKeep) {
-                    pickups.splice(i, 1);
+            try {
+                let currentPlayerWorldX = player.x - worldX;
+                const newFixedItems = itemSpawner.checkFixedSpawnPoints(currentPlayerWorldX, worldX, canvas);
+                
+                // Add new fixed spawn items to pickups array
+                for (const item of newFixedItems) {
+                    pickups.push(item);
                 }
+                
+                // Update all pickup items (physics, timers)
+                for (let i = pickups.length - 1; i >= 0; i--) {
+                    const item = pickups[i];
+                    const shouldKeep = itemSpawner.updateItem(item, groundY, platforms);
+                    if (!shouldKeep) {
+                        pickups.splice(i, 1);
+                    }
+                }
+            } catch (error) {
+                console.error('Error in item spawning system:', error);
             }
 
             // Medication spawning disabled for level 1 - medications only from NPCs/chests
@@ -1146,14 +1193,18 @@ import {
             for (const result of hitResults) {
                 // Handle enemy drops
                 if (result.destroyedEnemy) {
-                    const droppedItem = itemSpawner.handleEnemyDeath(
-                        result.destroyedEnemy, 
-                        worldX, 
-                        result.enemyType
-                    );
-                    
-                    if (droppedItem) {
-                        pickups.push(droppedItem);
+                    try {
+                        const droppedItem = itemSpawner.handleEnemyDeath(
+                            result.destroyedEnemy, 
+                            worldX, 
+                            result.enemyType
+                        );
+                        
+                        if (droppedItem) {
+                            pickups.push(droppedItem);
+                        }
+                    } catch (error) {
+                        console.error('Error handling enemy death drop:', error);
                     }
                 }
                 
@@ -1180,7 +1231,7 @@ import {
                     switch (pickup.subtype) {
                         case 'weapon':
                             if (pickup.weaponId) {
-                                currentWeapon = pickup.weaponId;
+                                player.currentWeapon = pickup.weaponId;
                                 itemCollected = true;
                             }
                             break;
@@ -1219,7 +1270,7 @@ import {
                         default:
                             // Legacy weapon pickup support
                             if (pickup.weaponId) {
-                                currentWeapon = pickup.weaponId;
+                                player.currentWeapon = pickup.weaponId;
                                 itemCollected = true;
                             }
                             break;
@@ -1264,7 +1315,7 @@ import {
         }
 
         function draw() {
-            ctx.fillStyle = selectedLevel >= 0 ? LEVEL_DATA[selectedLevel].color : '#333';
+            ctx.fillStyle = (selectedLevel >= 0 && LEVEL_DATA[selectedLevel]) ? LEVEL_DATA[selectedLevel].color : '#333';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (gameState === 'menu') {
@@ -1985,7 +2036,7 @@ import {
                 const currentArmorId = player.armors[player.currentArmorIndex];
                 const currentArmorName = ARMOR_DATA[currentArmorId].name;
                 ctx.fillText(`Armor: ${currentArmorName}`, 20, 35);
-                ctx.fillText(`Weapon: ${WEAPON_NAMES[currentWeapon - 1]}`, 20, 60);
+                ctx.fillText(`Weapon: ${WEAPON_NAMES[player.currentWeapon - 1]}`, 20, 60);
                 ctx.fillText(`Lives: ${player.lives}`, 20, 85);
 
                 if (player.dead) {
@@ -2164,12 +2215,20 @@ import {
         }
 
         function gameLoop() {
-            update();
-            draw();
-            if (DEBUG_DRAW_AXES) drawSpatialAxes();
+            try {
+                update();
+                draw();
+                if (typeof DEBUG_DRAW_AXES !== 'undefined' && DEBUG_DRAW_AXES) {
+                    drawSpatialAxes();
+                }
+            } catch (error) {
+                console.error('Game loop error:', error);
+                // Continue running even if there's an error
+            }
             requestAnimationFrame(gameLoop);
         }
 
+        console.log('Starting game...');
         gameLoop();
 export function initGame() {
     // TODO: Import/init player, enemies, UI, etc.
