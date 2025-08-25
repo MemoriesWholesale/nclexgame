@@ -148,29 +148,35 @@ const level = {
     
     // NPCs - Mental health professionals
     npcs: [
-        { id: 'therapist_1', type: 'therapist', x: 1100, y: 'ground-60', 
-          dialogue: "Anxiety ahead. Remember: breathe deeply. Let me create safe spaces.", 
-          activates: 'breathing_space_1,breathing_space_2' },
+        { id: 'therapist_1', type: 'therapist', x: 1100, y: 'ground-60',
+          dialogue: "Anxiety ahead. Remember: breathe deeply. Let me create safe spaces.",
+          activates: 'breathing_space_1,breathing_space_2',
+          preventsEffect: 'tunnel_vision' },
         
-        { id: 'psychiatrist_1', type: 'psychiatrist', x: 2700, y: 'ground-60', 
-          dialogue: "Depression fog is thick here. Hold onto hope - I'll light the way.", 
-          activates: 'hope_bridge_1' },
+        { id: 'psychiatrist_1', type: 'psychiatrist', x: 2700, y: 'ground-60',
+          dialogue: "Depression fog is thick here. Hold onto hope - I'll light the way.",
+          activates: 'hope_bridge_1',
+          preventsEffect: 'darkness_slowness' },
         
-        { id: 'social_worker_1', type: 'social_worker', x: 4100, y: 'ground-60', 
-          dialogue: "Mania makes everything race. Let's find stability together.", 
-          activates: 'mood_stabilizer' },
+        { id: 'social_worker_1', type: 'social_worker', x: 4100, y: 'ground-60',
+          dialogue: "Mania makes everything race. Let's find stability together.",
+          activates: 'mood_stabilizer',
+          preventsEffect: 'speed_up' },
         
-        { id: 'counselor_1', type: 'counselor', x: 5400, y: 'ground-60', 
-          dialogue: "Confusion is temporary. Focus on my voice for clarity.", 
-          activates: 'clarity_path' },
+        { id: 'counselor_1', type: 'counselor', x: 5400, y: 'ground-60',
+          dialogue: "Confusion is temporary. Focus on my voice for clarity.",
+          activates: 'clarity_path',
+          preventsEffect: 'inverted_controls' },
         
-        { id: 'peer_support_1', type: 'peer_support', x: 6900, y: 'ground-60', 
-          dialogue: "I've been where you are. You're not alone. Stay grounded.", 
-          activates: 'grounding_reality' },
+        { id: 'peer_support_1', type: 'peer_support', x: 6900, y: 'ground-60',
+          dialogue: "I've been where you are. You're not alone. Stay grounded.",
+          activates: 'grounding_reality',
+          preventsEffect: 'mirror_twin' },
         
-        { id: 'crisis_counselor_1', type: 'crisis_counselor', x: 8400, y: 'ground-60', 
-          dialogue: "Reality feels broken, but it's still there. Let me anchor you.", 
-          activates: 'reality_anchor' },
+        { id: 'crisis_counselor_1', type: 'crisis_counselor', x: 8400, y: 'ground-60',
+          dialogue: "Reality feels broken, but it's still there. Let me anchor you.",
+          activates: 'reality_anchor',
+          preventsEffect: 'upside_down' },
         
         { id: 'recovery_coach_1', type: 'recovery_coach', x: 10000, y: 'ground-60', 
           dialogue: "You've come so far! Recovery isn't linear, but you're doing it.", 

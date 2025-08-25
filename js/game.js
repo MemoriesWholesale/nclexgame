@@ -432,10 +432,14 @@ import {
                     player.gravityFlipped = false;
                     player.tunnelVision = 0;
                     player.speedMultiplier = 1;
+                    player.depressionFog = 0;
 
                     // Apply active zone effects
                     for (const zone of levelManager.currentLevel.psychZones) {
                         if (playerWorldX >= zone.startX && playerWorldX <= zone.endX) {
+                            if (player.preventedEffects && player.preventedEffects.has(zone.effect)) {
+                                continue;
+                            }
                             switch(zone.effect) {
                                 case 'tunnel_vision':
                                     player.tunnelVision = zone.intensity;

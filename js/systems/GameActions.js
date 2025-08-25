@@ -221,6 +221,9 @@ export class GameActions {
 
         // Handle NPC medication rewards
         this.handleNPCReward(currentQuestion);
+
+        // Handle NPC effect prevention rewards
+        this.handleNPCEffectPrevention(currentQuestion);
     }
     
     /**
@@ -288,6 +291,17 @@ export class GameActions {
                 width: 30,
                 height: 30
             });
+            interactingNpc.isLeaving = true;
+        }
+    }
+
+    /**
+     * Grant NPC effect prevention reward
+     */
+    handleNPCEffectPrevention(currentQuestion) {
+        const interactingNpc = this.gameState.npcs.find(n => n.interactionId === currentQuestion.originalInteractionId);
+        if (interactingNpc && interactingNpc.preventsEffect) {
+            this.player.preventedEffects.add(interactingNpc.preventsEffect);
             interactingNpc.isLeaving = true;
         }
     }
