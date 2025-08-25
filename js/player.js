@@ -46,6 +46,7 @@ export class Player {
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
+        this.preventedEffects = new Set();
         
         // Armor system
         this.armors = [0];
@@ -109,7 +110,15 @@ export class Player {
         this.y = groundY - this.height;
         this.vx = 0;
         this.vy = 0;
-        
+
+        // Reset temporary zone effects
+        this.invertedControls = false;
+        this.hasTwin = false;
+        this.gravityFlipped = false;
+        this.tunnelVision = 0;
+        this.depressionFog = 0;
+        this.speedMultiplier = 1;
+
         // Clear medication effects on respawn
         this.medication.clearAll();
     }
@@ -290,6 +299,14 @@ export class Player {
         this.sizeScale = 1;
         this.width = 50;
         this.height = 92;
+
+        // Clear zone effects and preventions
+        this.invertedControls = false;
+        this.hasTwin = false;
+        this.gravityFlipped = false;
+        this.tunnelVision = 0;
+        this.depressionFog = 0;
+        this.preventedEffects.clear();
         
         // Clear subsystem state
         this.medication.clearAll();
