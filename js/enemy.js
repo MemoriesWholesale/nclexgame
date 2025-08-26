@@ -14,6 +14,8 @@ export class Enemy {
         this.hp = 1;
         this.falling = false;
         this.speed = 2;
+        // Track spawn time for temporary invulnerability
+        this.spawnTime = Date.now();
     }
     
     // Update enemy position and AI
@@ -56,12 +58,16 @@ export class Enemy {
     
     // Check collision with player
     checkCollisionWithPlayer(player, worldX) {
+        // During spawn immunity, ignore collisions
+        if (this.isInvulnerable()) return false;
         const screenX = this.worldX + worldX;
         return player.checkEnemyCollision(this, screenX);
     }
     
     // Check if projectile hits this enemy
     checkProjectileHit(proj, worldX) {
+        // Ignore projectile hits while spawning
+        if (this.isInvulnerable()) return false;
         const enemyScreenX = this.worldX + worldX;
         const enemyTop = this.y - this.height;
         const enemyBottom = this.y;
@@ -92,24 +98,35 @@ export class Enemy {
 
         return hit;
     }
-    
+
     // Render the enemy
     render(ctx, worldX) {
         const screenX = this.worldX + worldX;
-        
+
+        // Flash enemy while invulnerable by skipping every other frame
+        if (this.isInvulnerable()) {
+            const flash = Math.floor(Date.now() / 100) % 2;
+            if (flash === 0) return;
+        }
+
         // Body
         ctx.fillStyle = '#8B008B';
         ctx.fillRect(screenX, this.y - this.height, this.width, this.height);
-        
+
         // Eyes (white)
         ctx.fillStyle = '#fff';
         ctx.fillRect(screenX + 8, this.y - this.height + 10, 8, 8);
         ctx.fillRect(screenX + 24, this.y - this.height + 10, 8, 8);
-        
+
         // Pupils (black)
         ctx.fillStyle = '#000';
         ctx.fillRect(screenX + 10, this.y - this.height + 12, 4, 4);
         ctx.fillRect(screenX + 26, this.y - this.height + 12, 4, 4);
+    }
+
+    // Determine if enemy is still in spawn immunity
+    isInvulnerable() {
+        return Date.now() - this.spawnTime < 1000;
     }
 }
 

@@ -6,6 +6,7 @@ import { PlayerPhysics } from '../js/systems/PlayerPhysics.js';
 import { PlayerAnimation } from '../js/systems/PlayerAnimation.js';
 import { PlayerInput } from '../js/systems/PlayerInput.js';
 import { GameState } from '../js/systems/GameState.js';
+import { Enemy } from '../js/enemy.js';
 
 // Mock canvas for testing
 const mockCanvas = { width: 960, height: 540 };
@@ -126,6 +127,31 @@ try {
     console.log('✅ PlayerInput system tests passed');
 } catch (error) {
     console.error('❌ PlayerInput system test failed:', error.message);
+}
+
+// Test 6: Enemy spawn immunity
+console.log('\nTesting Enemy spawn immunity...');
+try {
+    const enemy = new Enemy(100, 400);
+    const mockPlayer = { checkEnemyCollision: () => true };
+    const mockProj = { type: 1, landed: false, x: 105, y: 380, width: 5, height: 5 };
+
+    // Should be invulnerable immediately after spawn
+    console.assert(enemy.checkCollisionWithPlayer(mockPlayer, 0) === false,
+        'Enemy should not collide with player during spawn immunity');
+    console.assert(enemy.checkProjectileHit(mockProj, 0) === false,
+        'Enemy should not be hit by projectiles during spawn immunity');
+
+    // Simulate one second passing
+    enemy.spawnTime = Date.now() - 1001;
+    console.assert(enemy.checkCollisionWithPlayer(mockPlayer, 0) === true,
+        'Enemy should collide with player after spawn immunity');
+    console.assert(enemy.checkProjectileHit(mockProj, 0) === true,
+        'Enemy should be hit by projectiles after spawn immunity');
+
+    console.log('✅ Enemy spawn immunity tests passed');
+} catch (error) {
+    console.error('❌ Enemy spawn immunity test failed:', error.message);
 }
 
 console.log('\n🎉 All system tests completed!');
