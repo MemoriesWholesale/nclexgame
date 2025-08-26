@@ -56,6 +56,21 @@ export class Player {
             currentAction: 'idle',
             actionDuration: 0
         };
+        this.evilTwin = {
+            active: false,
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            grounded: false,
+            facing: 1,
+            actionTimer: 0,
+            currentAction: 'pursuit',
+            actionDuration: 0,
+            fireTimer: 0,
+            lastPlayerX: 0,
+            aggressionLevel: 1.0
+        };
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
@@ -132,6 +147,7 @@ export class Player {
         this.hasTwin = false;
         this.twinX = 0;
         this.shadowTwin.active = false;
+        this.evilTwin.active = false;
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
@@ -334,6 +350,7 @@ export class Player {
         this.hasTwin = false;
         this.twinX = 0;
         this.shadowTwin.active = false;
+        this.evilTwin.active = false;
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
