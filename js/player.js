@@ -69,7 +69,8 @@ export class Player {
             actionDuration: 0,
             fireTimer: 0,
             lastPlayerX: 0,
-            aggressionLevel: 1.0
+            aggressionLevel: 1.0,
+            crouching: false
         };
         this.gravityFlipped = false;
         this.tunnelVision = 0;
