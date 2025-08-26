@@ -64,8 +64,12 @@ export class Player {
             vy: 0,
             grounded: false,
             facing: 1,
-            fireTimer: 8000,
-            jumpTimer: 7000
+            actionTimer: 0,
+            currentAction: 'pursuit',
+            actionDuration: 0,
+            fireTimer: 0,
+            lastPlayerX: 0,
+            aggressionLevel: 1.0
         };
         this.gravityFlipped = false;
         this.tunnelVision = 0;

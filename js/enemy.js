@@ -144,10 +144,13 @@ export class EnemyManager {
         
         for (let j = this.enemies.length - 1; j >= 0; j--) {
             const enemy = this.enemies[j];
-            
+
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 const proj = projectiles[i];
-                
+
+                // Ignore phantom projectiles from the evil twin
+                if (proj.isPhantom) continue;
+
                 if (enemy.checkProjectileHit(proj, worldX)) {
                     // Store enemy data before removing it for item drops
                     const destroyedEnemy = { ...enemy };
