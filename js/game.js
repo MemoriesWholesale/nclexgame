@@ -5,6 +5,8 @@ import { Enemy, EnemyManager } from './enemy.js';
 import { Boss } from './systems/Boss.js';
 import { ItemSpawner } from './systems/ItemSpawner.js';
 import { PlayerPersistence } from './systems/PlayerPersistence.js';
+import { ArmorSystem } from './systems/ArmorSystem.js';
+import { StackableArmorSystem } from './systems/StackableArmorSystem.js';
 import {
     MIN_SPAWN_DISTANCE,
     LEVEL_DATA,
@@ -49,6 +51,11 @@ import {
 
         // Create enemy manager and item spawner
         const enemyManager = new EnemyManager();
+        
+        // Create armor systems
+        const armorSystem = new ArmorSystem();
+        const stackableArmorSystem = new StackableArmorSystem();
+        
         let itemSpawner;
         try {
             itemSpawner = new ItemSpawner();
@@ -111,8 +118,14 @@ import {
 
             if (e.key === ' ' && canFire) {
                 if (gameState === 'playing' && !player.dead) {
-                    fireWeapon();
-                    player.startShooting();
+                    // Start charging if player has charge armor, otherwise fire normally
+                    if (player.chargeArmor && !player.isCharging) {
+                        player.isCharging = true;
+                        player.chargeTimer = 0;
+                    } else if (!player.chargeArmor) {
+                        fireWeapon();
+                        player.startShooting();
+                    }
                 }
                 canFire = false;
             }
@@ -121,6 +134,20 @@ import {
         document.addEventListener('keyup', (e) => {
             keys[e.key] = false;
             if (e.key === ' ') {
+                // Handle charge release
+                if (player.isCharging && player.chargeTimer >= player.chargeRequired) {
+                    // Fire charge ability
+                    fireChargeAbility();
+                    player.startShooting();
+                } else if (player.isCharging) {
+                    // Quick release - fire normal weapon
+                    fireWeapon();
+                    player.startShooting();
+                }
+                
+                // Reset charge state
+                player.isCharging = false;
+                player.chargeTimer = 0;
                 canFire = true;
             }
         });
@@ -225,6 +252,14 @@ import {
                                     type: 'weapon',
                                     weaponId: targetChest.weaponId
                                 });
+                            } else if (targetChest.contains === 'shield_armor') {
+                                // Grant Shield Armor directly (no pickup needed)
+                                player.shieldArmor = true;
+                                console.log('Shield Armor equipped! You can now absorb one hit of damage.');
+                            } else if (targetChest.contains === 'charge_armor') {
+                                // Grant Charge Armor directly (no pickup needed)
+                                player.chargeArmor = true;
+                                console.log('Charge Armor equipped! Hold spacebar to charge up special weapon abilities.');
                             }
                         }
 
@@ -416,21 +451,150 @@ import {
                     if (proj.type === player.currentWeapon) return;
                 }
             }
-            fireTimer = FIRE_COOLDOWNS[player.currentWeapon - 1];
+            
+            // Get current armor ID and apply enhancements
+            const currentArmorId = player.armors[player.currentArmorIndex];
+            const damageMultiplier = armorSystem.getDamageMultiplier(currentArmorId, player.currentWeapon);
+            const speedMultiplier = armorSystem.getSpeedMultiplier(currentArmorId, player.currentWeapon);
+            
+            fireTimer = FIRE_COOLDOWNS[player.currentWeapon - 1] / speedMultiplier;
 
             const weaponPos = player.getWeaponSpawnPos();
             const weaponYOffset = player.crouching ? 20 : 0;
 
+            let baseProjectile;
             switch(player.currentWeapon) {
-                case 2: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 3 + weaponYOffset, vx: player.facing * 15, vy: 0, width: 30, height: 6, type: 2 }); break;
-                case 3: projectiles.push({ centerX: weaponPos.centerX, centerY: weaponPos.centerY + weaponYOffset, radius: 120, angle: 0, rotSpeed: 0.2, type: 3 }); break;
-                case 4: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 5 + weaponYOffset, vx: player.facing * 6, vy: -10, width: 30, height: 10, wavePhase: 0, type: 4 }); break;
-                case 5: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -40), y: weaponPos.y - 12 + weaponYOffset, vx: player.facing * 9, vy: 0, width: 40, height: 4, gap: 4, type: 5 }); break;
-                case 6: projectiles.push({ x: weaponPos.x, y: weaponPos.y - 15 + weaponYOffset, vx: player.facing * 5, vy: 0, size: 30, angle: 0, rotSpeed: 0.15 * player.facing, type: 6 }); break;
-                case 7: projectiles.push({ centerX: player.x + player.width / 2, centerY: player.y + player.height / 2 + weaponYOffset, radius: 150, angle: 0, rotSpeed: 0.12, direction: 1, type: 7 }); break;
-                case 8: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -30), y: player.y + player.height / 2 - 7 + weaponYOffset, vx: player.facing * 8, vy: -18, width: 30, height: 15, lastDropX: player.x + (player.facing > 0 ? player.width : -30), dropsLeft: 5, type: 8 }); break;
-                case 1: projectiles.push({ x: player.x + (player.facing > 0 ? player.width : -20), y: player.y + player.height / 2 - 5 + weaponYOffset, vx: player.facing * 8, vy: -8, width: 20, height: 10, type: 1 }); break;
+                case 2: 
+                    baseProjectile = { 
+                        x: weaponPos.x, 
+                        y: weaponPos.y - 3 + weaponYOffset, 
+                        vx: player.facing * 15 * speedMultiplier, 
+                        vy: 0, 
+                        width: 30, 
+                        height: 6, 
+                        type: 2,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 3: 
+                    baseProjectile = { 
+                        centerX: weaponPos.centerX, 
+                        centerY: weaponPos.centerY + weaponYOffset, 
+                        radius: 120, 
+                        angle: 0, 
+                        rotSpeed: 0.2 * speedMultiplier, 
+                        type: 3,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 4: 
+                    baseProjectile = { 
+                        x: weaponPos.x, 
+                        y: weaponPos.y - 5 + weaponYOffset, 
+                        vx: player.facing * 6 * speedMultiplier, 
+                        vy: -10 * speedMultiplier, 
+                        width: 30, 
+                        height: 10, 
+                        wavePhase: 0, 
+                        type: 4,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 5: 
+                    baseProjectile = { 
+                        x: player.x + (player.facing > 0 ? player.width : -40), 
+                        y: weaponPos.y - 12 + weaponYOffset, 
+                        vx: player.facing * 9 * speedMultiplier, 
+                        vy: 0, 
+                        width: 40, 
+                        height: 4, 
+                        gap: 4, 
+                        type: 5,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 6: 
+                    baseProjectile = { 
+                        x: weaponPos.x, 
+                        y: weaponPos.y - 15 + weaponYOffset, 
+                        vx: player.facing * 5 * speedMultiplier, 
+                        vy: 0, 
+                        size: 30, 
+                        angle: 0, 
+                        rotSpeed: 0.15 * player.facing * speedMultiplier, 
+                        type: 6,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 7: 
+                    baseProjectile = { 
+                        centerX: player.x + player.width / 2, 
+                        centerY: player.y + player.height / 2 + weaponYOffset, 
+                        radius: 150, 
+                        angle: 0, 
+                        rotSpeed: 0.12 * speedMultiplier, 
+                        direction: 1, 
+                        type: 7,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 8: 
+                    baseProjectile = { 
+                        x: player.x + (player.facing > 0 ? player.width : -30), 
+                        y: player.y + player.height / 2 - 7 + weaponYOffset, 
+                        vx: player.facing * 8 * speedMultiplier, 
+                        vy: -18 * speedMultiplier, 
+                        width: 30, 
+                        height: 15, 
+                        lastDropX: player.x + (player.facing > 0 ? player.width : -30), 
+                        dropsLeft: 5, 
+                        type: 8,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
+                case 1: 
+                    baseProjectile = { 
+                        x: player.x + (player.facing > 0 ? player.width : -20), 
+                        y: player.y + player.height / 2 - 5 + weaponYOffset, 
+                        vx: player.facing * 8 * speedMultiplier, 
+                        vy: -8 * speedMultiplier, 
+                        width: 20, 
+                        height: 10, 
+                        type: 1,
+                        damageMultiplier: damageMultiplier
+                    }; 
+                    break;
             }
+
+            // Apply special effects from armor system
+            const enhancedProjectiles = armorSystem.applySpecialEffects(baseProjectile, currentArmorId, player.currentWeapon);
+            
+            // Add all enhanced projectiles to the game
+            for (const proj of enhancedProjectiles) {
+                projectiles.push(proj);
+            }
+        }
+
+        function fireChargeAbility() {
+            if (fireTimer > 0) return;
+            
+            const currentArmorId = player.armors[player.currentArmorIndex];
+            const chargeProjectiles = stackableArmorSystem.executeChargeAbility(
+                player, 
+                player.currentWeapon, 
+                currentArmorId, 
+                player.shieldArmor, 
+                player.chargeArmor,
+                projectiles
+            );
+            
+            // Add charge projectiles to the game
+            for (const proj of chargeProjectiles) {
+                projectiles.push(proj);
+            }
+            
+            // Longer cooldown for charge abilities
+            fireTimer = FIRE_COOLDOWNS[player.currentWeapon - 1] * 1.5;
         }
 
         // [NEW] Central function to handle player death and respawn
@@ -464,6 +628,30 @@ import {
                     selectedLevel = -1; // Reset selected level
                 }
             }, 2000); // 2-second delay before respawn/game over
+        }
+        
+        // Function to handle damage with shield armor protection
+        function takeDamage(damageAmount = 1, damageSource = 'unknown') {
+            if (player.invincible) return false; // No damage during invincibility
+            
+            if (player.shieldArmor) {
+                // Shield armor absorbs the hit
+                player.shieldArmor = false;
+                player.invincible = true;
+                setTimeout(() => { player.invincible = false; }, 1000); // Brief invincibility after shield break
+                console.log('Shield armor absorbed damage from:', damageSource);
+                return true; // Damage was absorbed
+            } else {
+                // Take normal damage
+                player.lives -= damageAmount;
+                player.invincible = true;
+                setTimeout(() => { player.invincible = false; }, 2000);
+                
+                if (player.lives <= 0) {
+                    player.die();
+                }
+                return false; // Damage was taken
+            }
         }
 
         // Psychological zone effects (Level 4)
@@ -826,6 +1014,18 @@ import {
             if (gameState !== 'playing') return;
 
             groundY = canvas.height - 100;
+            
+            // Update charge mechanics
+            if (player.isCharging) {
+                player.chargeTimer++;
+                // Freeze player movement while charging
+                player.speedMultiplier = 0;
+            } else if (!player.isCharging) {
+                // Restore normal speed if not charging (and not affected by other effects)
+                if (player.speedMultiplier === 0) {
+                    player.speedMultiplier = 1;
+                }
+            }
 
             const playerWorldX = player.x - worldX;
 
@@ -861,11 +1061,7 @@ import {
                         
                         // Damage if too extreme
                         if (player.temperature < 95 || player.temperature > 104) {
-                            if (!player.invincible) {
-                                player.lives--;
-                                player.invincible = true;
-                                setTimeout(() => { player.invincible = false; }, 2000);
-                            }
+                            takeDamage(1, 'temperature_extremes');
                         }
                         break;
                         
@@ -907,19 +1103,15 @@ import {
                         
                     case 'pulsing':
                         // Pain platform damage
-                        if (platform.isPainful && !player.invincible) {
-                            player.lives--;
-                            player.invincible = true;
-                            setTimeout(() => { player.invincible = false; }, 1000);
+                        if (platform.isPainful) {
+                            takeDamage(1, 'painful_platform');
                         }
                         break;
                         
                     case 'pH_sensitive':
                         // pH damage
-                        if (platform.damaging && !player.invincible) {
-                            player.lives -= platform.damageAmount;
-                            player.invincible = true;
-                            setTimeout(() => { player.invincible = false; }, 1000);
+                        if (platform.damaging) {
+                            takeDamage(platform.damageAmount, 'pH_sensitive_platform');
                         }
                         break;
                         
@@ -1138,9 +1330,7 @@ import {
                         player.y < zone.y + zone.height && player.y + zone.height > zone.y) {
 
                         if (player.activeMedications.length >= 2) {
-                            player.lives--;
-                            player.invincible = true; // Brief immunity
-                            setTimeout(() => { player.invincible = false; }, 2000);
+                            takeDamage(1, 'medication_interaction');
                         }
                     }
                 }
@@ -2279,6 +2469,76 @@ import {
                             }
                             ctx.restore();
                             break;
+                        case 'charge_ability':
+                            // Render charge ability projectiles with special effects
+                            ctx.save();
+                            if (proj.energyTrail) {
+                                ctx.shadowColor = '#00FFFF';
+                                ctx.shadowBlur = 10;
+                            }
+                            if (proj.absorbsDamage) {
+                                ctx.shadowColor = '#FFD700';
+                                ctx.shadowBlur = 8;
+                            }
+                            
+                            switch(proj.subtype) {
+                                case 'multi_pill':
+                                    ctx.fillStyle = proj.homing ? '#FF69B4' : '#FFD700';
+                                    ctx.beginPath();
+                                    ctx.ellipse(proj.x + proj.width/2, proj.y + proj.height/2, proj.width/2, proj.height/2, 0, 0, Math.PI * 2);
+                                    ctx.fill();
+                                    break;
+                                case 'piercing_beam':
+                                    ctx.fillStyle = '#00FFFF';
+                                    ctx.fillRect(proj.x, proj.y, proj.width, proj.height);
+                                    break;
+                                case 'sonic_pulse':
+                                    ctx.strokeStyle = '#32CD32';
+                                    ctx.lineWidth = 6;
+                                    ctx.beginPath();
+                                    ctx.arc(proj.centerX, proj.centerY, proj.radius, 0, Math.PI * 2);
+                                    ctx.stroke();
+                                    break;
+                                case 'healing_wave':
+                                    ctx.strokeStyle = '#90EE90';
+                                    ctx.lineWidth = 4;
+                                    ctx.beginPath();
+                                    for (let dx = 0; dx <= proj.width; dx += 5) {
+                                        const x = proj.x + dx;
+                                        const y = proj.y + proj.height/2 + Math.sin((dx + proj.wavePhase) * 0.3) * 8;
+                                        if (dx === 0) ctx.moveTo(x, y);
+                                        else ctx.lineTo(x, y);
+                                    }
+                                    ctx.stroke();
+                                    break;
+                                case 'spinning_blade':
+                                    ctx.translate(proj.x, proj.y);
+                                    ctx.rotate(proj.angle);
+                                    ctx.fillStyle = '#C0C0C0';
+                                    ctx.fillRect(-proj.size/2, -proj.size/10, proj.size, proj.size/5);
+                                    ctx.fillRect(-proj.size/10, -proj.size/2, proj.size/5, proj.size);
+                                    break;
+                                case 'ground_pound':
+                                    ctx.fillStyle = '#8B4513';
+                                    ctx.fillRect(proj.x, proj.y, proj.width, proj.height);
+                                    break;
+                                case 'tracking_dart':
+                                    ctx.fillStyle = proj.homing ? '#FF1493' : '#00BFFF';
+                                    ctx.fillRect(proj.x, proj.y, proj.width, proj.height);
+                                    break;
+                                case 'liquid_bomb':
+                                    ctx.fillStyle = '#FF4500';
+                                    ctx.beginPath();
+                                    ctx.arc(proj.x + proj.width/2, proj.y + proj.height/2, proj.width/2, 0, Math.PI * 2);
+                                    ctx.fill();
+                                    break;
+                                default:
+                                    ctx.fillStyle = '#FFFFFF';
+                                    ctx.fillRect(proj.x, proj.y, proj.width || 20, proj.height || 20);
+                                    break;
+                            }
+                            ctx.restore();
+                            break;
                     }
                 }
 
@@ -2379,13 +2639,51 @@ import {
                 }
 
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(10, 10, 220, 105);
+                ctx.fillRect(10, 10, 380, 180);
                 ctx.fillStyle = '#fff'; ctx.font = '18px Arial'; ctx.textAlign = 'left';
                 const currentArmorId = player.armors[player.currentArmorIndex];
                 const currentArmorName = ARMOR_DATA[currentArmorId].name;
-                ctx.fillText(`Armor: ${currentArmorName}`, 20, 35);
-                ctx.fillText(`Weapon: ${WEAPON_NAMES[player.currentWeapon - 1]}`, 20, 60);
+                const enhancedWeaponName = armorSystem.getEnhancedWeaponName(currentArmorId, player.currentWeapon);
+                const damageMultiplier = armorSystem.getDamageMultiplier(currentArmorId, player.currentWeapon);
+                const speedMultiplier = armorSystem.getSpeedMultiplier(currentArmorId, player.currentWeapon);
+                const enhancement = armorSystem.getEnhancement(currentArmorId, player.currentWeapon);
+                
+                // Show all equipped armor types
+                let armorDisplay = currentArmorName;
+                if (player.shieldArmor) armorDisplay += ' + Shield';
+                if (player.chargeArmor) armorDisplay += ' + Charge';
+                
+                ctx.fillText(`Armor: ${armorDisplay}`, 20, 35);
+                ctx.fillText(`Weapon: ${enhancedWeaponName}`, 20, 60);
                 ctx.fillText(`Lives: ${player.lives}`, 20, 85);
+                
+                // Show enhancement details
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#90EE90';
+                ctx.fillText(`DMG: ${damageMultiplier.toFixed(1)}x  SPD: ${speedMultiplier.toFixed(1)}x`, 20, 105);
+                if (enhancement.special) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillText(`Special: ${enhancement.special.replace('_', ' ')}`, 20, 125);
+                }
+                
+                // Show charge ability if available
+                if (player.chargeArmor) {
+                    const chargeAbility = stackableArmorSystem.getChargeAbility(
+                        player.currentWeapon, 
+                        currentArmorId, 
+                        player.shieldArmor, 
+                        player.chargeArmor
+                    );
+                    ctx.fillStyle = '#87CEEB';
+                    ctx.fillText(`Charge: ${chargeAbility.name}`, 20, 145);
+                }
+                
+                // Show charging status
+                if (player.isCharging) {
+                    ctx.fillStyle = '#FF4500';
+                    const chargePercent = Math.min(100, (player.chargeTimer / player.chargeRequired) * 100);
+                    ctx.fillText(`Charging... ${chargePercent.toFixed(0)}%`, 20, 165);
+                }
 
                 if (player.dead) {
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';

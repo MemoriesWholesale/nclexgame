@@ -72,9 +72,16 @@ export class Player {
         this.depressionFog = 0;
         this.preventedEffects = new Set();
         
-        // Armor system
-        this.armors = [0];
+        // Armor system - stackable armor types
+        this.armors = [0]; // Level-specific armors (only one equipped)
         this.currentArmorIndex = 0;
+        this.shieldArmor = false; // Protective shell armor
+        this.chargeArmor = false; // Charge-up weapon power armor
+        
+        // Charge-up system
+        this.isCharging = false;
+        this.chargeTimer = 0;
+        this.chargeRequired = 120; // 2 seconds at 60fps
         
         // Weapon system
         this.currentWeapon = 1;
