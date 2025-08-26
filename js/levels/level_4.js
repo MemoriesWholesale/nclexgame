@@ -15,7 +15,7 @@ const level = {
     // Psychological zones that affect gameplay
     psychZones: [
         { id: 'anxiety_tunnel', startX: 1500, endX: 2200, type: 'anxiety', 
-          effect: 'mirror_twin', intensity: 0.7 },
+          effect: 'tunnel_vision', intensity: 0.7 },
         { id: 'depression_fog', startX: 2800, endX: 3600, type: 'depression', 
           effect: 'darkness_slowness', intensity: 0.8 },
         { id: 'mania_rush', startX: 4200, endX: 5000, type: 'mania', 
