@@ -89,7 +89,7 @@ import {
         // Performance tuning constants
         const SPAWN_CHECK_DISTANCE = 200; // pixels between spawn checks
         let lastSpawnX = null;
-        const DEBUG_DRAW_AXES = false;
+        const DEBUG_DRAW_AXES = true;
 
         let fireTimer = 0;
 
@@ -239,6 +239,12 @@ import {
                                 width: 30,
                                 height: 30
                             });
+                            interactingNpc.isLeaving = true;
+                        }
+
+                        // Handle NPC effect prevention rewards
+                        if (interactingNpc && interactingNpc.preventsEffect) {
+                            player.preventedEffects.add(interactingNpc.preventsEffect);
                             interactingNpc.isLeaving = true;
                         }
 
