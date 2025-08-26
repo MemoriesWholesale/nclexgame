@@ -15,7 +15,7 @@ const level = {
     // Psychological zones that affect gameplay
     psychZones: [
         { id: 'anxiety_tunnel', startX: 1500, endX: 2200, type: 'anxiety', 
-          effect: 'tunnel_vision', intensity: 0.7 },
+          effect: 'mirror_twin', intensity: 0.7 },
         { id: 'depression_fog', startX: 2800, endX: 3600, type: 'depression', 
           effect: 'darkness_slowness', intensity: 0.8 },
         { id: 'mania_rush', startX: 4200, endX: 5000, type: 'mania', 
@@ -23,7 +23,7 @@ const level = {
         { id: 'confusion_zone', startX: 5500, endX: 6550, type: 'confusion', 
           effect: 'inverted_controls', intensity: 1.0 },
         { id: 'dissociation_realm', startX: 7000, endX: 8000, type: 'dissociation', 
-          effect: 'mirror_twin', intensity: 1.0 },
+          effect: 'dissociation', intensity: 1.0 },
         { id: 'psychosis_void', startX: 8500, endX: 9500, type: 'psychosis', 
           effect: 'upside_down', intensity: 1.0 },
         { id: 'recovery_garden', startX: 10000, endX: 11000, type: 'recovery', 

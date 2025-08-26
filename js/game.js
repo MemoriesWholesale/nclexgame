@@ -324,6 +324,7 @@ import {
                     player.x = levelDef.playerStart.x || 100;
                     const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
                     player.y = startY - player.height;
+                    
 
                     gate = {
                         worldX: testLevelEndX,
@@ -509,24 +510,6 @@ import {
                                 player.shadowTwin.currentAction = 'idle';
                                 player.shadowTwin.actionDuration = Math.random() * 2000 + 1000; // 1-3 seconds
                             }
-                            
-                            // Initialize evil twin if not already active
-                            if (!player.evilTwin.active) {
-                                player.evilTwin.active = true;
-                                // Spawn evil twin at ground level near player
-                                player.evilTwin.x = player.x + (Math.random() < 0.5 ? 150 : -150);
-                                player.evilTwin.y = groundY - 92; // At ground level
-                                player.evilTwin.vx = 0;
-                                player.evilTwin.vy = 0;
-                                player.evilTwin.grounded = true;
-                                player.evilTwin.facing = player.x > player.evilTwin.x ? 1 : -1;
-                                player.evilTwin.actionTimer = 0;
-                                player.evilTwin.currentAction = 'stalk';
-                                player.evilTwin.actionDuration = 1000;
-                                player.evilTwin.fireTimer = 0;
-                                player.evilTwin.lastPlayerX = player.x;
-                                player.evilTwin.aggressionLevel = 1.0;
-                            }
                             break;
                         case 'upside_down':
                             player.gravityFlipped = true;
@@ -537,6 +520,39 @@ import {
                         case 'darkness_slowness':
                             player.speedMultiplier = 0.5;
                             player.depressionFog = zone.intensity;
+                            break;
+                        case 'dissociation':
+                            // Activate mirror twin
+                            player.hasTwin = true;
+                            player.twinX = canvas.width - player.x; // Mirror position
+                            
+                            // Initialize shadow twin if not already active
+                            if (!player.shadowTwin.active) {
+                                player.shadowTwin.active = true;
+                                player.shadowTwin.x = player.x + 200; // Start offset from player
+                                player.shadowTwin.y = player.y;
+                                player.shadowTwin.vx = 0;
+                                player.shadowTwin.vy = 0;
+                                player.shadowTwin.grounded = false;
+                                player.shadowTwin.facing = -player.facing;
+                                player.shadowTwin.actionTimer = 0;
+                                player.shadowTwin.currentAction = 'idle';
+                                player.shadowTwin.actionDuration = Math.random() * 2000 + 1000; // 1-3 seconds
+                            }
+                            
+                            // Initialize evil twin if not already active
+                            if (!player.evilTwin.active) {
+                                console.log("ACTIVATING EVIL TWIN at position", player.x - 250);
+                                player.evilTwin.active = true;
+                                player.evilTwin.x = player.x - 250; // Start on the left side
+                                player.evilTwin.y = player.y;
+                                player.evilTwin.vx = 0;
+                                player.evilTwin.vy = 0;
+                                player.evilTwin.grounded = false;
+                                player.evilTwin.facing = 1;
+                                player.evilTwin.fireTimer = 3000; // Start firing sooner for testing
+                                player.evilTwin.jumpTimer = 2000; // Start jumping sooner for testing
+                            }
                             break;
                     }
                     break; // Only apply one zone at a time
@@ -659,93 +675,49 @@ import {
 
         function updateEvilTwin() {
             const evil = player.evilTwin;
+            if (!evil.active) return;
             
-            // Update timers
-            evil.actionTimer += 16;
-            evil.fireTimer -= 16;
-            
-            // Apply gravity (same as player)
+            // Basic physics - apply gravity
             evil.vy += 0.8;
             
-            // Only make new decisions every half second to prevent rapid switching
-            let wantsToMoveLeft = false;
-            let wantsToMoveRight = false;
+            // Simple movement towards player with some distance
+            const targetDistance = 150;
+            const currentDistance = Math.abs(evil.x - player.x);
             
-            if (evil.actionTimer >= 500) { // Every half second
-                evil.actionTimer = 0;
-                
-                // Calculate which side of player the evil twin is on
-                const isOnLeftSide = evil.x < player.x;
-                const distToPlayer = Math.abs(player.x - evil.x);
-                
-                // Store decision for next 500ms
-                if (distToPlayer > 150) {
-                    // Too far - move toward player but stay on current side
-                    if (isOnLeftSide) {
-                        evil.currentAction = 'moveRight'; // Move toward center
-                    } else {
-                        evil.currentAction = 'moveLeft'; // Move toward center
-                    }
-                } else if (distToPlayer < 80) {
-                    // Too close - move away but stay on current side  
-                    if (isOnLeftSide) {
-                        evil.currentAction = 'moveLeft'; // Move away from center
-                    } else {
-                        evil.currentAction = 'moveRight'; // Move away from center
-                    }
-                } else {
-                    evil.currentAction = 'idle'; // Good distance - don't move
-                }
-            }
-            
-            // Execute the stored decision
-            if (evil.currentAction === 'moveLeft') {
-                wantsToMoveLeft = true;
-            } else if (evil.currentAction === 'moveRight') {
-                wantsToMoveRight = true;
-            }
-            
-            // Apply movement like player does (same speed and acceleration)
-            const maxSpeed = 5; // Same as player.baseSpeed
-            if (wantsToMoveLeft && !wantsToMoveRight) {
-                evil.vx = -maxSpeed;
-                evil.facing = -1;
-            } else if (wantsToMoveRight && !wantsToMoveLeft) {
-                evil.vx = maxSpeed;
-                evil.facing = 1;
+            if (currentDistance > targetDistance + 50) {
+                // Move towards player
+                evil.vx = player.x > evil.x ? 3 : -3;
+                evil.facing = evil.vx > 0 ? 1 : -1;
+            } else if (currentDistance < targetDistance - 50) {
+                // Move away from player
+                evil.vx = player.x > evil.x ? -3 : 3;
+                evil.facing = evil.vx > 0 ? 1 : -1;
             } else {
-                // Apply friction when not wanting to move (like player)
-                evil.vx *= 0.8;
-            }
-            
-            // Always face the player for shooting
-            evil.facing = player.x > evil.x ? 1 : -1;
-            
-            // Fire at player
-            if (evil.fireTimer <= 0) {
-                createEvilTwinProjectile();
-                evil.fireTimer = 1800; // 1.8 seconds between shots
-            }
-            
-            // Occasionally jump (like a human might)
-            if (evil.grounded && Math.random() < 0.005) { // Very rare random jumps
-                evil.vy = -15;
-                evil.grounded = false;
+                // Stay in place
+                evil.vx = 0;
             }
             
             // Update position
             evil.x += evil.vx;
             evil.y += evil.vy;
             
-            // Platform collision detection
+            // Ground collision
             evil.grounded = false;
+            if (evil.y + 92 >= groundY) {
+                evil.y = groundY - 92;
+                evil.vy = 0;
+                evil.grounded = true;
+            }
+            
+            // Platform collision (basic)
             for (const platform of platforms) {
                 const screenX = platform.worldX + worldX;
                 if (evil.x < screenX + platform.width && 
                     evil.x + 50 > screenX &&
                     evil.y + 92 > platform.y &&
-                    evil.y < platform.y + platform.height &&
+                    evil.y + 92 < platform.y + platform.height + 10 && 
                     evil.vy >= 0) {
+                    
                     evil.y = platform.y - 92;
                     evil.vy = 0;
                     evil.grounded = true;
@@ -753,45 +725,31 @@ import {
                 }
             }
             
-            // Ground collision
-            if (evil.y + 92 > groundY) {
-                evil.y = groundY - 92;
-                evil.vy = 0;
-                evil.grounded = true;
+            // Fire timer
+            evil.fireTimer -= 16;
+            if (evil.fireTimer <= 0) {
+                console.log("EVIL TWIN FIRING PROJECTILE");
+                // Create phantom projectile
+                projectiles.push({
+                    x: evil.x + (evil.facing > 0 ? 50 : -20),
+                    y: evil.y + 46,
+                    vx: evil.facing * 8,
+                    vy: -2,
+                    width: 20,
+                    height: 10,
+                    type: 'phantom'
+                });
+                evil.fireTimer = 5000; // Reset to 5 seconds
             }
             
-            // Boundary constraints
-            const zoneStart = 7000 + worldX;
-            const zoneEnd = 8000 + worldX;
-            if (evil.x < zoneStart - 200) {
-                evil.x = zoneStart - 200;
-                evil.vx = Math.abs(evil.vx);
+            // Jump timer
+            evil.jumpTimer -= 16;
+            if (evil.jumpTimer <= 0 && evil.grounded) {
+                console.log("EVIL TWIN JUMPING");
+                evil.vy = -15;
+                evil.grounded = false;
+                evil.jumpTimer = 3000 + Math.random() * 4000; // 3-7 seconds
             }
-            if (evil.x > zoneEnd + 200) {
-                evil.x = zoneEnd + 200;
-                evil.vx = -Math.abs(evil.vx);
-            }
-        }
-        
-        function createEvilTwinProjectile() {
-            const evil = player.evilTwin;
-            const currentWeapon = player.currentWeapon;
-            
-            // Create phantom projectile that looks like player's weapon but doesn't harm
-            const phantomProjectile = {
-                x: evil.x + (evil.facing > 0 ? 50 : -20),
-                y: evil.y + 46, // Center of evil twin
-                vx: evil.facing * 8,
-                vy: -2,
-                width: 20,
-                height: 10,
-                type: 'phantom',
-                weaponType: currentWeapon,
-                isPhantom: true // Flag to identify as evil twin projectile
-            };
-            
-            // Add to projectiles array
-            projectiles.push(phantomProjectile);
         }
 
         function update() {
@@ -1282,7 +1240,7 @@ import {
                 updateShadowTwin();
             }
             
-            // Update evil twin if active
+            // Update evil twin if active  
             if (player.evilTwin.active) {
                 updateEvilTwin();
             }
@@ -2430,47 +2388,29 @@ import {
                         ctx.restore();
                     }
                     
-                    // Draw evil twin - simple but effective representation
+                    // Draw evil twin
                     if (player.evilTwin.active) {
+                        console.log("RENDERING EVIL TWIN at", player.evilTwin.x, player.evilTwin.y);
                         ctx.save();
-                        ctx.globalAlpha = 0.8;
+                        ctx.globalAlpha = 0.6; // Same transparency as shadow twin
                         
-                        // Draw evil twin as a red-tinted, flickering silhouette
-                        const flickerIntensity = 0.7 + Math.sin(Date.now() * 0.02) * 0.3;
-                        ctx.fillStyle = `rgba(255, ${100 * flickerIntensity}, ${100 * flickerIntensity}, 0.9)`;
+                        // Save player's current state temporarily
+                        const originalX = player.x;
+                        const originalY = player.y;
+                        const originalFacing = player.facing;
                         
-                        // Draw basic humanoid shape
-                        const evil = player.evilTwin;
-                        const x = evil.x;
-                        const y = evil.y;
+                        // Set player position to evil twin position for rendering
+                        player.x = player.evilTwin.x;
+                        player.y = player.evilTwin.y;
+                        player.facing = player.evilTwin.facing;
                         
-                        // Body
-                        ctx.fillRect(x + 15, y + 20, 20, 40);
+                        // Render evil twin using player's render method
+                        player.render(ctx, playerSprite, spriteLoaded, SPRITE_ANIMATIONS, ARMOR_DATA);
                         
-                        // Head
-                        ctx.beginPath();
-                        ctx.arc(x + 25, y + 15, 12, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        // Arms (positioned based on facing direction)
-                        if (evil.facing > 0) {
-                            ctx.fillRect(x + 35, y + 25, 12, 6); // Right arm forward
-                            ctx.fillRect(x + 8, y + 30, 10, 6);  // Left arm back
-                        } else {
-                            ctx.fillRect(x + 3, y + 25, 12, 6);  // Left arm forward
-                            ctx.fillRect(x + 32, y + 30, 10, 6); // Right arm back
-                        }
-                        
-                        // Legs
-                        ctx.fillRect(x + 12, y + 60, 8, 25);
-                        ctx.fillRect(x + 25, y + 60, 8, 25);
-                        
-                        // Add menacing red glow around evil twin
-                        ctx.shadowColor = 'red';
-                        ctx.shadowBlur = 15;
-                        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-                        ctx.lineWidth = 2;
-                        ctx.strokeRect(x + 5, y, 40, 92);
+                        // Restore player's original state
+                        player.x = originalX;
+                        player.y = originalY;
+                        player.facing = originalFacing;
                         
                         ctx.restore();
                     }
