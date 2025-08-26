@@ -770,13 +770,6 @@ import {
             // Update position
             evil.x += evil.vx;
             evil.y += evil.vy;
-
-            // Finish crossing action once on opposite side
-            if (evil.currentAction === 'crossToLeft' && evil.x < player.x - 120) {
-                evil.currentAction = 'idle';
-            } else if (evil.currentAction === 'crossToRight' && evil.x > player.x + 120) {
-                evil.currentAction = 'idle';
-            }
             
             // Ground collision
             evil.grounded = false;
@@ -1454,18 +1447,8 @@ import {
                     default: if (!proj.landed) { if (proj.worldX !== undefined) { proj.x = proj.worldX + worldX; } else if (proj.vx !== 0) { proj.x += proj.vx; } proj.vy += 0.6; proj.y += proj.vy; if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; if (proj.worldX === undefined) proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { if (proj.worldX !== undefined) proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                 }
 
-                // Remove phantom projectiles when they touch the player
-                if (proj.type === 'phantom' &&
-                    proj.x < player.x + player.width &&
-                    proj.x + proj.width > player.x &&
-                    proj.y < player.y + player.height &&
-                    proj.y + proj.height > player.y) {
-                    projectiles.splice(i, 1);
-                    continue;
-                }
-
                 // **FIX**: Corrected Boss Gate and Boss Spawn Logic
-                if (gate && gate.hp > 0 && !proj.landed && !proj.isPhantom) {
+                if (gate && gate.hp > 0 && !proj.landed) {
                     const gateScreenX = gate.worldX + worldX;
 
                     // Gate can only be damaged if it's on screen
@@ -1509,7 +1492,7 @@ import {
                     }
                 }
 
-                if (boss && boss.hp > 0 && !proj.landed && !proj.isPhantom) {
+                if (boss && boss.hp > 0 && !proj.landed) {
                     let hitBoss = false;
                     if (proj.type === 3 || proj.type === 7) {
                         const numChecks = 10;
