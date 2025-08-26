@@ -13,13 +13,13 @@ export class PlayerPhysics {
     /**
      * Update player physics including gravity, movement, and platform collisions
      */
-    update(groundY, platforms, pits, worldX) {
-        this.applyGravity();
-        this.updateHorizontalMovement();
+    update(groundY, platforms, pits, worldX, terrainSystem = null) {
+        this.applyGravity(terrainSystem, worldX);
+        this.updateHorizontalMovement(terrainSystem, worldX);
         this.updateMovingPlatforms(platforms);
         this.updateVerticalPosition();
         this.handlePlatformCollisions(platforms, worldX, groundY);
-        this.handleGroundCollision(groundY, pits, worldX);
+        this.handleGroundCollision(groundY, pits, worldX, terrainSystem);
         this.updateJumpState();
     }
     
@@ -36,12 +36,31 @@ export class PlayerPhysics {
     }
     
     // Private methods
-    applyGravity() {
-        this.player.vy += this.GRAVITY;
+    applyGravity(terrainSystem = null, worldX = 0) {
+        if (terrainSystem && this.player.grounded) {
+            // Apply terrain-modified gravity
+            const playerWorldX = this.player.x - worldX;
+            const gravityMod = terrainSystem.getGravityModifier(playerWorldX);
+            
+            // Apply slope sliding
+            this.player.vx += gravityMod.x;
+            this.player.vy += this.GRAVITY * gravityMod.y;
+        } else {
+            // Standard gravity
+            this.player.vy += this.GRAVITY;
+        }
     }
     
-    updateHorizontalMovement() {
-        this.player.x += this.player.vx;
+    updateHorizontalMovement(terrainSystem = null, worldX = 0) {
+        if (terrainSystem && this.player.grounded) {
+            // Apply terrain speed modifier
+            const playerWorldX = this.player.x - worldX;
+            const speedMod = terrainSystem.getSpeedModifier(playerWorldX, this.player.vx);
+            this.player.x += this.player.vx * speedMod;
+        } else {
+            // Standard movement
+            this.player.x += this.player.vx;
+        }
     }
     
     updateVerticalPosition() {
@@ -218,10 +237,11 @@ export class PlayerPhysics {
         }
     }
     
-    handleGroundCollision(groundY, pits, worldX) {
+    handleGroundCollision(groundY, pits, worldX, terrainSystem = null) {
         const playerCenterX = this.player.x + this.player.width / 2 - worldX;
         let onGround = true;
         
+        // Check for pits (still override terrain)
         for (const pit of pits) {
             if (playerCenterX > pit.worldX && playerCenterX < pit.worldX + pit.width) {
                 onGround = false;
@@ -229,10 +249,26 @@ export class PlayerPhysics {
             }
         }
         
-        if (onGround && this.player.y + this.player.height > groundY) {
-            this.player.y = groundY - this.player.height;
-            this.player.vy = 0;
-            this.player.grounded = true;
+        if (onGround) {
+            let targetGroundY = groundY;
+            
+            // Use terrain height if terrain system is available
+            if (terrainSystem) {
+                const playerWorldX = this.player.x + this.player.width / 2 - worldX;
+                targetGroundY = terrainSystem.getTerrainHeight(playerWorldX);
+            }
+            
+            if (this.player.y + this.player.height > targetGroundY) {
+                this.player.y = targetGroundY - this.player.height;
+                this.player.vy = 0;
+                this.player.grounded = true;
+                
+                // Align player with terrain angle for visual effect
+                if (terrainSystem) {
+                    const playerWorldX = this.player.x + this.player.width / 2 - worldX;
+                    this.player.terrainAngle = terrainSystem.getTerrainAngle(playerWorldX);
+                }
+            }
         }
     }
     

@@ -10,7 +10,8 @@ export const LEVEL_DATA = [
     { name: "Psychosocial Int.", color: '#ADD8E6', file: 'data/psychosocial_integrity.json' },
     { name: "Basic Care", color: '#FFA07A', file: 'data/basic_care_and_comfort.json' },
     { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
-    { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' }
+    { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' },
+    { name: "Terrain Test", color: '#228B22', file: 'levels/level_terrain.js', isJS: true }
 ];
 
 export const SPRITE_ANIMATIONS = {

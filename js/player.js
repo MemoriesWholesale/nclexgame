@@ -83,6 +83,9 @@ export class Player {
         this.chargeTimer = 0;
         this.chargeRequired = 120; // 2 seconds at 60fps
         
+        // Terrain system
+        this.terrainAngle = 0; // Current terrain angle for rendering
+        
         // Weapon system
         this.currentWeapon = 1;
         
@@ -115,8 +118,8 @@ export class Player {
     /**
      * Update player physics and position
      */
-    updatePhysics(groundY, platforms, pits, worldX) {
-        this.physics.update(groundY, platforms, pits, worldX);
+    updatePhysics(groundY, platforms, pits, worldX, terrainSystem = null) {
+        this.physics.update(groundY, platforms, pits, worldX, terrainSystem);
     }
     
     /**

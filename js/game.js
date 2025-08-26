@@ -7,6 +7,7 @@ import { ItemSpawner } from './systems/ItemSpawner.js';
 import { PlayerPersistence } from './systems/PlayerPersistence.js';
 import { ArmorSystem } from './systems/ArmorSystem.js';
 import { StackableArmorSystem } from './systems/StackableArmorSystem.js';
+import { TerrainSystem } from './systems/TerrainSystem.js';
 import {
     MIN_SPAWN_DISTANCE,
     LEVEL_DATA,
@@ -55,6 +56,9 @@ import {
         // Create armor systems
         const armorSystem = new ArmorSystem();
         const stackableArmorSystem = new StackableArmorSystem();
+        
+        // Create terrain system
+        const terrainSystem = new TerrainSystem();
         
         let itemSpawner;
         try {
@@ -356,6 +360,57 @@ import {
                         hp: 5,
                         maxHp: 5
                     };
+                    // Initialize terrain system if level uses it
+                    if (levelDef.useTerrainSystem && levelDef.terrain) {
+                        terrainSystem.initialize(levelDef.terrain.baseGroundY || canvas.height - 100);
+                        
+                        // Build terrain from level definition
+                        for (const feature of levelDef.terrain.features) {
+                            switch (feature.type) {
+                                case 'slope':
+                                    terrainSystem.addTerrainSegment(terrainSystem.createSlope(
+                                        feature.startX, feature.startY, feature.endX, feature.endY
+                                    ));
+                                    break;
+                                case 'hill':
+                                    const hillSegments = terrainSystem.createHill(
+                                        feature.centerX, feature.centerY, feature.width, feature.height, feature.steepness
+                                    );
+                                    hillSegments.forEach(seg => terrainSystem.addTerrainSegment(seg));
+                                    break;
+                                case 'mound':
+                                    const moundSegments = terrainSystem.createMound(
+                                        feature.centerX, feature.centerY, feature.width, feature.height
+                                    );
+                                    moundSegments.forEach(seg => terrainSystem.addTerrainSegment(seg));
+                                    break;
+                                case 'plateau':
+                                    const plateauSegments = terrainSystem.createPlateau(
+                                        feature.startX, feature.endX, feature.plateauY, feature.edgeHeight
+                                    );
+                                    plateauSegments.forEach(seg => terrainSystem.addTerrainSegment(seg));
+                                    break;
+                                case 'valley':
+                                    const valleySegments = terrainSystem.createValley(
+                                        feature.centerX, feature.centerY, feature.width, feature.depth
+                                    );
+                                    valleySegments.forEach(seg => terrainSystem.addTerrainSegment(seg));
+                                    break;
+                                case 'flat':
+                                    terrainSystem.addTerrainSegment({
+                                        type: 'flat',
+                                        startX: feature.startX,
+                                        startY: feature.y,
+                                        endX: feature.endX,
+                                        endY: feature.y,
+                                        curveType: 'linear',
+                                        friction: 'flat'
+                                    });
+                                    break;
+                            }
+                        }
+                    }
+                    
                     player.x = levelDef.playerStart.x || 100;
                     const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
                     player.y = startY - player.height;
@@ -1493,7 +1548,9 @@ import {
 
             player.handleInput(keys, onSpill);
             player.updateState(SPRITE_ANIMATIONS);
-            player.updatePhysics(groundY, platforms, pits, worldX);
+            // Pass terrain system if current level uses it
+            const currentTerrainSystem = (levelManager.currentLevel && levelManager.currentLevel.useTerrainSystem) ? terrainSystem : null;
+            player.updatePhysics(groundY, platforms, pits, worldX, currentTerrainSystem);
             
             // Update shadow twin if active
             if (player.shadowTwin.active) {
@@ -1908,6 +1965,11 @@ import {
                         ctx.lineTo(x, groundY - 10);
                         ctx.stroke();
                     }
+                }
+
+                // Render terrain system if level uses it
+                if (levelManager.currentLevel && levelManager.currentLevel.useTerrainSystem) {
+                    terrainSystem.render(ctx, worldX, canvas);
                 }
 
                 for (const p of platforms) {
@@ -2683,6 +2745,18 @@ import {
                     ctx.fillStyle = '#FF4500';
                     const chargePercent = Math.min(100, (player.chargeTimer / player.chargeRequired) * 100);
                     ctx.fillText(`Charging... ${chargePercent.toFixed(0)}%`, 20, 165);
+                }
+                
+                // Show terrain info if terrain level
+                if (levelManager.currentLevel && levelManager.currentLevel.useTerrainSystem && levelManager.currentLevel.showTerrainInfo) {
+                    const playerWorldX = player.x - worldX;
+                    const terrainInfo = terrainSystem.getTerrainInfo(playerWorldX);
+                    ctx.fillStyle = '#CCCCCC';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(`Terrain: ${terrainInfo.type}`, 20, canvas.height - 80);
+                    ctx.fillText(`Angle: ${terrainInfo.angle.toFixed(1)}°`, 20, canvas.height - 65);
+                    ctx.fillText(`Slope: ${terrainInfo.slope.toFixed(2)}`, 20, canvas.height - 50);
+                    ctx.fillText(`Height: ${terrainInfo.height.toFixed(0)}`, 20, canvas.height - 35);
                 }
 
                 if (player.dead) {

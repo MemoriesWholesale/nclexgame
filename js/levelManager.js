@@ -383,6 +383,9 @@ class LevelManager {
                     case 7:
                             module = await import('./levels/level_7.js');
                             break;
+                    case 8: // Terrain test level
+                            module = await import('./levels/level_terrain.js');
+                            break;
                     // For now, return a placeholder for other levels
                     console.log('Using placeholder for level', levelId);
                     this.currentLevel = {
