@@ -472,6 +472,7 @@ import {
             // Reset effects first
             player.invertedControls = false;
             player.hasTwin = false;
+            player.shadowTwin.active = false;
             player.gravityFlipped = false;
             player.tunnelVision = 0;
             player.speedMultiplier = 1;
@@ -493,6 +494,20 @@ import {
                         case 'mirror_twin':
                             player.hasTwin = true;
                             player.twinX = canvas.width - player.x; // Mirror position
+                            
+                            // Initialize shadow twin if not already active
+                            if (!player.shadowTwin.active) {
+                                player.shadowTwin.active = true;
+                                player.shadowTwin.x = player.x + 200; // Start offset from player
+                                player.shadowTwin.y = player.y;
+                                player.shadowTwin.vx = 0;
+                                player.shadowTwin.vy = 0;
+                                player.shadowTwin.grounded = false;
+                                player.shadowTwin.facing = -player.facing;
+                                player.shadowTwin.actionTimer = 0;
+                                player.shadowTwin.currentAction = 'idle';
+                                player.shadowTwin.actionDuration = Math.random() * 2000 + 1000; // 1-3 seconds
+                            }
                             break;
                         case 'upside_down':
                             player.gravityFlipped = true;
@@ -506,6 +521,119 @@ import {
                             break;
                     }
                     break; // Only apply one zone at a time
+                }
+            }
+        }
+
+        function updateShadowTwin() {
+            const twin = player.shadowTwin;
+            const dt = 16; // Approximate frame time
+            
+            // Update action timer
+            twin.actionTimer += dt;
+            
+            // Check if current action is complete
+            if (twin.actionTimer >= twin.actionDuration) {
+                // Choose new pseudo-random action
+                const actions = ['idle', 'walk_left', 'walk_right', 'jump', 'random_jump'];
+                const weights = [20, 25, 25, 15, 15]; // Weighted probabilities
+                
+                let totalWeight = weights.reduce((sum, w) => sum + w, 0);
+                let random = Math.random() * totalWeight;
+                let actionIndex = 0;
+                
+                for (let i = 0; i < weights.length; i++) {
+                    random -= weights[i];
+                    if (random <= 0) {
+                        actionIndex = i;
+                        break;
+                    }
+                }
+                
+                twin.currentAction = actions[actionIndex];
+                twin.actionTimer = 0;
+                twin.actionDuration = Math.random() * 2000 + 1000; // 1-3 seconds
+            }
+            
+            // Apply physics - gravity
+            twin.vy += 0.8; // Same gravity as player
+            
+            // Execute current action
+            switch (twin.currentAction) {
+                case 'walk_left':
+                    twin.vx = -2;
+                    twin.facing = -1;
+                    break;
+                case 'walk_right':
+                    twin.vx = 2;
+                    twin.facing = 1;
+                    break;
+                case 'jump':
+                    if (twin.grounded) {
+                        twin.vy = -15; // Same jump strength as player
+                    }
+                    twin.vx *= 0.9; // Slight deceleration
+                    break;
+                case 'random_jump':
+                    if (twin.grounded) {
+                        twin.vy = -12;
+                        twin.vx = (Math.random() - 0.5) * 6; // Random horizontal velocity
+                    }
+                    break;
+                case 'idle':
+                default:
+                    twin.vx *= 0.8; // Deceleration
+                    break;
+            }
+            
+            // Update position
+            twin.x += twin.vx;
+            twin.y += twin.vy;
+            
+            // Platform collision detection (simplified)
+            twin.grounded = false;
+            for (const platform of platforms) {
+                const screenX = platform.worldX + worldX;
+                if (twin.x < screenX + platform.width && 
+                    twin.x + 50 > screenX && // Assume twin is same size as player
+                    twin.y + 92 > platform.y &&
+                    twin.y < platform.y + platform.height &&
+                    twin.vy >= 0) {
+                    twin.y = platform.y - 92; // Place on top of platform
+                    twin.vy = 0;
+                    twin.grounded = true;
+                    break;
+                }
+            }
+            
+            // Ground collision
+            if (twin.y + 92 > groundY) {
+                twin.y = groundY - 92;
+                twin.vy = 0;
+                twin.grounded = true;
+            }
+            
+            // Boundary constraints - keep twin in dissociation zone roughly
+            const zoneStart = 7000 + worldX;
+            const zoneEnd = 8000 + worldX;
+            if (twin.x < zoneStart - 100) {
+                twin.x = zoneStart - 100;
+                twin.vx = Math.abs(twin.vx); // Bounce right
+            }
+            if (twin.x > zoneEnd + 100) {
+                twin.x = zoneEnd + 100;
+                twin.vx = -Math.abs(twin.vx); // Bounce left
+            }
+            
+            // Avoid pits
+            for (const pit of pits) {
+                const pitScreenX = pit.worldX + worldX;
+                if (twin.x > pitScreenX - 50 && twin.x < pitScreenX + pit.width + 50 && twin.grounded) {
+                    // Jump to avoid pit if approaching
+                    if (Math.abs(twin.vx) > 0.5) {
+                        twin.vy = -12;
+                        twin.grounded = false;
+                    }
                 }
             }
         }
@@ -992,6 +1120,11 @@ import {
             player.handleInput(keys, onSpill);
             player.updateState(SPRITE_ANIMATIONS);
             player.updatePhysics(groundY, platforms, pits, worldX);
+            
+            // Update shadow twin if active
+            if (player.shadowTwin.active) {
+                updateShadowTwin();
+            }
 
             if (player.checkFallDeath()) {
                 player.die();
@@ -1355,6 +1488,14 @@ import {
                     }
                 }
             } else {
+                // Apply upside-down transformation if gravity is flipped
+                if (player.gravityFlipped) {
+                    ctx.save();
+                    ctx.translate(canvas.width/2, canvas.height/2);
+                    ctx.rotate(Math.PI);
+                    ctx.translate(-canvas.width/2, -canvas.height/2);
+                }
+                
                 groundY = canvas.height - 100;
 
                 ctx.fillStyle = '#654321';
@@ -2090,17 +2231,34 @@ import {
                         player.render(ctx, playerSprite, spriteLoaded, SPRITE_ANIMATIONS, ARMOR_DATA, player.twinX);
                         ctx.restore();
                     }
-
-                    // Upside down effect
-                    if (player.gravityFlipped) {
+                    
+                    // Draw shadow twin
+                    if (player.shadowTwin.active) {
                         ctx.save();
-                        ctx.translate(canvas.width/2, canvas.height/2);
-                        ctx.rotate(Math.PI);
-                        ctx.translate(-canvas.width/2, -canvas.height/2);
-                        // The entire world would need to be redrawn here
-                        // Or you could apply this transformation at the start of draw()
+                        ctx.globalAlpha = 0.4;
+                        
+                        // Create a temporary player object for rendering the shadow twin
+                        const shadowPlayer = {
+                            x: player.shadowTwin.x,
+                            y: player.shadowTwin.y,
+                            width: player.width,
+                            height: player.height,
+                            facing: player.shadowTwin.facing,
+                            crouching: false,
+                            currentArmorIndex: player.currentArmorIndex,
+                            armors: player.armors,
+                            animation: {
+                                currentFrame: player.animation.currentFrame,
+                                lastFrameTime: player.animation.lastFrameTime
+                            },
+                            grounded: player.shadowTwin.grounded
+                        };
+                        
+                        // Render shadow twin with same appearance as player but more transparent
+                        player.render.call(shadowPlayer, ctx, playerSprite, spriteLoaded, SPRITE_ANIMATIONS, ARMOR_DATA);
                         ctx.restore();
                     }
+
                 }
 
                 if (gameState === 'paused') {
@@ -2219,6 +2377,11 @@ import {
             ctx.fillText(`Player: (${Math.round(playerWorldX)}, ${Math.round(playerY)})`, canvas.width - 200, 20);
 
             ctx.restore();
+                
+            // Restore upside-down transformation if it was applied
+            if (player.gravityFlipped) {
+                ctx.restore();
+            }
         }
 
         function gameLoop() {

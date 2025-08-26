@@ -43,6 +43,19 @@ export class Player {
         // Special effects (from level zones)
         this.invertedControls = false;
         this.hasTwin = false;
+        this.twinX = 0;
+        this.shadowTwin = {
+            active: false,
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            grounded: false,
+            facing: 1,
+            actionTimer: 0,
+            currentAction: 'idle',
+            actionDuration: 0
+        };
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
@@ -117,6 +130,8 @@ export class Player {
         // Reset temporary zone effects
         this.invertedControls = false;
         this.hasTwin = false;
+        this.twinX = 0;
+        this.shadowTwin.active = false;
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
@@ -317,6 +332,8 @@ export class Player {
         // Clear zone effects and preventions
         this.invertedControls = false;
         this.hasTwin = false;
+        this.twinX = 0;
+        this.shadowTwin.active = false;
         this.gravityFlipped = false;
         this.tunnelVision = 0;
         this.depressionFog = 0;
