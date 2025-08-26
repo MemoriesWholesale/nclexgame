@@ -225,6 +225,76 @@ const level = {
         { type: 'health_pack', x: 10500, y: 'ground-30' }
     ],
     
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Early anxiety relief
+        { 
+            id: 'anxiety_relief', 
+            x: 1000, 
+            y: 'ground-30', 
+            triggerX: 950,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'anxiolytic',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Depression support weapon
+        { 
+            id: 'support_weapon', 
+            x: 2700, 
+            y: 'ground-30', 
+            triggerX: 2650,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 3,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Manic phase stabilizer
+        { 
+            id: 'mood_stabilizer', 
+            x: 4600, 
+            y: 'ground-30', 
+            triggerX: 4550,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'mood_stabilizer',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Dissociation grounding tool
+        { 
+            id: 'grounding_item', 
+            x: 7500, 
+            y: 'ground-30', 
+            triggerX: 7450,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 7,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        },
+        // Pre-boss mental health boost
+        { 
+            id: 'mental_health_boost', 
+            x: 11800, 
+            y: 'ground-30', 
+            triggerX: 11600,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        }
+    ],
+    
     // Enemy waves - Represent mental health challenges
     enemyWaves: [
         { triggerX: 1200, enemies: [

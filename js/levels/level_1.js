@@ -199,6 +199,76 @@ const level = {
         { type: 'health_pack', x: 7500, y: 'ground-30' }
     ],
     
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Early game weapon upgrade
+        { 
+            id: 'weapon_1', 
+            x: 1200, 
+            y: 'ground-30', 
+            triggerX: 1150,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 2,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Hidden medication on vessel wall
+        { 
+            id: 'hidden_med_1', 
+            x: 2950, 
+            y: 'vessel_wall_2-top', 
+            triggerX: 2900,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'insulin',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // High platform reward
+        { 
+            id: 'high_weapon', 
+            x: 4350, 
+            y: 'high_ledge_2-top', 
+            triggerX: 4300,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 5,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        },
+        // Mid-game life boost
+        { 
+            id: 'life_boost', 
+            x: 6800, 
+            y: 'ground-30', 
+            triggerX: 6750,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        },
+        // Pre-boss preparation
+        { 
+            id: 'boss_prep', 
+            x: 10200, 
+            y: 'ground-30', 
+            triggerX: 10000,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'epinephrine',
+            width: 30,
+            height: 30,
+            persistent: false
+        }
+    ],
+    
     // Boss configuration - Receptor Site Boss
     boss: {
         triggerX: 10500,

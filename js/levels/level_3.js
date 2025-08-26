@@ -188,6 +188,75 @@ const level = {
         { type: 'chest', x: 8000, y: 'ground-300', contains: 'weapon_upgrade', weaponId: 8, requiresQuestion: true }
     ],
     
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Early safety equipment
+        { 
+            id: 'safety_start', 
+            x: 600, 
+            y: 'ground-30', 
+            triggerX: 550,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 2,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Hidden on high platform
+        { 
+            id: 'high_reward', 
+            x: 1850, 
+            y: 'ground-500', 
+            triggerX: 1800,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'muscle_relaxant',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Mid-level weapon upgrade
+        { 
+            id: 'fall_weapon', 
+            x: 2900, 
+            y: 'ground-30', 
+            triggerX: 2850,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 4,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Emergency life boost
+        { 
+            id: 'emergency_life', 
+            x: 4500, 
+            y: 'ground-30', 
+            triggerX: 4450,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        },
+        // Pre-boss stability aid
+        { 
+            id: 'stability_boost', 
+            x: 8800, 
+            y: 'ground-30', 
+            triggerX: 8600,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'balance_aid',
+            width: 30,
+            height: 30,
+            persistent: false
+        }
+    ],
+    
     // Enemy waves
     enemyWaves: [
         { triggerX: 500, enemies: [

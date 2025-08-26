@@ -245,6 +245,90 @@ const level = {
         { type: 'health_pack', x: 11200, y: 'ground-30' }
     ],
     
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Emergency cardiac tool
+        { 
+            id: 'cardiac_emergency', 
+            x: 1100, 
+            y: 'ground-30', 
+            triggerX: 1050,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'cardiac_stabilizer',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Respiratory support
+        { 
+            id: 'resp_support', 
+            x: 2900, 
+            y: 'ground-30', 
+            triggerX: 2850,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 4,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Advanced monitoring equipment
+        { 
+            id: 'monitoring_upgrade', 
+            x: 5100, 
+            y: 'ground-30', 
+            triggerX: 5050,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 6,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        },
+        // Metabolic stabilizer
+        { 
+            id: 'metabolic_aid', 
+            x: 7100, 
+            y: 'ground-30', 
+            triggerX: 7050,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'metabolic_stabilizer',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Critical life support
+        { 
+            id: 'life_support', 
+            x: 9500, 
+            y: 'ground-30', 
+            triggerX: 9450,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        },
+        // Pre-boss homeostasis tool
+        { 
+            id: 'homeostasis_weapon', 
+            x: 11600, 
+            y: 'ground-30', 
+            triggerX: 11400,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 8,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        }
+    ],
+    
     // Enemy waves - System failures
     enemyWaves: [
         { triggerX: 1700, enemies: [

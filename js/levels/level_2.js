@@ -92,6 +92,76 @@ const level = {
         { type: 'chest', x: 4750, y: 'ground-610', contains: 'extra_life', requiresQuestion: true }
     ],
 
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Early contamination protection
+        { 
+            id: 'early_weapon', 
+            x: 800, 
+            y: 'ground-30', 
+            triggerX: 750,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 3,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Sterilization medication
+        { 
+            id: 'sterile_med', 
+            x: 1500, 
+            y: 'ground-30', 
+            triggerX: 1450,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'antiseptic',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // High platform secret weapon
+        { 
+            id: 'secret_weapon', 
+            x: 3200, 
+            y: 'ground-360', 
+            triggerX: 3150,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 6,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        },
+        // Mid-level health boost
+        { 
+            id: 'health_boost', 
+            x: 4200, 
+            y: 'ground-30', 
+            triggerX: 4150,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        },
+        // Pre-boss immune boost
+        { 
+            id: 'immune_boost', 
+            x: 6500, 
+            y: 'ground-30', 
+            triggerX: 6300,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'immunoglobulin',
+            width: 30,
+            height: 30,
+            persistent: false
+        }
+    ],
+
     // Boss configuration
     boss: {
         triggerX: 7000,

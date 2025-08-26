@@ -219,6 +219,89 @@ const level = {
         { type: 'health_pack', x: 10500, y: 'ground-30' }
     ],
     
+    // Fixed item spawn points - strategically placed rewards
+    fixedItemSpawns: [
+        // Early mobility aid
+        { 
+            id: 'mobility_aid', 
+            x: 700, 
+            y: 'ground-30', 
+            triggerX: 650,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 2,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Temperature regulation tool
+        { 
+            id: 'temp_tool', 
+            x: 1800, 
+            y: 'ground-30', 
+            triggerX: 1750,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'thermal_regulator',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Hygiene equipment
+        { 
+            id: 'hygiene_upgrade', 
+            x: 4800, 
+            y: 'ground-30', 
+            triggerX: 4750,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 4,
+            width: 30,
+            height: 30,
+            persistent: true
+        },
+        // Nutrition boost
+        { 
+            id: 'nutrition_boost', 
+            x: 6400, 
+            y: 'ground-30', 
+            triggerX: 6350,
+            itemType: 'powerup',
+            subtype: 'powerup',
+            powerupType: 'life',
+            width: 25,
+            height: 25,
+            persistent: false
+        },
+        // Pain management tool
+        { 
+            id: 'pain_management', 
+            x: 9300, 
+            y: 'ground-30', 
+            triggerX: 9250,
+            itemType: 'medication',
+            subtype: 'medication',
+            medicationType: 'analgesic',
+            width: 30,
+            height: 30,
+            persistent: false
+        },
+        // Pre-boss comfort item
+        { 
+            id: 'comfort_weapon', 
+            x: 10900, 
+            y: 'ground-30', 
+            triggerX: 10700,
+            itemType: 'pickup',
+            subtype: 'weapon',
+            weaponId: 8,
+            width: 30,
+            height: 30,
+            persistent: true,
+            rare: true
+        }
+    ],
+    
     // Enemy waves - Represent care challenges
     enemyWaves: [
         { triggerX: 800, enemies: [
