@@ -2458,48 +2458,28 @@ import {
                         ctx.restore();
                     }
                     
-                    // Draw evil twin - simple but effective representation
+                    // Draw evil twin
                     if (player.evilTwin.active) {
-                        console.log("RENDERING EVIL TWIN at", player.evilTwin.x, player.evilTwin.y);
                         ctx.save();
-                        ctx.globalAlpha = 0.8;
+                        ctx.globalAlpha = 0.6; // Same transparency as shadow twin
                         
-                        // Draw evil twin as a red-tinted, flickering silhouette
-                        const flickerIntensity = 0.7 + Math.sin(Date.now() * 0.02) * 0.3;
-                        ctx.fillStyle = `rgba(255, ${100 * flickerIntensity}, ${100 * flickerIntensity}, 0.9)`;
+                        // Save player's current state temporarily
+                        const originalX = player.x;
+                        const originalY = player.y;
+                        const originalFacing = player.facing;
                         
-                        // Draw basic humanoid shape
-                        const evil = player.evilTwin;
-                        const x = evil.x;
-                        const y = evil.y;
+                        // Set player position to evil twin position for rendering
+                        player.x = player.evilTwin.x;
+                        player.y = player.evilTwin.y;
+                        player.facing = player.evilTwin.facing;
                         
-                        // Body
-                        ctx.fillRect(x + 15, y + 20, 20, 40);
+                        // Render evil twin using player's render method
+                        player.render(ctx, playerSprite, spriteLoaded, SPRITE_ANIMATIONS, ARMOR_DATA);
                         
-                        // Head
-                        ctx.beginPath();
-                        ctx.arc(x + 25, y + 15, 12, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        // Arms (positioned based on facing direction)
-                        if (evil.facing > 0) {
-                            ctx.fillRect(x + 35, y + 25, 12, 6); // Right arm forward
-                            ctx.fillRect(x + 8, y + 30, 10, 6);  // Left arm back
-                        } else {
-                            ctx.fillRect(x + 3, y + 25, 12, 6);  // Left arm forward
-                            ctx.fillRect(x + 32, y + 30, 10, 6); // Right arm back
-                        }
-                        
-                        // Legs
-                        ctx.fillRect(x + 12, y + 60, 8, 25);
-                        ctx.fillRect(x + 25, y + 60, 8, 25);
-                        
-                        // Add menacing red glow around evil twin
-                        ctx.shadowColor = 'red';
-                        ctx.shadowBlur = 15;
-                        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-                        ctx.lineWidth = 2;
-                        ctx.strokeRect(x + 5, y, 40, 92);
+                        // Restore player's original state
+                        player.x = originalX;
+                        player.y = originalY;
+                        player.facing = originalFacing;
                         
                         ctx.restore();
                     }
