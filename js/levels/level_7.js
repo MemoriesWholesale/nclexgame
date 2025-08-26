@@ -223,9 +223,9 @@ const level = {
         // **FIX**: Reduced from 300px to 250px for consistency
         { type: 'pit', x: 9100, width: 200 },
         // **FIX**: Reduced from 400px to 250px to make it jumpable without NPC help
-        { type: 'pit', x: 10600, width: 200 },
+        { type: 'pit', x: 10600, width: 100 },
         // **FIX**: Reduced from 300px to 250px for consistency
-        { type: 'pit', x: 11900, width: 200 },
+        { type: 'pit', x: 11900, width: 100 },
         
         // Lifecycle-specific hazards
         { id: 'teratogen_1', type: 'teratogen', x: 900, y: 'ground-300', 

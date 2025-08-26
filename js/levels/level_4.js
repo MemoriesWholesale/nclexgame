@@ -227,26 +227,26 @@ const level = {
     
     // Enemy waves - Represent mental health challenges
     enemyWaves: [
-        // { triggerX: 1200, enemies: [
-        //     { type: 'anxiety_spark', x: 1250, y: 'ground-0', speed: 3, jumpy: true },
-        //     { type: 'anxiety_spark', x: 1350, y: 'ground-0', speed: 3, jumpy: true }
-        // ]},
-        // { triggerX: 2400, enemies: [
-        //     { type: 'depression_cloud', x: 2450, y: 'ground-0', hp: 2, slow: true },
-        //     { type: 'anxiety_spark', x: 2550, y: 'ground-0', speed: 3, jumpy: true }
-        // ]},
-        // { triggerX: 4000, enemies: [
-        //     { type: 'manic_burst', x: 4050, y: 'ground-0', hp: 1, speed: 6, erratic: true },
-        //     { type: 'manic_burst', x: 4150, y: 'ground-0', hp: 1, speed: 6, erratic: true }
-        // ]},
-        // { triggerX: 6500, enemies: [
-        //     { type: 'confusion_wisp', x: 6550, y: 'ground-0', hp: 2, teleports: true },
-        //     { type: 'confusion_wisp', x: 6650, y: 'ground-0', hp: 2, teleports: true }
-        // ]},
-        // { triggerX: 8200, enemies: [
-        //     { type: 'hallucination', x: 8250, y: 'ground-0', hp: 3, phases: true },
-        //     { type: 'anxiety_spark', x: 8350, y: 'ground-0', speed: 4, jumpy: true }
-        // ]}
+        { triggerX: 1200, enemies: [
+            { type: 'anxiety_spark', x: 1250, y: 'ground-0', speed: 3, jumpy: true },
+            { type: 'anxiety_spark', x: 1350, y: 'ground-0', speed: 3, jumpy: true }
+        ]},
+        { triggerX: 2400, enemies: [
+            { type: 'depression_cloud', x: 2450, y: 'ground-0', hp: 2, slow: true },
+            { type: 'anxiety_spark', x: 2550, y: 'ground-0', speed: 3, jumpy: true }
+        ]},
+        { triggerX: 4000, enemies: [
+            { type: 'manic_burst', x: 4050, y: 'ground-0', hp: 1, speed: 6, erratic: true },
+            { type: 'manic_burst', x: 4150, y: 'ground-0', hp: 1, speed: 6, erratic: true }
+        ]},
+        { triggerX: 6500, enemies: [
+            { type: 'confusion_wisp', x: 6550, y: 'ground-0', hp: 2, teleports: true },
+            { type: 'confusion_wisp', x: 6650, y: 'ground-0', hp: 2, teleports: true }
+        ]},
+        { triggerX: 8200, enemies: [
+            { type: 'hallucination', x: 8250, y: 'ground-0', hp: 3, phases: true },
+            { type: 'anxiety_spark', x: 8350, y: 'ground-0', speed: 4, jumpy: true }
+        ]}
     ],
     
     // Boss configuration - Stigma Boss

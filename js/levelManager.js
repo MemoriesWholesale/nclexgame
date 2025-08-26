@@ -555,7 +555,9 @@ class LevelManager {
                             // Cleanliness decreases over time
                             zone.cleanlinessLevel = Math.max(0, zone.cleanlinessLevel - 0.5);
                             if (zone.cleanlinessLevel < 30) {
-                                player.speedMultiplier *= 0.8; // Slow when dirty
+                                player.speedMultiplier = 0.8; // Slow when dirty
+                            } else {
+                                player.speedMultiplier = 1.0; // Normal speed when clean
                             }
                             break;
                             
@@ -563,7 +565,9 @@ class LevelManager {
                             // Hunger increases
                             zone.hungerLevel = Math.max(0, zone.hungerLevel - 0.3);
                             if (zone.hungerLevel < 30) {
-                                player.jumpMultiplier *= 0.8; // Weak when hungry
+                                player.jumpMultiplier = 0.8; // Weak when hungry
+                            } else {
+                                player.jumpMultiplier = 1.0; // Normal jump when fed
                             }
                             break;
                             
@@ -572,7 +576,16 @@ class LevelManager {
                             if (zone.currentNoise > zone.maxNoise) {
                                 player.fatigue = (player.fatigue || 0) + 0.5;
                                 if (player.fatigue > 50) {
-                                    player.speedMultiplier *= 0.7;
+                                    if (player.speedMultiplier > 0.7) {
+                                        player.speedMultiplier = 0.7;
+                                    }
+                                } else {
+                                    player.speedMultiplier = 1.0; // Reset when not fatigued
+                                }
+                            } else {
+                                player.fatigue = Math.max(0, (player.fatigue || 0) - 0.2); // Recover from fatigue
+                                if (player.fatigue <= 0) {
+                                    player.speedMultiplier = 1.0;
                                 }
                             }
                             break;
@@ -598,7 +611,12 @@ class LevelManager {
                             // O2 decreases without proper breathing
                             zone.currentO2 = Math.max(80, zone.currentO2 - 0.2);
                             if (zone.currentO2 < 90) {
-                                player.speedMultiplier *= (zone.currentO2 / 100);
+                                const o2Ratio = zone.currentO2 / 100;
+                                if (player.speedMultiplier > o2Ratio) {
+                                    player.speedMultiplier = o2Ratio;
+                                }
+                            } else {
+                                player.speedMultiplier = 1.0; // Normal speed with good oxygen
                             }
                             break;
                             
@@ -627,8 +645,15 @@ class LevelManager {
                             // Poor perfusion affects everything
                             if (zone.perfusion < 60) {
                                 const perfusionRatio = zone.perfusion / 100;
-                                player.speedMultiplier *= perfusionRatio;
-                                player.jumpMultiplier *= perfusionRatio;
+                                if (player.speedMultiplier > perfusionRatio) {
+                                    player.speedMultiplier = perfusionRatio;
+                                }
+                                if (player.jumpMultiplier > perfusionRatio) {
+                                    player.jumpMultiplier = perfusionRatio;
+                                }
+                            } else {
+                                player.speedMultiplier = 1.0; // Normal movement with good perfusion
+                                player.jumpMultiplier = 1.0;
                             }
                             break;
                     }
@@ -652,7 +677,7 @@ class LevelManager {
                         case 'toddler':
                             if (zone.mechanics === 'exploration') {
                                 player.curiosity = true; // Drawn to hazards
-                                player.speedMultiplier *= 1.2; // Fast but unsteady
+                                player.speedMultiplier = 1.2; // Fast but unsteady
                             }
                             break;
                             
@@ -665,7 +690,7 @@ class LevelManager {
                             
                         case 'older_adult':
                             if (zone.mechanics === 'adaptation') {
-                                player.speedMultiplier *= 0.7; // Slower movement
+                                player.speedMultiplier = 0.7; // Slower movement
                                 player.fallRisk = true; // Higher fall damage
                             }
                             break;
