@@ -1158,27 +1158,27 @@ import {
             }
         }
 
-        function update() {
+        function update(deltaTime = 1) {
             if (gameState !== 'playing') return;
 
             // Handle gate explosion sequence
             if (gateExploding) {
-                explosionTimer--;
+                explosionTimer -= deltaTime;
                 if (explosionTimer <= 0) {
                     gateExploding = false;
                     // Arena terrain was already set up at level start
                 }
                 // Continue with game update but don't process player input
             }
-            
+
             // Handle arena panning animation
             if (arenaPanning) {
-                arenaPanProgress++;
+                arenaPanProgress += deltaTime;
                 const t = Math.min(arenaPanProgress / arenaPanDuration, 1);
                 // Smooth easing function (ease out)
                 const easedT = 1 - Math.pow(1 - t, 3);
                 worldX = arenaPanStartX + (arenaPanTargetX - arenaPanStartX) * easedT;
-                
+
                 if (arenaPanProgress >= arenaPanDuration) {
                     arenaPanning = false;
                     worldX = arenaPanTargetX; // Ensure exact final position
@@ -1186,10 +1186,10 @@ import {
             }
 
             groundY = canvas.height - 100;
-            
+
             // Update charge mechanics
             if (player.isCharging) {
-                player.chargeTimer++;
+                player.chargeTimer += deltaTime;
                 // Freeze player movement while charging
                 player.speedMultiplier = 0;
             } else if (!player.isCharging) {
@@ -1214,7 +1214,7 @@ import {
 
             // Update platform states for new mechanics
         if (levelManager.currentLevel) {
-            levelManager.updatePlatformStates(platforms, worldX, player, canvas);
+            levelManager.updatePlatformStates(platforms, worldX, player, canvas, deltaTime);
             levelManager.applyZoneEffects(player, worldX, canvas);
         }
 
@@ -1665,9 +1665,9 @@ import {
 
             // Only process player input if not during explosion
             if (!gateExploding) {
-                player.handleInput(keys, onSpill);
+                player.handleInput(keys, onSpill, deltaTime);
             }
-            player.updateState(SPRITE_ANIMATIONS);
+            player.updateState(SPRITE_ANIMATIONS, deltaTime);
             // Pass terrain system if current level uses it
             const currentTerrainSystem = (levelManager.currentLevel && levelManager.currentLevel.useTerrainSystem) ? terrainSystem : null;
             
@@ -1714,7 +1714,7 @@ import {
                 }
             }
             
-            player.updatePhysics(effectiveGroundY, platforms, pits, worldX, currentTerrainSystem);
+            player.updatePhysics(effectiveGroundY, platforms, pits, worldX, currentTerrainSystem, deltaTime);
             
             // Update shadow twin if active
             if (player.shadowTwin.active) {
@@ -3250,9 +3250,12 @@ import {
             }
         }
 
-        function gameLoop() {
+        let lastTime = performance.now();
+        function gameLoop(timestamp) {
+            const deltaTime = (timestamp - lastTime) / (1000 / 60);
+            lastTime = timestamp;
             try {
-                update();
+                update(deltaTime);
                 draw();
                 if (typeof DEBUG_DRAW_AXES !== 'undefined' && DEBUG_DRAW_AXES) {
                     drawSpatialAxes();
@@ -3265,7 +3268,7 @@ import {
         }
 
         console.log('Starting game...');
-        gameLoop();
+        requestAnimationFrame(gameLoop);
 export function initGame() {
     // TODO: Import/init player, enemies, UI, etc.
     // TODO: Set up canvas, start game loop

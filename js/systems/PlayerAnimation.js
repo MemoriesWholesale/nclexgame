@@ -13,10 +13,10 @@ export class PlayerAnimation {
     /**
      * Update animation state based on player conditions
      */
-    updateState(spriteAnimations) {
-        this.updateShootTimer();
+    updateState(spriteAnimations, deltaTime = 1) {
+        this.updateShootTimer(deltaTime);
         this.determineAnimationState();
-        this.updateAnimationFrame(spriteAnimations);
+        this.updateAnimationFrame(spriteAnimations, deltaTime);
     }
     
     /**
@@ -43,9 +43,9 @@ export class PlayerAnimation {
     }
     
     // Private methods
-    updateShootTimer() {
+    updateShootTimer(deltaTime = 1) {
         if (this.player.shootTimer > 0) {
-            this.player.shootTimer--;
+            this.player.shootTimer -= deltaTime;
         } else {
             this.player.isShooting = false;
         }
@@ -72,15 +72,15 @@ export class PlayerAnimation {
         return 'idleShoot';
     }
     
-    updateAnimationFrame(spriteAnimations) {
+    updateAnimationFrame(spriteAnimations, deltaTime = 1) {
         const currentAnimation = spriteAnimations[this.state];
-        this.animationTimer++;
-        
+        this.animationTimer += deltaTime;
+
         if (this.animationTimer > this.ANIMATION_SPEED) {
             this.currentFrame = (this.currentFrame + 1) % currentAnimation.frames;
             this.animationTimer = 0;
         }
-        
+
         if (this.currentFrame >= currentAnimation.frames) {
             this.currentFrame = 0;
         }

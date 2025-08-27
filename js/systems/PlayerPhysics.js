@@ -13,11 +13,11 @@ export class PlayerPhysics {
     /**
      * Update player physics including gravity, movement, and platform collisions
      */
-    update(groundY, platforms, pits, worldX, terrainSystem = null) {
-        this.applyGravity(terrainSystem, worldX);
-        this.updateHorizontalMovement(terrainSystem, worldX);
-        this.updateMovingPlatforms(platforms);
-        this.updateVerticalPosition();
+    update(groundY, platforms, pits, worldX, terrainSystem = null, deltaTime = 1) {
+        this.applyGravity(terrainSystem, worldX, deltaTime);
+        this.updateHorizontalMovement(terrainSystem, worldX, deltaTime);
+        this.updateMovingPlatforms(platforms, deltaTime);
+        this.updateVerticalPosition(deltaTime);
         this.handlePlatformCollisions(platforms, worldX, groundY);
         this.handleGroundCollision(groundY, pits, worldX, terrainSystem);
         this.updateJumpState(groundY);
@@ -26,9 +26,9 @@ export class PlayerPhysics {
     /**
      * Handle spill physics when player is on a slippery surface
      */
-    applySpillPhysics(onSpill) {
+    applySpillPhysics(onSpill, deltaTime = 1) {
         if (onSpill && this.player.grounded) {
-            this.player.vx *= this.SPILL_ACCELERATION;
+            this.player.vx *= Math.pow(this.SPILL_ACCELERATION, deltaTime);
             if (Math.abs(this.player.vx) < this.MIN_SPILL_VELOCITY) {
                 this.player.vx = this.player.facing * this.MIN_SPILL_VELOCITY;
             }
@@ -36,49 +36,49 @@ export class PlayerPhysics {
     }
     
     // Private methods
-    applyGravity(terrainSystem = null, worldX = 0) {
+    applyGravity(terrainSystem = null, worldX = 0, deltaTime = 1) {
         if (terrainSystem && this.player.grounded) {
             // Apply terrain-modified gravity
             const playerWorldX = this.player.x - worldX;
             const gravityMod = terrainSystem.getGravityModifier(playerWorldX);
-            
+
             // Apply slope sliding
-            this.player.vx += gravityMod.x;
-            this.player.vy += this.GRAVITY * gravityMod.y;
+            this.player.vx += gravityMod.x * deltaTime;
+            this.player.vy += this.GRAVITY * gravityMod.y * deltaTime;
         } else {
             // Standard gravity
-            this.player.vy += this.GRAVITY;
+            this.player.vy += this.GRAVITY * deltaTime;
         }
     }
     
-    updateHorizontalMovement(terrainSystem = null, worldX = 0) {
+    updateHorizontalMovement(terrainSystem = null, worldX = 0, deltaTime = 1) {
         if (terrainSystem && this.player.grounded) {
             // Apply terrain speed modifier
             const playerWorldX = this.player.x - worldX;
             const speedMod = terrainSystem.getSpeedModifier(playerWorldX, this.player.vx);
-            this.player.x += this.player.vx * speedMod;
+            this.player.x += this.player.vx * speedMod * deltaTime;
         } else {
             // Standard movement
-            this.player.x += this.player.vx;
+            this.player.x += this.player.vx * deltaTime;
         }
     }
     
-    updateVerticalPosition() {
-        this.player.y += this.player.vy;
+    updateVerticalPosition(deltaTime = 1) {
+        this.player.y += this.player.vy * deltaTime;
     }
     
-    updateMovingPlatforms(platforms) {
+    updateMovingPlatforms(platforms, deltaTime = 1) {
         const currentPlatform = this.player.onPlatform;
-        
+
         for (const platform of platforms) {
             if (!platform.activated) continue;
-            
+
             const prevY = platform.y;
             const prevX = platform.worldX || platform.x;
-            
+
             // Update platform movement regardless of player position
-            this.updatePlatformMovement(platform);
-            
+            this.updatePlatformMovement(platform, deltaTime);
+
             // Move player with platform only if they're standing on it
             if (currentPlatform === platform) {
                 this.movePlayerWithPlatform(platform, prevX, prevY);
@@ -86,26 +86,26 @@ export class PlayerPhysics {
         }
     }
     
-    updatePlatformMovement(platform) {
+    updatePlatformMovement(platform, deltaTime) {
         switch (platform.type) {
             case 'elevator':
-                this.updateElevatorPlatform(platform);
+                this.updateElevatorPlatform(platform, deltaTime);
                 break;
             case 'moving':
-                this.updateMovingPlatform(platform);
+                this.updateMovingPlatform(platform, deltaTime);
                 break;
             case 'orbiting':
-                this.updateOrbitingPlatform(platform);
+                this.updateOrbitingPlatform(platform, deltaTime);
                 break;
             case 'malfunctioning':
-                this.updateMalfunctioningPlatform(platform);
+                this.updateMalfunctioningPlatform(platform, deltaTime);
                 break;
         }
     }
     
-    updateElevatorPlatform(platform) {
-        platform.y += platform.speed;
-        if ((platform.speed < 0 && platform.y <= platform.endY) || 
+    updateElevatorPlatform(platform, deltaTime) {
+        platform.y += platform.speed * deltaTime;
+        if ((platform.speed < 0 && platform.y <= platform.endY) ||
             (platform.speed > 0 && platform.y >= platform.endY)) {
             platform.y = platform.endY;
             [platform.startY, platform.endY] = [platform.endY, platform.startY];
@@ -113,51 +113,49 @@ export class PlayerPhysics {
         }
     }
     
-    updateMovingPlatform(platform) {
+    updateMovingPlatform(platform, deltaTime) {
         if (!platform.movement) return;
-        
+
         if (platform.movement.horizontal) {
-            platform.worldX += platform.movement.speed;
+            platform.worldX += platform.movement.speed * deltaTime;
             if ((platform.movement.speed > 0 && platform.worldX >= platform.movement.endX) ||
                 (platform.movement.speed < 0 && platform.worldX <= platform.movement.startX)) {
                 platform.movement.speed = -platform.movement.speed;
             }
         } else if (platform.movement.vertical) {
-            platform.y += platform.movement.speed;
-            if ((platform.speed < 0 && platform.y <= platform.endY) ||
-                (platform.speed > 0 && platform.y >= platform.endY)) {
-                platform.y = platform.endY;
-                [platform.startY, platform.endY] = [platform.endY, platform.startY];
-                platform.speed = -platform.speed;
+            platform.y += platform.movement.speed * deltaTime;
+            if ((platform.movement.speed > 0 && platform.y >= platform.movement.endY) ||
+                (platform.movement.speed < 0 && platform.y <= platform.movement.startY)) {
+                platform.movement.speed = -platform.movement.speed;
             }
         }
     }
     
-    updateOrbitingPlatform(platform) {
+    updateOrbitingPlatform(platform, deltaTime) {
         if (!platform.orbit) return;
-        platform.orbit.currentAngle += platform.orbit.speed;
+        platform.orbit.currentAngle += platform.orbit.speed * deltaTime;
         platform.worldX = platform.orbit.centerX + Math.cos(platform.orbit.currentAngle) * platform.orbit.radiusX;
         platform.y = platform.orbit.centerY + Math.sin(platform.orbit.currentAngle) * platform.orbit.radiusY;
     }
     
-    updateMalfunctioningPlatform(platform) {
+    updateMalfunctioningPlatform(platform, deltaTime) {
         if (!platform.isActiveMalfunction) return;
-        
+
         if (!platform.malfunctionStartTime) {
             platform.malfunctionStartTime = Date.now();
         }
-        
+
         const elapsed = Date.now() - platform.malfunctionStartTime;
         const oscillation = Math.sin(elapsed * 0.01) * platform.malfunctionSpeed;
-        
+
         if (platform.axis === 'horizontal') {
             if (!platform.originalX) platform.originalX = platform.worldX;
-            platform.worldX = platform.originalX + oscillation;
+            platform.worldX = platform.originalX + oscillation * deltaTime;
         } else if (platform.axis === 'vertical') {
             if (!platform.originalY) platform.originalY = platform.y;
-            platform.y = platform.originalY + oscillation;
+            platform.y = platform.originalY + oscillation * deltaTime;
         }
-        
+
         // Stop malfunction after 3 seconds
         if (elapsed > 3000) {
             this.resetMalfunctioningPlatform(platform);

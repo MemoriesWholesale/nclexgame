@@ -103,23 +103,23 @@ export class Player {
     /**
      * Handle player input for movement
      */
-    handleInput(keys, onSpill) {
-        this.input.handleInput(keys, onSpill);
-        this.physics.applySpillPhysics(onSpill);
+    handleInput(keys, onSpill, deltaTime = 1) {
+        this.input.handleInput(keys, onSpill, deltaTime);
+        this.physics.applySpillPhysics(onSpill, deltaTime);
     }
     
     /**
      * Update player state and animation
      */
-    updateState(spriteAnimations) {
-        this.animation.updateState(spriteAnimations);
+    updateState(spriteAnimations, deltaTime = 1) {
+        this.animation.updateState(spriteAnimations, deltaTime);
     }
     
     /**
      * Update player physics and position
      */
-    updatePhysics(groundY, platforms, pits, worldX, terrainSystem = null) {
-        this.physics.update(groundY, platforms, pits, worldX, terrainSystem);
+    updatePhysics(groundY, platforms, pits, worldX, terrainSystem = null, deltaTime = 1) {
+        this.physics.update(groundY, platforms, pits, worldX, terrainSystem, deltaTime);
     }
     
     /**
