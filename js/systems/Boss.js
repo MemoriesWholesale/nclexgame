@@ -9,6 +9,7 @@ export class Boss {
         this.width = 80;
         this.height = 120;
         this.vx = -2;
+        this.vy = 0;
         this.facing = levelId === 0 ? 1 : -1; // Level 0 boss faces right, others face left
         
         // Boss data from constants
@@ -44,6 +45,12 @@ export class Boss {
         this.isDying = false;
         this.deathTimer = 0;
         this.deathDuration = 240; // 4 seconds death animation
+        
+        // Entrance state
+        this.isEntering = true;
+        this.entranceTimer = 180; // 3 seconds entrance phase
+        this.isInvulnerable = true;
+        this.entranceIdleComplete = false;
         
         // Level-specific properties
         if (levelId === 0) {
@@ -139,13 +146,20 @@ export class Boss {
             return;
         }
         
+        // Handle entrance phase
+        if (this.isEntering) {
+            this.updateEntrance(canvas);
+            this.updateAnimation();
+            return;
+        }
+        
         // Update hurt state
         if (this.hurtTimer > 0) {
             this.hurtTimer--;
             this.currentAnimation = 'hurt';
         } else {
-            // Normal behavior
-            this.updateMovement(canvas);
+            // Normal behavior - need worldX passed from game.js
+            this.updateMovement(canvas, this.worldX);
             this.updateAttack(player);
         }
         
@@ -153,14 +167,53 @@ export class Boss {
     }
     
     /**
+     * Update boss entrance sequence
+     */
+    updateEntrance(canvas) {
+        this.entranceTimer--;
+        
+        if (this.entranceTimer > 120) {
+            // Phase 1: Idle at arena rim (first 1 second) - no movement
+            this.currentAnimation = 'idle';
+        } else if (this.entranceTimer > 60) {
+            // Phase 2: Start descending into arena (next 1 second)
+            this.currentAnimation = 'idle';
+            // Apply gravity to make boss drop into arena
+            this.vy += 0.8;
+            this.y += this.vy;
+            
+            // Check if boss has landed in the arena (simplified ground check)
+            const arenaGroundY = canvas.height - 100 + 80; // groundY + arenaDepth
+            if (this.y + this.height >= arenaGroundY) {
+                this.y = arenaGroundY - this.height;
+                this.vy = 0;
+            }
+        } else if (this.entranceTimer > 0) {
+            // Phase 3: Move into arena (final 1 second)
+            this.currentAnimation = 'idle';
+            // Slowly move left into the arena
+            this.x -= 1;
+        } else {
+            // Entrance complete
+            this.isEntering = false;
+            this.isInvulnerable = false;
+            this.entranceIdleComplete = true;
+        }
+    }
+    
+    /**
      * Update boss movement patterns
      */
-    updateMovement(canvas) {
+    updateMovement(canvas, worldX = 0) {
         // Basic horizontal movement
         this.x += this.vx;
         
-        // Bounce off screen edges
-        if (this.x <= 100 || this.x >= canvas.width - 100 - this.width) {
+        // Bounce off arena bounds (convert screen bounds to world coordinates)
+        // Arena should be visible from worldX+50 to worldX+canvas.width-50
+        const leftBound = -worldX + 50;  // Left arena boundary in world coords
+        const rightBound = -worldX + canvas.width - 50 - this.width; // Right arena boundary
+        
+        if (this.x <= leftBound || this.x >= rightBound) {
             this.vx = -this.vx;
             this.facing = this.vx > 0 ? 1 : -1;
         }
@@ -1034,7 +1087,7 @@ export class Boss {
      * Take damage and trigger hurt animation
      */
     takeDamage(damage = 1) {
-        if (this.hurtTimer > 0 || this.isDying) return false;
+        if (this.hurtTimer > 0 || this.isDying || this.isInvulnerable) return false;
         
         this.hp -= damage;
         this.hurtTimer = 20; // Brief hurt state
@@ -1072,11 +1125,15 @@ export class Boss {
     /**
      * Render the boss with sprite animation
      */
-    render(ctx) {
+    render(ctx, worldX = 0) {
+        // Convert world coordinates to screen coordinates
+        const screenX = this.x + worldX;
+        const screenY = this.y;
+        
         if (!this.spriteLoaded) {
             // Fallback rendering - colored rectangle
             ctx.fillStyle = '#4B0082';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.fillRect(screenX, screenY, this.width, this.height);
             return;
         }
         
@@ -1126,13 +1183,13 @@ export class Boss {
             ctx.drawImage(
                 this.sprite,
                 sourceX, sourceY, sourceWidth, sourceHeight,
-                -this.x - this.width, this.y, this.width, this.height
+                -screenX - this.width, screenY, this.width, this.height
             );
         } else {
             ctx.drawImage(
                 this.sprite,
                 sourceX, sourceY, sourceWidth, sourceHeight,
-                this.x, this.y, this.width, this.height
+                screenX, screenY, this.width, this.height
             );
         }
         
@@ -1141,7 +1198,7 @@ export class Boss {
         // Hurt flash effect
         if (this.hurtTimer > 0) {
             ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.fillRect(screenX, screenY, this.width, this.height);
         }
     }
     

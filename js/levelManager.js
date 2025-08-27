@@ -386,6 +386,30 @@ class LevelManager {
                     case 8: // Terrain test level
                             module = await import('./levels/level_terrain.js');
                             break;
+                    case 9: // Boss Arena 0
+                            module = await import('./levels/boss_0.js');
+                            break;
+                    case 10: // Boss Arena 1
+                            module = await import('./levels/boss_1.js');
+                            break;
+                    case 11: // Boss Arena 2
+                            module = await import('./levels/boss_2.js');
+                            break;
+                    case 12: // Boss Arena 3
+                            module = await import('./levels/boss_3.js');
+                            break;
+                    case 13: // Boss Arena 4
+                            module = await import('./levels/boss_4.js');
+                            break;
+                    case 14: // Boss Arena 5
+                            module = await import('./levels/boss_5.js');
+                            break;
+                    case 15: // Boss Arena 6
+                            module = await import('./levels/boss_6.js');
+                            break;
+                    case 16: // Boss Arena 7
+                            module = await import('./levels/boss_7.js');
+                            break;
                     // For now, return a placeholder for other levels
                     console.log('Using placeholder for level', levelId);
                     this.currentLevel = {

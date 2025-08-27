@@ -1,0 +1,13 @@
+{
+  "boss_test": {
+    "question": "Boss Arena Test Question - Which action demonstrates effective leadership in healthcare?",
+    "answers": [
+      "Working in isolation",
+      "Coordinating team efforts",
+      "Avoiding difficult decisions",
+      "Delegating all responsibilities"
+    ],
+    "correct": 1,
+    "explanation": "Effective leadership requires coordinating team efforts and collaborative decision-making."
+  }
+}

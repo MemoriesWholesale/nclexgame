@@ -9,8 +9,8 @@ export class Player {
         this.canvas = canvas;
         this.x = 100;
         this.y = 0;
-        this.width = 50;
-        this.height = 92;
+        this.width = 83;
+        this.height = 120;
         
         // Movement state
         this.vx = 0;
@@ -210,15 +210,20 @@ export class Player {
     }
     
     // Check collision with boss
-    checkBossCollision(boss) {
-        if (boss && !this.dead && 
-            this.x < boss.x + boss.width && this.x + this.width > boss.x && 
-            this.y < boss.y + boss.height && this.y + this.height > boss.y) {
+    checkBossCollision(boss, worldX = 0) {
+        if (boss && !this.dead) {
+            // Convert boss world coordinates to screen coordinates for comparison
+            const bossScreenX = boss.x + worldX;
+            const bossScreenY = boss.y;
             
-            // Boss instantly kills player (set lives to 1 so die() reduces it to 0)
-            this.lives = 1;
-            this.die();
-            return true;
+            if (this.x < bossScreenX + boss.width && this.x + this.width > bossScreenX && 
+                this.y < bossScreenY + boss.height && this.y + this.height > bossScreenY) {
+                
+                // Boss instantly kills player (set lives to 1 so die() reduces it to 0)
+                this.lives = 1;
+                this.die();
+                return true;
+            }
         }
         return false;
     }
@@ -348,8 +353,8 @@ export class Player {
         this.speedMultiplier = 1;
         this.jumpMultiplier = 1;
         this.sizeScale = 1;
-        this.width = 50;
-        this.height = 92;
+        this.width = 83;
+        this.height = 120;
 
         // Clear zone effects and preventions
         this.invertedControls = false;

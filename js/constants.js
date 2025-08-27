@@ -11,19 +11,55 @@ export const LEVEL_DATA = [
     { name: "Basic Care", color: '#FFA07A', file: 'data/basic_care_and_comfort.json' },
     { name: "Phys. Adaptation", color: '#DA70D6', file: 'data/physiological_adaptation.json' },
     { name: "Health Promotion", color: '#A52A2A', file: 'data/health_promotion_and_maintenance.json' },
-    { name: "Terrain Test", color: '#228B22', file: 'levels/level_terrain.js', isJS: true }
+    { name: "Terrain Test", color: '#228B22', file: 'levels/level_terrain.js', isJS: true },
+    { name: "Boss Arena 0", color: '#4F94CD', file: 'levels/boss_0.js', isJS: true },
+    { name: "Boss Arena 1", color: '#66CDAA', file: 'levels/boss_1.js', isJS: true },
+    { name: "Boss Arena 2", color: '#F0E68C', file: 'levels/boss_2.js', isJS: true },
+    { name: "Boss Arena 3", color: '#F08080', file: 'levels/boss_3.js', isJS: true },
+    { name: "Boss Arena 4", color: '#87CEFA', file: 'levels/boss_4.js', isJS: true },
+    { name: "Boss Arena 5", color: '#FA8072', file: 'levels/boss_5.js', isJS: true },
+    { name: "Boss Arena 6", color: '#DDA0DD', file: 'levels/boss_6.js', isJS: true },
+    { name: "Boss Arena 7", color: '#BC8F8F', file: 'levels/boss_7.js', isJS: true }
 ];
 
 export const SPRITE_ANIMATIONS = {
-    walk:       { y: 0,   frames: 4, width: 62, height: 115, startFrame: 0 },
-    walkShoot:  { y: 0,   frames: 1, width: 62, height: 115, startFrame: 4 },
-    idleShoot:  { y: 0,   frames: 1, width: 62, height: 115, startFrame: 5 },
-    jumpUp:     { y: 115, frames: 1, width: 62, height: 115, startFrame: 0 },
-    jumpDown:   { y: 115, frames: 1, width: 62, height: 115, startFrame: 1 },
-    jumpShoot:  { y: 115, frames: 1, width: 62, height: 115, startFrame: 2 },
-    crouch:     { y: 230, frames: 1, width: 62, height: 115, startFrame: 0 },
-    crouchShoot:{ y: 230, frames: 2, width: 62, height: 115, startFrame: 1 },
-    idle:       { y: 0,   frames: 1, width: 62, height: 115, startFrame: 0 }
+    // Based on 5×6 grid layout (500×600 sprite sheet)
+    // Each frame is exactly 100×100 pixels, no gutters
+    // Row A: a1(idle), a2(idle→walk), a3-a5(walk pt1), a6(shoot idle)
+    // Row B: b1(walk→idle), b2-b5(walk pt2), b6(shoot walk) 
+    // Row C: c1(idle→jump), c2(jump up), c3(jump down), c4(jump+move up), c5(jump+move down), c6(shoot jump+move)
+    // Row D: d1(stand→crouch), d2(jump→idle), d3-d5(jump→walk), d6(shoot jump)
+    // Row E: e1(crouch), e2-e5(crouch walk), e6(shoot crouch)
+    
+    // Core animations (500×600 sprite sheet = 83.33×120 per frame)
+    idle:           { row: 0, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // a1
+    walk:           { row: 0, frames: 7, frameWidth: 83.33, frameHeight: 120, startCol: 2,   // a3→a4→a5→b2→b3→b4→b5
+                      customFrames: [2, 3, 4, 7, 8, 9, 10] }, // a3,a4,a5,b2,b3,b4,b5
+    
+    // Transition animations  
+    idleToWalk:     { row: 0, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // a2
+    walkToIdle:     { row: 1, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // b1
+    
+    // Shooting animations
+    idleShoot:      { row: 0, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // a6
+    walkShoot:      { row: 1, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // b6
+    
+    // Jumping animations
+    idleToJump:     { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // c1
+    jumpUp:         { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // c2
+    jumpDown:       { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 2 }, // c3
+    jumpMoveUp:     { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 3 }, // c4
+    jumpMoveDown:   { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 4 }, // c5
+    jumpMoveShoot:  { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // c6
+    jumpShoot:      { row: 3, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // d6
+    jumpToIdle:     { row: 3, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // d2
+    jumpToWalk:     { row: 3, frames: 3, frameWidth: 83.33, frameHeight: 120, startCol: 2 }, // d3→d4→d5
+    
+    // Crouching animations
+    standToCrouch:  { row: 3, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // d1
+    crouch:         { row: 4, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // e1
+    crouchWalk:     { row: 4, frames: 4, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // e2→e3→e4→e5
+    crouchShoot:    { row: 4, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }  // e6
 };
 
 export const BOSS_ANIMATIONS = {
@@ -360,7 +396,7 @@ export const BOSS_ANIMATIONS = {
 };
 
 export const BOSS_DATA = [
-    { name: 'Coordination Crisis', type: 'coordinated_care', maxHp: 10, attackPattern: 'swipe' },
+    { name: 'Airborne Contagion', type: 'coordinated_care', maxHp: 10, attackPattern: 'swipe' },
     { name: 'Toxic Overdose', type: 'pharma_therapies', maxHp: 12, attackPattern: 'projectile' },
     { name: 'Infection Spreader', type: 'safety_infection', maxHp: 8, attackPattern: 'area_damage' },
     { name: 'Risk Amplifier', type: 'risk_reduction', maxHp: 15, attackPattern: 'charge' },

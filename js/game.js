@@ -25,7 +25,7 @@ import {
         const ctx = canvas.getContext('2d');
 
         const playerSprite = new Image();
-        playerSprite.src = 'assets/nurse_sprites.png';
+        playerSprite.src = 'assets/nurse.png';
         let spriteLoaded = false;
         playerSprite.onload = () => {
             spriteLoaded = true;
@@ -37,6 +37,47 @@ import {
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
+
+        // Draw ground section with boss arena sunken area
+        function drawGroundWithArena(ctx, startX, width, baseGroundY) {
+            const arenaScreenStartX = arenaStartX + worldX;
+            const arenaScreenEndX = arenaScreenStartX + arenaWidth;
+            
+            // Determine the intersection of this ground section with the arena
+            const intersectionStart = Math.max(startX, arenaScreenStartX);
+            const intersectionEnd = Math.min(startX + width, arenaScreenEndX);
+            
+            // Draw ground before arena
+            if (startX < intersectionStart) {
+                ctx.fillRect(startX, baseGroundY, intersectionStart - startX, canvas.height - baseGroundY);
+            }
+            
+            // Draw sunken arena section
+            if (intersectionStart < intersectionEnd) {
+                const arenaGroundY = baseGroundY + arenaDepth;
+                ctx.fillRect(intersectionStart, arenaGroundY, intersectionEnd - intersectionStart, canvas.height - arenaGroundY);
+                
+                // Draw arena walls
+                ctx.fillStyle = '#4a3728'; // Darker brown for walls
+                
+                // Left wall
+                if (intersectionStart === arenaScreenStartX) {
+                    ctx.fillRect(arenaScreenStartX - 5, baseGroundY, 5, arenaDepth);
+                }
+                
+                // Right wall  
+                if (intersectionEnd === arenaScreenEndX) {
+                    ctx.fillRect(arenaScreenEndX, baseGroundY, 5, arenaDepth);
+                }
+                
+                ctx.fillStyle = '#654321'; // Reset to normal ground color
+            }
+            
+            // Draw ground after arena
+            if (startX + width > intersectionEnd) {
+                ctx.fillRect(intersectionEnd, baseGroundY, (startX + width) - intersectionEnd, canvas.height - baseGroundY);
+            }
+        }
 
         let gameState = 'menu';
         let selectedLevel = -1;
@@ -82,6 +123,26 @@ import {
         let boss = null;
         let screenLocked = false;
         let armorPickup = null;
+        
+        // Gate explosion state
+        let gateExploding = false;
+        let explosionTimer = 0;
+        let explosionDuration = 120; // 2 seconds at 60fps
+        let explosionX = 0;
+        let explosionY = 0;
+        
+        // Boss arena state
+        let arenaStartX = 0; // World X where arena begins
+        let arenaWidth = 0;  // Width of arena (screen width)
+        let arenaCenterX = 0; // Center of arena for boss spawn trigger
+        let arenaDepth = 80; // How deep the arena is sunken
+        
+        // Arena screen positioning animation
+        let arenaPanning = false;
+        let arenaPanStartX = 0;
+        let arenaPanTargetX = 0;
+        let arenaPanProgress = 0;
+        let arenaPanDuration = 60; // 1 second at 60fps
 
         const projectiles = [];
         const platforms = [];
@@ -421,14 +482,40 @@ import {
                     const startY = levelManager.parsePosition(levelDef.playerStart.y, canvas);
                     player.y = startY - player.height;
                     
-
-                    gate = {
-                        worldX: testLevelEndX,
-                        width: 60,
-                        height: 150,
-                        hp: 5,
-                        maxHp: 5
-                    };
+                    // Set up boss arena levels
+                    if (levelDef.isBossArena && levelDef.bossLevel !== undefined) {
+                        // Give player the appropriate armor for this boss level
+                        if (!player.armors.includes(levelDef.bossLevel + 1)) {
+                            player.armors.push(levelDef.bossLevel + 1);
+                        }
+                        player.currentArmorIndex = player.armors.indexOf(levelDef.bossLevel + 1);
+                        
+                        // Set up arena terrain first
+                        arenaStartX = 800; // Arena starts here
+                        
+                        // Position gate so its right edge aligns with arena start
+                        gate = {
+                            worldX: arenaStartX - 60, // Gate positioned so right edge aligns with arena start
+                            width: 60,
+                            height: 150,
+                            hp: 5, // Requires destruction before boss spawns
+                            maxHp: 5
+                        };
+                        arenaWidth = 1200; // Arena width for boss fights
+                        arenaDepth = 80; // Sunken depth
+                        
+                        // Set level end to match arena end
+                        testLevelEndX = arenaStartX + arenaWidth;
+                    } else {
+                        // Standard gate for non-boss arena levels
+                        gate = {
+                            worldX: testLevelEndX,
+                            width: 60,
+                            height: 150,
+                            hp: 5,
+                            maxHp: 5
+                        };
+                    }
 
                     if (levelDef.hazards) {
                         levelDef.hazards.forEach(hazard => {
@@ -1074,6 +1161,30 @@ import {
         function update() {
             if (gameState !== 'playing') return;
 
+            // Handle gate explosion sequence
+            if (gateExploding) {
+                explosionTimer--;
+                if (explosionTimer <= 0) {
+                    gateExploding = false;
+                    // Arena terrain was already set up at level start
+                }
+                // Continue with game update but don't process player input
+            }
+            
+            // Handle arena panning animation
+            if (arenaPanning) {
+                arenaPanProgress++;
+                const t = Math.min(arenaPanProgress / arenaPanDuration, 1);
+                // Smooth easing function (ease out)
+                const easedT = 1 - Math.pow(1 - t, 3);
+                worldX = arenaPanStartX + (arenaPanTargetX - arenaPanStartX) * easedT;
+                
+                if (arenaPanProgress >= arenaPanDuration) {
+                    arenaPanning = false;
+                    worldX = arenaPanTargetX; // Ensure exact final position
+                }
+            }
+
             groundY = canvas.height - 100;
             
             // Update charge mechanics
@@ -1552,11 +1663,58 @@ import {
 
             enemyManager.update(canvas, worldX, player, pits);
 
-            player.handleInput(keys, onSpill);
+            // Only process player input if not during explosion
+            if (!gateExploding) {
+                player.handleInput(keys, onSpill);
+            }
             player.updateState(SPRITE_ANIMATIONS);
             // Pass terrain system if current level uses it
             const currentTerrainSystem = (levelManager.currentLevel && levelManager.currentLevel.useTerrainSystem) ? terrainSystem : null;
-            player.updatePhysics(groundY, platforms, pits, worldX, currentTerrainSystem);
+            
+            // Calculate effective ground Y considering boss arena
+            let effectiveGroundY = groundY;
+            if (arenaStartX > 0) {
+                const playerWorldX = player.x - worldX;
+                if (playerWorldX >= arenaStartX && playerWorldX <= arenaStartX + arenaWidth) {
+                    effectiveGroundY = groundY + arenaDepth; // Player is in sunken arena
+                    
+                    // Check if right edge of screen has reached the right edge of arena
+                    const arenaEndX = arenaStartX + arenaWidth;
+                    const screenRightEdge = -worldX + canvas.width; // Right edge of screen in world coordinates
+                    const playerCanSeeArenaEnd = screenRightEdge >= arenaEndX;
+                    
+                    if (!boss && !screenLocked && playerCanSeeArenaEnd) {
+                        // Player can see the end of the arena - lock screen and spawn boss
+                        screenLocked = true;
+                        
+                        // Start smooth panning to position arena with ~50px margins
+                        arenaPanning = true;
+                        arenaPanStartX = worldX;
+                        arenaPanTargetX = -(arenaStartX - 50); // Arena left edge at 50px from screen left
+                        arenaPanProgress = 0;
+                        
+                        const bossLevelId = (levelManager.currentLevel && levelManager.currentLevel.isBossArena) 
+                            ? levelManager.currentLevel.bossLevel 
+                            : selectedLevel;
+                            
+                        // Calculate boss spawn position in screen coordinates since that's where we want him to appear
+                        // Arena right edge should be at screen position ~1250px, boss should be 30px right of that
+                        const bossScreenX = 1250 + 30; // Screen position where we want boss to appear
+                        const bossWorldX = bossScreenX - worldX; // Convert to world coordinates
+                        console.log(`Boss spawn: screen pos ${bossScreenX}, world pos ${bossWorldX}, worldX=${worldX}`);
+                        
+                        boss = new Boss(
+                            bossLevelId,
+                            bossWorldX, // Boss world position that will render at correct screen position
+                            groundY - 120, // Above the arena edge (normal ground level)
+                            BOSS_DATA[bossLevelId],
+                            BOSS_ANIMATIONS
+                        );
+                    }
+                }
+            }
+            
+            player.updatePhysics(effectiveGroundY, platforms, pits, worldX, currentTerrainSystem);
             
             // Update shadow twin if active
             if (player.shadowTwin.active) {
@@ -1583,6 +1741,7 @@ import {
             }
 
             if (boss) {
+                boss.worldX = worldX; // Update boss's worldX reference
                 boss.update(player, canvas);
                 
                 // Handle boss projectiles
@@ -1641,7 +1800,7 @@ import {
                     boss = null;
                 }
                 
-                if (boss && player.checkBossCollision(boss)) {
+                if (boss && player.checkBossCollision(boss, worldX)) {
                     setTimeout(() => {
                         // Clear level content when boss defeats player
                         levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
@@ -1663,16 +1822,34 @@ import {
                 }
             }
 
+            // Calculate effective ground level for projectiles (considering boss arena)
+            let effectiveProjectileGroundY = groundY;
+            if (arenaStartX > 0) {
+                // Check if projectiles are in the boss arena area
+                for (let i = projectiles.length - 1; i >= 0; i--) {
+                    const proj = projectiles[i];
+                    const projWorldX = proj.x - worldX;
+                    if (projWorldX >= arenaStartX && projWorldX <= arenaStartX + arenaWidth) {
+                        proj.inArena = true;
+                        proj.effectiveGroundY = groundY + arenaDepth;
+                    } else {
+                        proj.inArena = false;
+                        proj.effectiveGroundY = groundY;
+                    }
+                }
+            }
+
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 const proj = projectiles[i];
+                const projGroundY = proj.effectiveGroundY || groundY;
 
                 switch(proj.type) {
                     case 3: proj.centerX = player.x + player.width/2; proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); proj.angle += proj.rotSpeed; if (proj.angle > Math.PI * 2) { projectiles.splice(i, 1); continue; } break;
                     case 7: proj.centerX = player.x + player.width/2; proj.centerY = player.y + player.height/2 + (player.crouching ? 20 : 0); proj.angle += proj.rotSpeed * proj.direction; if ((proj.direction === 1 && proj.angle >= Math.PI * 2)) { proj.direction = -1; } else if (proj.direction === -1 && proj.angle <= 0) { projectiles.splice(i, 1); continue; } break;
-                    case 4: if (!proj.landed) { proj.x += proj.vx; proj.vy += 0.6; proj.y += proj.vy; proj.wavePhase += 0.3; if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
+                    case 4: if (!proj.landed) { proj.x += proj.vx; proj.vy += 0.6; proj.y += proj.vy; proj.wavePhase += 0.3; if (proj.y + proj.height > projGroundY) { proj.y = projGroundY - proj.height; proj.vy = 0; proj.vx = 0; proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                     case 5: proj.x += proj.vx; break;
                     case 6: proj.x += proj.vx; proj.angle += proj.rotSpeed; break;
-                    case 8: if (!proj.landed) { proj.x += proj.vx; proj.vy += 0.6; proj.y += proj.vy; if (proj.dropsLeft > 0 && Math.abs(proj.x - proj.lastDropX) > 80) { projectiles.push({ worldX: proj.x - worldX, y: proj.y, vx: 0, vy: 0, width: 20, height: 10, type: 1 }); proj.lastDropX = proj.x; proj.dropsLeft--; } if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
+                    case 8: if (!proj.landed) { proj.x += proj.vx; proj.vy += 0.6; proj.y += proj.vy; if (proj.dropsLeft > 0 && Math.abs(proj.x - proj.lastDropX) > 80) { projectiles.push({ worldX: proj.x - worldX, y: proj.y, vx: 0, vy: 0, width: 20, height: 10, type: 1 }); proj.lastDropX = proj.x; proj.dropsLeft--; } if (proj.y + proj.height > projGroundY) { proj.y = projGroundY - proj.height; proj.vy = 0; proj.vx = 0; proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                     case 2: proj.x += proj.vx; break;
                     case 'boss_projectile':
                         proj.x += proj.vx;
@@ -1697,7 +1874,7 @@ import {
                             continue;
                         }
                         break;
-                    default: if (!proj.landed) { if (proj.worldX !== undefined) { proj.x = proj.worldX + worldX; } else if (proj.vx !== 0) { proj.x += proj.vx; } proj.vy += 0.6; proj.y += proj.vy; if (proj.y + proj.height > groundY) { proj.y = groundY - proj.height; proj.vy = 0; proj.vx = 0; if (proj.worldX === undefined) proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { if (proj.worldX !== undefined) proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
+                    default: if (!proj.landed) { if (proj.worldX !== undefined) { proj.x = proj.worldX + worldX; } else if (proj.vx !== 0) { proj.x += proj.vx; } proj.vy += 0.6; proj.y += proj.vy; if (proj.y + proj.height > projGroundY) { proj.y = projGroundY - proj.height; proj.vy = 0; proj.vx = 0; if (proj.worldX === undefined) proj.worldX = proj.x - worldX; proj.landed = true; proj.landTime = Date.now(); } } else { if (proj.worldX !== undefined) proj.x = proj.worldX + worldX; if (Date.now() - proj.landTime > 1000) { projectiles.splice(i, 1); continue; } } break;
                 }
 
                 // **FIX**: Corrected Boss Gate and Boss Spawn Logic
@@ -1725,17 +1902,21 @@ import {
                         if (hitGate) {
                             gate.hp--;
                             if (gate.hp <= 0) {
+                                // Start gate explosion sequence
+                                gateExploding = true;
+                                explosionTimer = explosionDuration;
+                                // Store explosion position in world coordinates, not screen coordinates
+                                explosionX = gate.worldX + gate.width / 2;
+                                explosionY = groundY - gate.height / 2;
+                                
+                                // Stop player movement during explosion
+                                player.vx = 0;
+                                player.vy = 0;
+                                
+                                // Clear all existing projectiles during explosion
+                                projectiles.length = 0;
+                                
                                 gate = null; // Gate is destroyed
-                                screenLocked = true; // Lock the screen for the boss fight
-
-                                // Spawn the boss *only* now
-                                boss = new Boss(
-                                    selectedLevel,
-                                    canvas.width - 200,
-                                    groundY - 120,
-                                    BOSS_DATA[selectedLevel],
-                                    BOSS_ANIMATIONS
-                                );
                             }
                             if (proj.type !== 3 && proj.type !== 7) {
                                 projectiles.splice(i, 1);
@@ -1747,20 +1928,33 @@ import {
 
                 if (boss && boss.hp > 0 && !proj.landed) {
                     let hitBoss = false;
-                    if (proj.type === 3 || proj.type === 7) {
-                        const numChecks = 10;
-                        for (let k = 0; k <= numChecks; k++) {
-                            const t = k / numChecks;
-                            const checkX = proj.centerX + Math.cos(proj.angle) * proj.radius * t;
-                            const checkY = proj.centerY + Math.sin(proj.angle) * proj.radius * t;
-                            if (checkX > boss.x && checkX < boss.x + boss.width && checkY > boss.y && checkY < boss.y + boss.height) {
-                                hitBoss = true; break;
+                    
+                    // Only check collision if projectile is reasonably positioned
+                    const projScreenPos = proj.x !== undefined ? proj.x : proj.centerX;
+                    const isProjectileValid = projScreenPos > -100 && projScreenPos < canvas.width + 100;
+                    
+                    if (isProjectileValid) {
+                        // Convert boss world coordinates to screen coordinates for collision detection
+                        const bossScreenX = boss.x + worldX;
+                        const bossScreenY = boss.y;
+                        
+                        if (proj.type === 3 || proj.type === 7) {
+                            const numChecks = 10;
+                            for (let k = 0; k <= numChecks; k++) {
+                                const t = k / numChecks;
+                                const checkX = proj.centerX + Math.cos(proj.angle) * proj.radius * t;
+                                const checkY = proj.centerY + Math.sin(proj.angle) * proj.radius * t;
+                                if (checkX > bossScreenX && checkX < bossScreenX + boss.width && checkY > bossScreenY && checkY < bossScreenY + boss.height) {
+                                    hitBoss = true; break;
+                                }
                             }
+                        } else if (proj.x < bossScreenX + boss.width && proj.x + (proj.width || proj.size || 20) > bossScreenX && proj.y < bossScreenY + boss.height && proj.y + (proj.height || proj.size || 10) > bossScreenY) {
+                            hitBoss = true;
                         }
-                    } else if (proj.x < boss.x + boss.width && proj.x + (proj.width || proj.size || 20) > boss.x && proj.y < boss.y + boss.height && proj.y + (proj.height || proj.size || 10) > boss.y) {
-                        hitBoss = true;
                     }
+                    
                     if (hitBoss) {
+                        console.log(`Boss hit by projectile type ${proj.type} at position ${proj.x || proj.centerX}, ${proj.y || proj.centerY}`);
                         boss.takeDamage(1);
                         if (proj.type !== 3 && proj.type !== 7) {
                             projectiles.splice(i, 1);
@@ -1933,6 +2127,7 @@ import {
                     }
                 }
             } else {
+                
                 // Apply upside-down transformation if gravity is flipped
                 if (player.gravityFlipped) {
                     ctx.save();
@@ -1946,15 +2141,35 @@ import {
                 ctx.fillStyle = '#654321';
                 let currentDrawX = 0;
                 let sortedPits = [...pits].sort((a,b) => (a.worldX + worldX) - (b.worldX + worldX));
+                
+                // Draw ground with boss arena consideration
                 for(const pit of sortedPits) {
                     const pitScreenX = pit.worldX + worldX;
                     if(pitScreenX > currentDrawX) {
-                        ctx.fillRect(currentDrawX, groundY, pitScreenX - currentDrawX, canvas.height - groundY);
+                        // Check if this section intersects with boss arena
+                        const sectionStartWorld = currentDrawX - worldX;
+                        const sectionEndWorld = pitScreenX - worldX;
+                        
+                        if (arenaStartX > 0 && sectionStartWorld < arenaStartX + arenaWidth && sectionEndWorld > arenaStartX) {
+                            // This section contains the arena - draw it with arena depth
+                            drawGroundWithArena(ctx, currentDrawX, pitScreenX - currentDrawX, groundY);
+                        } else {
+                            ctx.fillRect(currentDrawX, groundY, pitScreenX - currentDrawX, canvas.height - groundY);
+                        }
                     }
                     currentDrawX = pitScreenX + pit.width;
                 }
                 if(currentDrawX < canvas.width) {
-                    ctx.fillRect(currentDrawX, groundY, canvas.width - currentDrawX, canvas.height - groundY);
+                    // Check if remaining section intersects with boss arena
+                    const sectionStartWorld = currentDrawX - worldX;
+                    const sectionEndWorld = canvas.width - worldX;
+                    
+                    if (arenaStartX > 0 && sectionStartWorld < arenaStartX + arenaWidth && sectionEndWorld > arenaStartX) {
+                        // This section contains the arena - draw it with arena depth
+                        drawGroundWithArena(ctx, currentDrawX, canvas.width - currentDrawX, groundY);
+                    } else {
+                        ctx.fillRect(currentDrawX, groundY, canvas.width - currentDrawX, canvas.height - groundY);
+                    }
                 }
 
                 ctx.strokeStyle = '#8B4513';
@@ -1968,7 +2183,17 @@ import {
                             break;
                         }
                     }
-                    if(!inPit) {
+                    
+                    // Check if this mark is in the boss arena area
+                    let inArena = false;
+                    if (arenaStartX > 0) {
+                        const markWorldX = x - worldX;
+                        if (markWorldX >= arenaStartX && markWorldX <= arenaStartX + arenaWidth) {
+                            inArena = true;
+                        }
+                    }
+                    
+                    if(!inPit && !inArena) {
                         ctx.beginPath();
                         ctx.moveTo(x, groundY);
                         ctx.lineTo(x, groundY - 10);
@@ -2394,8 +2619,8 @@ import {
                         ctx.setLineDash([]);
                     }
                     
-                    // Render boss with sprite
-                    boss.render(ctx);
+                    // Render boss with sprite (convert world coordinates to screen coordinates)
+                    boss.render(ctx, worldX);
                     
                     // Render boss health bar
                     const barWidth = 300, barHeight = 20, barX = (canvas.width - barWidth) / 2, barY = 50;
@@ -2984,6 +3209,41 @@ import {
 
             ctx.restore();
                 
+            // Draw gate explosion effect on top of everything
+            if (gateExploding) {
+                // Convert world coordinates to screen coordinates
+                const explosionScreenX = explosionX + worldX;
+                const explosionScreenY = explosionY;
+                
+                const explosionProgress = 1 - (explosionTimer / explosionDuration);
+                const maxRadius = 150;
+                
+                // Multiple explosion circles for dramatic effect
+                const numCircles = 5;
+                for (let i = 0; i < numCircles; i++) {
+                    const delay = i * 0.2;
+                    const adjustedProgress = Math.max(0, explosionProgress - delay);
+                    const radius = maxRadius * adjustedProgress * (1 + i * 0.3);
+                    
+                    if (adjustedProgress > 0) {
+                        const alpha = Math.max(0, 1 - adjustedProgress);
+                        ctx.fillStyle = `rgba(255, ${255 - i * 50}, 0, ${alpha * 0.8})`;
+                        ctx.beginPath();
+                        ctx.arc(explosionScreenX, explosionScreenY, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                // Add white flash at the beginning
+                if (explosionTimer > explosionDuration * 0.8) {
+                    const flashAlpha = (explosionTimer - explosionDuration * 0.8) / (explosionDuration * 0.2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha * 0.3})`;
+                    ctx.beginPath();
+                    ctx.arc(explosionScreenX, explosionScreenY, maxRadius * 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
             // Restore upside-down transformation if it was applied
             if (player.gravityFlipped) {
                 ctx.restore();

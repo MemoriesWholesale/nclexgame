@@ -20,7 +20,7 @@ export class PlayerPhysics {
         this.updateVerticalPosition();
         this.handlePlatformCollisions(platforms, worldX, groundY);
         this.handleGroundCollision(groundY, pits, worldX, terrainSystem);
-        this.updateJumpState();
+        this.updateJumpState(groundY);
     }
     
     /**
@@ -272,10 +272,10 @@ export class PlayerPhysics {
         }
     }
     
-    updateJumpState() {
+    updateJumpState(groundY) {
         // Player can jump if grounded and on a valid surface
         this.player.canJump = this.player.grounded && 
                               (this.player.onPlatform || 
-                               this.player.y + this.player.height <= this.player.canvas.height - 95);
+                               this.player.y + this.player.height <= groundY + 5); // Use actual ground level with small tolerance
     }
 }
