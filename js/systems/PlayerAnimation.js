@@ -112,6 +112,18 @@ export class PlayerAnimation {
             if (this.state.includes('jump') || this.state.includes('Jump')) {
                 sWidth -= 5;
             }
+            
+            // Special adjustment for jumpShoot frame - extend 5px left for back of head
+            if (this.state === 'jumpShoot') {
+                sX -= 5; // Extend source 5px left for back of head
+                sWidth += 5; // Increase width by 5px to capture back of head
+                // Don't modify sY or sHeight to avoid artifacts from frame above
+            }
+            
+            // Special adjustment for jump-down frames - patch heel from adjacent area
+            if (this.state === 'jumpDown' || this.state === 'jumpMoveDown') {
+                // Don't modify the main frame, we'll add a patch in the render function
+            }
         } else {
             // Legacy format
             sX = (currentAnimation.startFrame + this.currentFrame) * currentAnimation.width;
@@ -152,6 +164,21 @@ export class PlayerAnimation {
             sX, sY, sWidth, sHeight,
             renderX, yPos, this.player.width, this.player.height
         );
+        
+        // Add heel patch for jump-down frames
+        if (this.state === 'jumpDown' || this.state === 'jumpMoveDown') {
+            // Draw a small 5x5 patch from a nearby frame area for the heel
+            const heelPatchX = sX - 5; // Get patch from left of current frame
+            const heelPatchY = sY + sHeight - 5; // Bottom area
+            const heelRenderX = this.player.facing === -1 ? renderX + this.player.width - 5 : renderX - 5;
+            const heelRenderY = yPos + this.player.height - 5;
+            
+            ctx.drawImage(
+                playerSprite,
+                heelPatchX, heelPatchY, 5, 5,
+                heelRenderX, heelRenderY, 5, 5
+            );
+        }
         
         ctx.restore();
     }

@@ -787,7 +787,6 @@ import {
                 player.shieldArmor = false;
                 player.invincible = true;
                 setTimeout(() => { player.invincible = false; }, 1000); // Brief invincibility after shield break
-                console.log('Shield armor absorbed damage from:', damageSource);
                 return true; // Damage was absorbed
             } else {
                 // Take normal damage
@@ -896,7 +895,6 @@ import {
                             
                             // Initialize evil twin if not already active
                             if (!player.evilTwin.active) {
-                                console.log("ACTIVATING EVIL TWIN at position", player.x - 250);
                                 player.evilTwin.active = true;
                                 player.evilTwin.x = player.x - 250; // Start on the left side
                                 player.evilTwin.y = player.y;
@@ -1134,7 +1132,6 @@ import {
             // Fire timer
             evil.fireTimer -= 16;
             if (evil.fireTimer <= 0) {
-                console.log("EVIL TWIN FIRING PROJECTILE");
                 // Create phantom projectile
                 projectiles.push({
                     x: evil.x + (evil.facing > 0 ? 50 : -20),
@@ -1151,7 +1148,6 @@ import {
             // Jump timer
             evil.jumpTimer -= 16;
             if (evil.jumpTimer <= 0 && evil.grounded) {
-                console.log("EVIL TWIN JUMPING");
                 evil.vy = -15;
                 evil.grounded = false;
                 evil.jumpTimer = 3000 + Math.random() * 4000; // 3-7 seconds
@@ -1483,12 +1479,10 @@ import {
                     if (result.success) {
                         medications.splice(i, 1);
                     } else if (result.reason === 'tolerance') {
-                        // Show reduced effect message
-                        console.log('Tolerance built up! Wait before using again.');
+                        // Show reduced effect message  
                         medications.splice(i, 1);
                     } else if (result.reason === 'interaction') {
                         // Show interaction warning
-                        console.log('Dangerous drug interaction!');
                         medications.splice(i, 1);
                     }
                 }
@@ -1954,7 +1948,6 @@ import {
                     }
                     
                     if (hitBoss) {
-                        console.log(`Boss hit by projectile type ${proj.type} at position ${proj.x || proj.centerX}, ${proj.y || proj.centerY}`);
                         boss.takeDamage(1);
                         if (proj.type !== 3 && proj.type !== 7) {
                             projectiles.splice(i, 1);
