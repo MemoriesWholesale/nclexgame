@@ -9,14 +9,14 @@ export class PlayerInput {
     /**
      * Process player input and update movement/actions
      */
-    handleInput(keys, onSpill) {
+    handleInput(keys, onSpill, deltaTime = 1) {
         if (this.player.dead) {
             this.handleDeadState();
             return;
         }
-        
+
         const inputKeys = this.processInputKeys(keys);
-        this.handleHorizontalMovement(inputKeys, onSpill);
+        this.handleHorizontalMovement(inputKeys, onSpill, deltaTime);
         this.handleJumping(inputKeys);
         this.handleGliding(inputKeys);
         this.handleCrouching(inputKeys);
@@ -43,9 +43,9 @@ export class PlayerInput {
         return { leftKey, rightKey, upKey, downKey };
     }
     
-    handleHorizontalMovement(inputKeys, onSpill) {
+    handleHorizontalMovement(inputKeys, onSpill, deltaTime = 1) {
         const currentSpeed = this.player.baseSpeed * this.player.speedMultiplier;
-        
+
         if (inputKeys.leftKey) {
             this.player.vx = -currentSpeed;
             this.player.facing = -1;
@@ -53,7 +53,7 @@ export class PlayerInput {
             this.player.vx = currentSpeed;
             this.player.facing = 1;
         } else if (!onSpill) {
-            this.player.vx *= 0.8; // Apply friction when not moving
+            this.player.vx *= Math.pow(0.8, deltaTime); // Apply friction when not moving
         }
     }
     
