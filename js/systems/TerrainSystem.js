@@ -341,29 +341,30 @@ export class TerrainSystem {
         
         ctx.beginPath();
         
-        // Start from left edge of screen
-        const startX = -worldX - 100;
-        const endX = -worldX + canvas.width + 100;
+        // Calculate world coordinates visible on screen
+        const startWorldX = -worldX - 100; // Slightly off-screen left
+        const endWorldX = -worldX + canvas.width + 100; // Slightly off-screen right
         
         let firstPoint = true;
         
         // Draw terrain curve
-        for (let screenX = startX; screenX <= endX; screenX += 5) {
-            const worldPosX = screenX + worldX;
+        for (let worldPosX = startWorldX; worldPosX <= endWorldX; worldPosX += 5) {
             const terrainY = this.getTerrainHeight(worldPosX);
-            const screenPosX = screenX;
+            const screenX = worldPosX + worldX; // Convert world X to screen X
             
             if (firstPoint) {
-                ctx.moveTo(screenPosX, terrainY);
+                ctx.moveTo(screenX, terrainY);
                 firstPoint = false;
             } else {
-                ctx.lineTo(screenPosX, terrainY);
+                ctx.lineTo(screenX, terrainY);
             }
         }
         
         // Fill below terrain
-        ctx.lineTo(endX, canvas.height);
-        ctx.lineTo(startX, canvas.height);
+        const rightScreenX = endWorldX + worldX;
+        const leftScreenX = startWorldX + worldX;
+        ctx.lineTo(rightScreenX, canvas.height);
+        ctx.lineTo(leftScreenX, canvas.height);
         ctx.closePath();
         ctx.fill();
         
@@ -371,16 +372,15 @@ export class TerrainSystem {
         ctx.beginPath();
         firstPoint = true;
         
-        for (let screenX = startX; screenX <= endX; screenX += 3) {
-            const worldPosX = screenX + worldX;
+        for (let worldPosX = startWorldX; worldPosX <= endWorldX; worldPosX += 3) {
             const terrainY = this.getTerrainHeight(worldPosX);
-            const screenPosX = screenX;
+            const screenX = worldPosX + worldX; // Convert world X to screen X
             
             if (firstPoint) {
-                ctx.moveTo(screenPosX, terrainY);
+                ctx.moveTo(screenX, terrainY);
                 firstPoint = false;
             } else {
-                ctx.lineTo(screenPosX, terrainY);
+                ctx.lineTo(screenX, terrainY);
             }
         }
         
