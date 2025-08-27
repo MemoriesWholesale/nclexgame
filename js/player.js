@@ -9,7 +9,7 @@ export class Player {
         this.canvas = canvas;
         this.x = 100;
         this.y = 0;
-        this.width = 83;
+        this.width = 80;
         this.height = 120;
         
         // Movement state
@@ -353,7 +353,7 @@ export class Player {
         this.speedMultiplier = 1;
         this.jumpMultiplier = 1;
         this.sizeScale = 1;
-        this.width = 83;
+        this.width = 80;
         this.height = 120;
 
         // Clear zone effects and preventions

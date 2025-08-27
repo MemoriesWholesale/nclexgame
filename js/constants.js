@@ -31,35 +31,35 @@ export const SPRITE_ANIMATIONS = {
     // Row D: d1(stand→crouch), d2(jump→idle), d3-d5(jump→walk), d6(shoot jump)
     // Row E: e1(crouch), e2-e5(crouch walk), e6(shoot crouch)
     
-    // Core animations (500×600 sprite sheet = 83.33×120 per frame)
-    idle:           { row: 0, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // a1
-    walk:           { row: 0, frames: 7, frameWidth: 83.33, frameHeight: 120, startCol: 2,   // a3→a4→a5→b2→b3→b4→b5
+    // Core animations (480×600 sprite sheet = 80×120 per frame)
+    idle:           { row: 0, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 0 }, // a1
+    walk:           { row: 0, frames: 7, frameWidth: 80, frameHeight: 120, startCol: 2,   // a3→a4→a5→b2→b3→b4→b5
                       customFrames: [2, 3, 4, 7, 8, 9, 10] }, // a3,a4,a5,b2,b3,b4,b5
     
     // Transition animations  
-    idleToWalk:     { row: 0, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // a2
-    walkToIdle:     { row: 1, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // b1
+    idleToWalk:     { row: 0, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 1 }, // a2
+    walkToIdle:     { row: 1, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 0 }, // b1
     
     // Shooting animations
-    idleShoot:      { row: 0, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // a6
-    walkShoot:      { row: 1, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // b6
+    idleShoot:      { row: 0, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 5 }, // a6
+    walkShoot:      { row: 1, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 5 }, // b6
     
     // Jumping animations
-    idleToJump:     { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // c1
-    jumpUp:         { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // c2
-    jumpDown:       { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 2 }, // c3
-    jumpMoveUp:     { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 3 }, // c4
-    jumpMoveDown:   { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 4 }, // c5
-    jumpMoveShoot:  { row: 2, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // c6
-    jumpShoot:      { row: 3, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }, // d6
-    jumpToIdle:     { row: 3, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // d2
-    jumpToWalk:     { row: 3, frames: 3, frameWidth: 83.33, frameHeight: 120, startCol: 2 }, // d3→d4→d5
+    idleToJump:     { row: 2, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 0 }, // c1
+    jumpUp:         { row: 2, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 1 }, // c2
+    jumpDown:       { row: 2, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 2 }, // c3
+    jumpMoveUp:     { row: 2, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 3 }, // c4
+    jumpMoveDown:   { row: 2, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 4 }, // c5
+    jumpMoveShoot:  { row: 2, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 5 }, // c6
+    jumpShoot:      { row: 3, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 5 }, // d6
+    jumpToIdle:     { row: 3, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 1 }, // d2
+    jumpToWalk:     { row: 3, frames: 3, frameWidth: 80, frameHeight: 120, startCol: 2 }, // d3→d4→d5
     
     // Crouching animations
-    standToCrouch:  { row: 3, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // d1
-    crouch:         { row: 4, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 0 }, // e1
-    crouchWalk:     { row: 4, frames: 4, frameWidth: 83.33, frameHeight: 120, startCol: 1 }, // e2→e3→e4→e5
-    crouchShoot:    { row: 4, frames: 1, frameWidth: 83.33, frameHeight: 120, startCol: 5 }  // e6
+    standToCrouch:  { row: 3, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 0 }, // d1
+    crouch:         { row: 4, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 0 }, // e1
+    crouchWalk:     { row: 4, frames: 4, frameWidth: 80, frameHeight: 120, startCol: 1 }, // e2→e3→e4→e5
+    crouchShoot:    { row: 4, frames: 1, frameWidth: 80, frameHeight: 120, startCol: 5 }  // e6
 };
 
 export const BOSS_ANIMATIONS = {

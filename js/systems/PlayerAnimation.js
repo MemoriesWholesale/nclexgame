@@ -7,7 +7,7 @@ export class PlayerAnimation {
         this.state = 'idle';
         this.currentFrame = 0;
         this.animationTimer = 0;
-        this.ANIMATION_SPEED = 8; // Frames per animation frame
+        this.ANIMATION_SPEED = 12; // Frames per animation frame (slower = better performance)
     }
     
     /**
@@ -86,28 +86,32 @@ export class PlayerAnimation {
         }
     }
     
-    renderSprite(ctx, playerSprite, spriteAnimations, drawX) {
-        const currentAnimation = spriteAnimations[this.state];
-        
-        // Support both old and new sprite format
+    calculateSpriteCoordinates(currentAnimation) {
         let sX, sY, sWidth, sHeight;
+        
         if (currentAnimation.row !== undefined) {
             // New row/column format
             if (currentAnimation.customFrames) {
                 // Handle custom frame sequences that span multiple rows
                 const frameIndex = currentAnimation.customFrames[this.currentFrame];
-                const col = frameIndex % 6; // 6 columns per row (correct for 5×6 grid)
+                const col = frameIndex % 6; // 6 columns per row
                 const row = Math.floor(frameIndex / 6);
-                sX = col * currentAnimation.frameWidth;
-                sY = row * currentAnimation.frameHeight; // No gutter needed - perfect 5×6 grid
+                // Perfect integer pixel boundaries
+                sX = col * 80; // 480px ÷ 6 columns = 80px per frame
+                sY = row * 120; // 600px ÷ 5 rows = 120px per frame
             } else {
                 // Standard row/column calculation
                 const currentCol = currentAnimation.startCol + this.currentFrame;
-                sX = currentCol * currentAnimation.frameWidth;
-                sY = currentAnimation.row * currentAnimation.frameHeight; // No gutter needed - perfect 5×6 grid
+                sX = currentCol * 80;
+                sY = currentAnimation.row * 120;
             }
             sWidth = currentAnimation.frameWidth;
             sHeight = currentAnimation.frameHeight;
+            
+            // Reduce width by 5px for jumping frames to avoid spillover
+            if (this.state.includes('jump') || this.state.includes('Jump')) {
+                sWidth -= 5;
+            }
         } else {
             // Legacy format
             sX = (currentAnimation.startFrame + this.currentFrame) * currentAnimation.width;
@@ -115,6 +119,21 @@ export class PlayerAnimation {
             sWidth = currentAnimation.width;
             sHeight = currentAnimation.height;
         }
+        
+        this.cachedSpriteCoords = { sX, sY, sWidth, sHeight };
+    }
+    
+    renderSprite(ctx, playerSprite, spriteAnimations, drawX) {
+        const currentAnimation = spriteAnimations[this.state];
+        
+        // Cache sprite coordinates to reduce per-frame calculations
+        if (!this.cachedSpriteCoords || this.lastState !== this.state || this.lastFrame !== this.currentFrame) {
+            this.calculateSpriteCoordinates(currentAnimation);
+            this.lastState = this.state;
+            this.lastFrame = this.currentFrame;
+        }
+        
+        const { sX, sY, sWidth, sHeight } = this.cachedSpriteCoords;
         
         ctx.save();
         
