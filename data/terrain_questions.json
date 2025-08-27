@@ -1,0 +1,49 @@
+{
+  "terrain_intro": {
+    "question": "Which factor is most important when assessing a patient's mobility on varied terrain?",
+    "answers": [
+      "Patient's shoe type",
+      "Joint stability and balance",
+      "Weather conditions", 
+      "Time of day"
+    ],
+    "correct": 1,
+    "explanation": "Joint stability and balance are crucial for safe mobility on uneven surfaces."
+  },
+  
+  "plateau_challenge": {
+    "question": "When helping a patient navigate elevated surfaces, what's the priority?",
+    "answers": [
+      "Speed of movement",
+      "Fall prevention and support", 
+      "Minimizing rest breaks",
+      "Maintaining conversation"
+    ],
+    "correct": 1,
+    "explanation": "Fall prevention is the top priority when assisting patients on elevated surfaces."
+  },
+  
+  "terrain_shield": {
+    "question": "What adaptive equipment helps with mobility on uneven terrain?",
+    "answers": [
+      "Wheelchair only",
+      "Walking aids with proper tips",
+      "Regular shoes",
+      "Loose clothing"
+    ],
+    "correct": 1,
+    "explanation": "Proper walking aids with appropriate tips provide stability on varied terrain."
+  },
+  
+  "terrain_charge": {
+    "question": "How should you prepare a patient for mobility on slopes?",
+    "answers": [
+      "Encourage rapid movement",
+      "Assess strength and provide support",
+      "Avoid slopes completely", 
+      "Focus only on the destination"
+    ],
+    "correct": 1,
+    "explanation": "Assessing patient strength and providing appropriate support ensures safe slope navigation."
+  }
+}

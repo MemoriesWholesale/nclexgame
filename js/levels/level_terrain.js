@@ -8,13 +8,16 @@ const level_terrain = {
     description: 'Test level for the new terrain system with varied topography',
     color: '#228B22',
     
-    // Basic level properties
+    // Required level structure
     worldLength: 3000,
     playerStart: { x: 100, y: 'ground-0' },
     backgroundMusic: null,
+    questionFile: 'data/terrain_questions.json', // Will create fallback questions
     
-    // Enemy waves (required by game)
+    // Required arrays for game systems
     enemyWaves: [],
+    items: [],
+    hazards: [],
     
     // Terrain features - this level showcases the terrain system
     terrain: {
@@ -255,7 +258,7 @@ const level_terrain = {
         {
             id: 'slope_weapon',
             x: 350,
-            y: 'terrain', // Special value - will be positioned on terrain
+            y: 'ground-30', // Position on terrain surface
             triggerX: 340,
             itemType: 'pickup',
             subtype: 'weapon',
@@ -268,7 +271,7 @@ const level_terrain = {
         {
             id: 'valley_medication',
             x: 1250,
-            y: 'terrain',
+            y: 'ground-30',
             triggerX: 1240,
             itemType: 'pickup',
             subtype: 'medication',
@@ -281,7 +284,7 @@ const level_terrain = {
         {
             id: 'hill_weapon',
             x: 1650,
-            y: 'terrain',
+            y: 'ground-30',
             triggerX: 1640,
             itemType: 'pickup',
             subtype: 'weapon',

@@ -177,9 +177,13 @@ import {
                     if (mouseX >= btnX && mouseX <= btnX + buttonWidth && mouseY >= btnY && mouseY <= btnY + buttonHeight) {
                         selectedLevel = i;
                         // Check if persistence system has saved data (indicates level change)
-                        const hasSavedState = playerPersistence.getState().lives !== 3 || 
-                                            playerPersistence.getState().currentWeapon !== 1 ||
-                                            playerPersistence.getState().armors.length > 1;
+                        const state = playerPersistence.getState();
+                        const hasSavedState = state.lives !== 3 || 
+                                            state.currentWeapon !== 1 ||
+                                            state.armors.length > 1 ||
+                                            state.armors[0] !== 0 ||
+                                            state.shieldArmor ||
+                                            state.chargeArmor;
                         startGame(hasSavedState);
                         break;
                     }
@@ -259,10 +263,12 @@ import {
                             } else if (targetChest.contains === 'shield_armor') {
                                 // Grant Shield Armor directly (no pickup needed)
                                 player.shieldArmor = true;
+                                playerPersistence.saveState(player, player.currentWeapon);
                                 console.log('Shield Armor equipped! You can now absorb one hit of damage.');
                             } else if (targetChest.contains === 'charge_armor') {
                                 // Grant Charge Armor directly (no pickup needed)
                                 player.chargeArmor = true;
+                                playerPersistence.saveState(player, player.currentWeapon);
                                 console.log('Charge Armor equipped! Hold spacebar to charge up special weapon abilities.');
                             }
                         }
@@ -1860,6 +1866,9 @@ import {
 
             if (armorPickup) {
                 if (player.checkArmorPickupCollision(armorPickup)) {
+                    // Save player state immediately after armor acquisition
+                    playerPersistence.saveState(player, player.currentWeapon);
+                    
                     armorPickup = null;
                     setTimeout(() => {
                         alert('Level Complete! New Armor Acquired!');

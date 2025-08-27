@@ -9,6 +9,8 @@ export class PlayerPersistence {
             currentWeapon: 1,
             armors: [0],
             currentArmorIndex: 0,
+            shieldArmor: false,
+            chargeArmor: false,
             // Optional: could add more progression elements like score, unlocks, etc.
             totalScore: 0,
             levelsCompleted: []
@@ -23,6 +25,8 @@ export class PlayerPersistence {
         this.persistentState.currentWeapon = currentWeapon;
         this.persistentState.armors = [...player.armors]; // Deep copy
         this.persistentState.currentArmorIndex = player.currentArmorIndex;
+        this.persistentState.shieldArmor = player.shieldArmor;
+        this.persistentState.chargeArmor = player.chargeArmor;
     }
 
     /**
@@ -33,8 +37,17 @@ export class PlayerPersistence {
         player.currentWeapon = this.persistentState.currentWeapon;
         player.armors = [...this.persistentState.armors]; // Deep copy
         player.currentArmorIndex = this.persistentState.currentArmorIndex;
+        player.shieldArmor = this.persistentState.shieldArmor;
+        player.chargeArmor = this.persistentState.chargeArmor;
         
         return this.persistentState.currentWeapon;
+    }
+
+    /**
+     * Get current persistent state (for checking saved data)
+     */
+    getState() {
+        return this.persistentState;
     }
 
     /**
@@ -46,6 +59,8 @@ export class PlayerPersistence {
             currentWeapon: 1,
             armors: [0],
             currentArmorIndex: 0,
+            shieldArmor: false,
+            chargeArmor: false,
             totalScore: 0,
             levelsCompleted: []
         };
