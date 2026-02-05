@@ -75,45 +75,96 @@ export class GameRenderer {
     /**
      * Render the pause menu overlay
      */
-    renderPauseMenu() {
+    renderPauseMenu(selectedOption = 0) {
         // Semi-transparent overlay
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        const panelWidth = Math.min(400, this.canvas.width * 0.8);
-        const panelHeight = 200;
+
+        const panelWidth = Math.min(450, this.canvas.width * 0.85);
+        const panelHeight = 320;
         const panelX = (this.canvas.width - panelWidth) / 2;
         const panelY = (this.canvas.height - panelHeight) / 2;
-        
-        // Panel background
-        this.ctx.fillStyle = '#fff';
-        this.ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-        
+
+        // Panel background with rounded corners
+        this.ctx.fillStyle = 'rgba(40, 40, 50, 0.95)';
+        this.roundRect(panelX, panelY, panelWidth, panelHeight, 15);
+        this.ctx.fill();
+
+        // Panel border
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+
         // Title
-        this.ctx.fillStyle = '#000';
+        this.ctx.fillStyle = '#fff';
         this.ctx.font = 'bold 36px Arial';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('PAUSED', this.canvas.width / 2, panelY + 40);
-        
-        // Buttons
+        this.ctx.fillText('PAUSED', this.canvas.width / 2, panelY + 50);
+
+        // Menu options
+        const options = [
+            { text: 'Resume', key: 'ENTER', color: '#4CAF50' },
+            { text: 'Restart Level', key: 'R', color: '#FF9800' },
+            { text: 'Level Select', key: 'ESC', color: '#2196F3' }
+        ];
+
         const buttonWidth = panelWidth - 60;
         const buttonHeight = 50;
-        const resumeX = panelX + 30;
-        const resumeY = panelY + 60;
-        
-        // Resume button
-        this.ctx.fillStyle = '#4CAF50';
-        this.ctx.fillRect(resumeX, resumeY, buttonWidth, buttonHeight);
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = '24px Arial';
-        this.ctx.fillText('Resume', this.canvas.width / 2, resumeY + buttonHeight / 2 + 8);
-        
-        // Level select button
-        const selectY = resumeY + buttonHeight + 20;
-        this.ctx.fillStyle = '#f44336';
-        this.ctx.fillRect(resumeX, selectY, buttonWidth, buttonHeight);
-        this.ctx.fillStyle = '#fff';
-        this.ctx.fillText('Level Select', this.canvas.width / 2, selectY + buttonHeight / 2 + 8);
+        const startY = panelY + 80;
+        const spacing = 65;
+
+        for (let i = 0; i < options.length; i++) {
+            const opt = options[i];
+            const y = startY + i * spacing;
+            const isSelected = i === selectedOption;
+
+            // Button background
+            this.ctx.fillStyle = isSelected ? opt.color : 'rgba(60, 60, 70, 0.8)';
+            this.roundRect(panelX + 30, y, buttonWidth, buttonHeight, 8);
+            this.ctx.fill();
+
+            // Selection indicator
+            if (isSelected) {
+                this.ctx.strokeStyle = '#fff';
+                this.ctx.lineWidth = 3;
+                this.ctx.stroke();
+            }
+
+            // Button text
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = 'bold 22px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(opt.text, this.canvas.width / 2 - 30, y + buttonHeight / 2 + 7);
+
+            // Keyboard shortcut hint
+            this.ctx.fillStyle = isSelected ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.5)';
+            this.ctx.font = '14px Arial';
+            this.ctx.textAlign = 'right';
+            this.ctx.fillText(`[${opt.key}]`, panelX + panelWidth - 45, y + buttonHeight / 2 + 5);
+        }
+
+        // Help text at bottom
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        this.ctx.font = '14px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('Use UP/DOWN to navigate, ENTER to select', this.canvas.width / 2, panelY + panelHeight - 20);
+    }
+
+    /**
+     * Helper method for rounded rectangles
+     */
+    roundRect(x, y, width, height, radius) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + radius, y);
+        this.ctx.lineTo(x + width - radius, y);
+        this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        this.ctx.lineTo(x + width, y + height - radius);
+        this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        this.ctx.lineTo(x + radius, y + height);
+        this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.ctx.lineTo(x, y + radius);
+        this.ctx.quadraticCurveTo(x, y, x + radius, y);
+        this.ctx.closePath();
     }
     
     /**

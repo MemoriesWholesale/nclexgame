@@ -8,6 +8,8 @@ import { PlayerPersistence } from './systems/PlayerPersistence.js';
 import { ArmorSystem } from './systems/ArmorSystem.js';
 import { StackableArmorSystem } from './systems/StackableArmorSystem.js';
 import { TerrainSystem } from './systems/TerrainSystem.js';
+import { VisualEffects } from './systems/VisualEffects.js';
+import { EnhancedHUD } from './systems/EnhancedHUD.js';
 import {
     MIN_SPAWN_DISTANCE,
     LEVEL_DATA,
@@ -100,7 +102,16 @@ import {
         
         // Create terrain system
         const terrainSystem = new TerrainSystem();
-        
+
+        // Create visual effects system for screen shake, particles, damage numbers
+        const visualEffects = new VisualEffects(canvas, ctx);
+
+        // Create enhanced HUD for boss health bars, combos, better UI
+        const enhancedHUD = new EnhancedHUD(canvas, ctx);
+
+        // Pause menu state
+        let pauseMenuSelection = 0;
+
         let itemSpawner;
         try {
             itemSpawner = new ItemSpawner();
@@ -170,8 +181,35 @@ import {
 
         document.addEventListener('keydown', (e) => {
             keys[e.key] = true;
-            if (e.key === 'Enter' && gameState === 'playing') gameState = 'paused';
-            else if (e.key === 'Enter' && gameState === 'paused') gameState = 'playing';
+
+            // Pause/Resume toggle
+            if (e.key === 'Enter' && gameState === 'playing') {
+                gameState = 'paused';
+                pauseMenuSelection = 0;
+            } else if (e.key === 'Enter' && gameState === 'paused') {
+                // Execute selected pause menu option
+                executePauseMenuOption(pauseMenuSelection);
+            }
+
+            // Pause menu navigation
+            if (gameState === 'paused') {
+                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                    pauseMenuSelection = (pauseMenuSelection - 1 + 3) % 3;
+                } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                    pauseMenuSelection = (pauseMenuSelection + 1) % 3;
+                } else if (e.key === 'r' || e.key === 'R') {
+                    // Quick restart
+                    restartCurrentLevel();
+                } else if (e.key === 'Escape') {
+                    // Quick level select
+                    returnToLevelSelect();
+                }
+            }
+
+            // Quick restart during gameplay
+            if ((e.key === 'r' || e.key === 'R') && gameState === 'playing' && e.ctrlKey) {
+                restartCurrentLevel();
+            }
 
             if ((e.key === 'q' || e.key === 'Q') && gameState === 'playing' && !player.dead) {
                 player.switchArmor();
@@ -250,30 +288,24 @@ import {
                     }
                 }
             } else if (gameState === 'paused') {
-                const panelWidth = Math.min(400, canvas.width * 0.8);
-                const panelHeight = 200;
+                // Updated pause menu click handling for new 3-option menu
+                const panelWidth = Math.min(450, canvas.width * 0.85);
+                const panelHeight = 320;
                 const panelX = (canvas.width - panelWidth) / 2;
                 const panelY = (canvas.height - panelHeight) / 2;
                 const buttonWidth = panelWidth - 60;
                 const buttonHeight = 50;
-                const resumeX = panelX + 30;
-                const resumeY = panelY + 60;
-                const selectX = resumeX;
-                const selectY = resumeY + buttonHeight + 20;
+                const startY = panelY + 80;
+                const spacing = 65;
 
-                if (mouseX >= resumeX && mouseX <= resumeX + buttonWidth && mouseY >= resumeY && mouseY <= resumeY + buttonHeight) gameState = 'playing';
-                if (mouseX >= selectX && mouseX <= selectX + buttonWidth && mouseY >= selectY && mouseY <= selectY + buttonHeight) {
-                    // Save current player state before returning to level select
-                    playerPersistence.saveState(player, player.currentWeapon);
-                    
-                    // Clear all level content when returning to level select menu
-                    levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
-                    enemyManager.clear();
-                    itemSpawner.reset();
-                    boss = null;
-                    armorPickup = null;
-                    gameState = 'menu';
-                    selectedLevel = -1;
+                // Check each button
+                for (let i = 0; i < 3; i++) {
+                    const btnY = startY + i * spacing;
+                    if (mouseX >= panelX + 30 && mouseX <= panelX + 30 + buttonWidth &&
+                        mouseY >= btnY && mouseY <= btnY + buttonHeight) {
+                        executePauseMenuOption(i);
+                        break;
+                    }
                 }
             } else if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
                 const currentQuestion = quiz.getCurrentQuestion();
@@ -370,10 +402,76 @@ import {
             }
         });
 
+        // Helper function to execute pause menu option
+        function executePauseMenuOption(selection) {
+            switch (selection) {
+                case 0: // Resume
+                    gameState = 'playing';
+                    break;
+                case 1: // Restart Level
+                    restartCurrentLevel();
+                    break;
+                case 2: // Level Select
+                    returnToLevelSelect();
+                    break;
+            }
+        }
+
+        // Helper function to restart current level
+        function restartCurrentLevel() {
+            if (selectedLevel === -1) return;
+
+            // Save persistent state (but reset lives for restart)
+            const tempLives = 3;
+            playerPersistence.saveState(player, player.currentWeapon);
+
+            // Clear and restart
+            levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+            enemyManager.clear();
+            itemSpawner.reset();
+            boss = null;
+            armorPickup = null;
+            visualEffects.clear();
+            enhancedHUD.reset();
+
+            // Reset player with fresh lives
+            const groundY = canvas.height - 100;
+            player.reset(groundY, false);
+            player.lives = tempLives;
+
+            worldX = 0;
+            gameState = 'playing';
+            pauseMenuSelection = 0;
+
+            // Reload level
+            startGame(false);
+            enhancedHUD.showNotification('Level Restarted', '#ffff00', 90);
+        }
+
+        // Helper function to return to level select
+        function returnToLevelSelect() {
+            // Save current player state before returning to level select
+            playerPersistence.saveState(player, player.currentWeapon);
+
+            // Clear all level content when returning to level select menu
+            levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
+            enemyManager.clear();
+            itemSpawner.reset();
+            boss = null;
+            armorPickup = null;
+            visualEffects.clear();
+            enhancedHUD.reset();
+            gameState = 'menu';
+            selectedLevel = -1;
+            pauseMenuSelection = 0;
+        }
+
         async function startGame(isLevelChange = false) {
             // **FIX**: Clear all level content arrays right at the start.
             levelManager.clearLevelContent(platforms, npcs, chests, hazards, pits, powerups, medications, interactionZones, hiddenPlatforms, projectiles, pickups);
             itemSpawner.reset();
+            visualEffects.clear();
+            enhancedHUD.reset();
 
             gameState = 'playing';
             const groundY = canvas.height - 100;
@@ -781,21 +879,37 @@ import {
         // Function to handle damage with shield armor protection
         function takeDamage(damageAmount = 1, damageSource = 'unknown') {
             if (player.invincible) return false; // No damage during invincibility
-            
+
             if (player.shieldArmor) {
                 // Shield armor absorbs the hit
                 player.shieldArmor = false;
                 player.invincible = true;
                 setTimeout(() => { player.invincible = false; }, 1000); // Brief invincibility after shield break
+
+                // Visual feedback for shield break
+                visualEffects.screenShake(5, 8);
+                visualEffects.screenFlash('#4488ff', 10, 0.3);
+                visualEffects.spawnParticles(player.x + player.width / 2, player.y + player.height / 2, {
+                    count: 15, color: '#4488ff', speed: 5, size: 6, lifetime: 30
+                });
+                enhancedHUD.showNotification('Shield Broken!', '#4488ff', 60);
+                enhancedHUD.resetCombo();
+
                 return true; // Damage was absorbed
             } else {
                 // Take normal damage
                 player.lives -= damageAmount;
                 player.invincible = true;
                 setTimeout(() => { player.invincible = false; }, 2000);
-                
+
+                // Visual feedback for damage taken
+                visualEffects.playerHitEffect(player.x + player.width / 2, player.y + player.height / 2);
+                player.animation.triggerHitFlash();
+                enhancedHUD.resetCombo();
+
                 if (player.lives <= 0) {
                     player.die();
+                    visualEffects.screenFlash('#ff0000', 30, 0.5);
                 }
                 return false; // Damage was taken
             }
@@ -1949,6 +2063,24 @@ import {
                     
                     if (hitBoss) {
                         boss.takeDamage(1);
+
+                        // Visual effects for boss hit
+                        const bossScreenX = boss.x + worldX;
+                        visualEffects.bossHitEffect(
+                            bossScreenX + boss.width / 2,
+                            boss.y + boss.height / 2,
+                            1
+                        );
+                        enhancedHUD.addCombo(1);
+                        enhancedHUD.addScore(100, bossScreenX + boss.width / 2, boss.y);
+
+                        // Extra effects if boss is defeated
+                        if (boss.hp <= 0) {
+                            visualEffects.spawnExplosion(bossScreenX + boss.width / 2, boss.y + boss.height / 2, '#ff4400');
+                            enhancedHUD.addScore(1000, bossScreenX + boss.width / 2, boss.y - 50);
+                            enhancedHUD.showNotification('BOSS DEFEATED!', '#ffff00', 180, 36);
+                        }
+
                         if (proj.type !== 3 && proj.type !== 7) {
                             projectiles.splice(i, 1);
                             continue;
@@ -1960,15 +2092,31 @@ import {
             const hitResults = enemyManager.checkProjectileCollisions(projectiles, worldX);
             hitResults.sort((a, b) => b.projectileIndex - a.projectileIndex);
             for (const result of hitResults) {
+                // Visual effects for enemy hit
+                if (result.hit) {
+                    const hitX = result.destroyedEnemy ? result.destroyedEnemy.x : result.hitX || 0;
+                    const hitY = result.destroyedEnemy ? result.destroyedEnemy.y : result.hitY || 0;
+                    visualEffects.enemyHitEffect(hitX + worldX, hitY - 20, 1);
+                    enhancedHUD.addCombo(1);
+                    enhancedHUD.addScore(50, hitX + worldX, hitY - 30);
+                }
+
                 // Handle enemy drops
                 if (result.destroyedEnemy) {
+                    // Extra effects for enemy death
+                    visualEffects.spawnParticles(
+                        result.destroyedEnemy.x + worldX,
+                        result.destroyedEnemy.y - result.destroyedEnemy.height / 2,
+                        { count: 12, color: '#ff6600', speed: 4, size: 5, lifetime: 25 }
+                    );
+
                     try {
                         const droppedItem = itemSpawner.handleEnemyDeath(
-                            result.destroyedEnemy, 
-                            worldX, 
+                            result.destroyedEnemy,
+                            worldX,
                             result.enemyType
                         );
-                        
+
                         if (droppedItem) {
                             pickups.push(droppedItem);
                         }
@@ -2082,11 +2230,19 @@ import {
                 const powerupType = player.checkPowerupCollision(powerup, screenX);
                 if (powerupType) {
                     powerups.splice(i, 1);
+                    visualEffects.pickupEffect(screenX, powerup.y, 'powerup');
                 }
             }
+
+            // Update visual effects and HUD systems
+            visualEffects.update(deltaTime);
+            enhancedHUD.update(deltaTime);
         }
 
         function draw() {
+            // Apply screen shake before drawing
+            visualEffects.applyShake();
+
             ctx.fillStyle = (selectedLevel >= 0 && LEVEL_DATA[selectedLevel]) ? LEVEL_DATA[selectedLevel].color : '#333';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -2614,18 +2770,9 @@ import {
                     
                     // Render boss with sprite (convert world coordinates to screen coordinates)
                     boss.render(ctx, worldX);
-                    
-                    // Render boss health bar
-                    const barWidth = 300, barHeight = 20, barX = (canvas.width - barWidth) / 2, barY = 50;
-                    ctx.fillStyle = '#333'; ctx.fillRect(barX, barY, barWidth, barHeight);
-                    ctx.fillStyle = '#ff0000'; ctx.fillRect(barX, barY, barWidth * (boss.hp / boss.maxHp), barHeight);
-                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(barX, barY, barWidth, barHeight);
-                    
-                    // Boss name display
-                    ctx.fillStyle = '#fff';
-                    ctx.font = 'bold 18px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(boss.name, canvas.width / 2, barY - 10);
+
+                    // Render enhanced boss health bar
+                    enhancedHUD.renderBossHealthBar(boss, { name: boss.name, maxHp: boss.maxHp });
                 }
 
                 for (const pickup of pickups) {
@@ -2945,6 +3092,19 @@ import {
                 ctx.fillText(`Armor: ${armorDisplay}`, 20, 35);
                 ctx.fillText(`Weapon: ${enhancedWeaponName}`, 20, 60);
                 ctx.fillText(`Lives: ${player.lives}`, 20, 85);
+
+                // Weapon cooldown bar
+                const cooldownBarX = 130;
+                const cooldownBarY = 52;
+                const cooldownBarWidth = 80;
+                const cooldownBarHeight = 6;
+                const currentCooldown = FIRE_COOLDOWNS[player.currentWeapon - 1];
+                const cooldownProgress = Math.max(0, 1 - fireTimer / currentCooldown);
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.fillRect(cooldownBarX, cooldownBarY, cooldownBarWidth, cooldownBarHeight);
+                ctx.fillStyle = cooldownProgress >= 1 ? '#00ff00' : WEAPON_COLORS[player.currentWeapon - 1];
+                ctx.fillRect(cooldownBarX, cooldownBarY, cooldownBarWidth * cooldownProgress, cooldownBarHeight);
                 
                 // Show enhancement details
                 ctx.font = '14px Arial';
@@ -2984,6 +3144,28 @@ import {
                     ctx.fillText(`Angle: ${terrainInfo.angle.toFixed(1)}°`, 20, canvas.height - 65);
                     ctx.fillText(`Slope: ${terrainInfo.slope.toFixed(2)}`, 20, canvas.height - 50);
                     ctx.fillText(`Height: ${terrainInfo.height.toFixed(0)}`, 20, canvas.height - 35);
+                }
+
+                // Render visual effects (particles, damage numbers, hit markers)
+                visualEffects.render();
+
+                // Render combo counter and score
+                enhancedHUD.renderComboCounter();
+                enhancedHUD.renderScore();
+                enhancedHUD.renderNotifications();
+
+                // Render screen overlay effects (flash, tint)
+                visualEffects.renderOverlay();
+
+                // Restore screen shake offset
+                visualEffects.restoreShake();
+
+                // Low health warning indicator
+                if (player.lives === 1 && !player.dead) {
+                    const pulse = Math.abs(Math.sin(Date.now() * 0.005));
+                    ctx.strokeStyle = `rgba(255, 0, 0, ${pulse * 0.5})`;
+                    ctx.lineWidth = 8;
+                    ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
                 }
 
                 if (player.dead) {
@@ -3086,22 +3268,8 @@ import {
                 }
 
                 if (gameState === 'paused') {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    const panelWidth = Math.min(400, canvas.width * 0.8), panelHeight = 200;
-                    const panelX = (canvas.width - panelWidth) / 2, panelY = (canvas.height - panelHeight) / 2;
-                    ctx.fillStyle = '#fff'; ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-                    ctx.fillStyle = '#000'; ctx.font = 'bold 36px Arial'; ctx.textAlign = 'center';
-                    ctx.fillText('PAUSED', canvas.width / 2, panelY + 40);
-                    const buttonWidth = panelWidth - 60, buttonHeight = 50;
-                    const resumeX = panelX + 30, resumeY = panelY + 60;
-                    ctx.fillStyle = '#4CAF50'; ctx.fillRect(resumeX, resumeY, buttonWidth, buttonHeight);
-                    ctx.fillStyle = '#fff'; ctx.font = '24px Arial';
-                    ctx.fillText('Resume', canvas.width / 2, resumeY + buttonHeight / 2 + 8);
-                    const selectX = resumeX, selectY = resumeY + buttonHeight + 20;
-                    ctx.fillStyle = '#f44336'; ctx.fillRect(selectX, selectY, buttonWidth, buttonHeight);
-                    ctx.fillStyle = '#fff';
-                    ctx.fillText('Level Select', canvas.width / 2, selectY + buttonHeight / 2 + 8);
+                    // Use improved pause menu with keyboard navigation
+                    renderImprovedPauseMenu(pauseMenuSelection);
                 }
 
                 if (gameState === 'quiz' && quiz.getCurrentQuestion()) {
@@ -3111,6 +3279,97 @@ import {
         }
 
         
+
+        // Helper function for rounded rectangles (cross-browser compatible)
+        function drawRoundRect(x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        // Improved pause menu with keyboard navigation
+        function renderImprovedPauseMenu(selectedOption) {
+            // Semi-transparent overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const panelWidth = Math.min(450, canvas.width * 0.85);
+            const panelHeight = 320;
+            const panelX = (canvas.width - panelWidth) / 2;
+            const panelY = (canvas.height - panelHeight) / 2;
+
+            // Panel background with rounded corners
+            ctx.fillStyle = 'rgba(40, 40, 50, 0.95)';
+            drawRoundRect(panelX, panelY, panelWidth, panelHeight, 15);
+            ctx.fill();
+
+            // Panel border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Title
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 36px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('PAUSED', canvas.width / 2, panelY + 50);
+
+            // Menu options
+            const options = [
+                { text: 'Resume', key: 'ENTER', color: '#4CAF50' },
+                { text: 'Restart Level', key: 'R', color: '#FF9800' },
+                { text: 'Level Select', key: 'ESC', color: '#2196F3' }
+            ];
+
+            const buttonWidth = panelWidth - 60;
+            const buttonHeight = 50;
+            const startY = panelY + 80;
+            const spacing = 65;
+
+            for (let i = 0; i < options.length; i++) {
+                const opt = options[i];
+                const y = startY + i * spacing;
+                const isSelected = i === selectedOption;
+
+                // Button background
+                ctx.fillStyle = isSelected ? opt.color : 'rgba(60, 60, 70, 0.8)';
+                drawRoundRect(panelX + 30, y, buttonWidth, buttonHeight, 8);
+                ctx.fill();
+
+                // Selection indicator
+                if (isSelected) {
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                }
+
+                // Button text
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 22px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(opt.text, canvas.width / 2 - 30, y + buttonHeight / 2 + 7);
+
+                // Keyboard shortcut hint
+                ctx.fillStyle = isSelected ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.5)';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`[${opt.key}]`, panelX + panelWidth - 45, y + buttonHeight / 2 + 5);
+            }
+
+            // Help text at bottom
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Use UP/DOWN to navigate, ENTER to select', canvas.width / 2, panelY + panelHeight - 20);
+        }
 
         // Debugging function to draw spatial axes
         function drawSpatialAxes() {

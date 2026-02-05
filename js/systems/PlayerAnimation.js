@@ -1,5 +1,6 @@
 /**
  * PlayerAnimation - Handles player sprite animations and rendering
+ * Includes invincibility flashing and hit feedback effects
  */
 export class PlayerAnimation {
     constructor(player) {
@@ -8,6 +9,33 @@ export class PlayerAnimation {
         this.currentFrame = 0;
         this.animationTimer = 0;
         this.ANIMATION_SPEED = 12; // Frames per animation frame (slower = better performance)
+
+        // Invincibility flash effect
+        this.invincibilityFlashTimer = 0;
+        this.invincibilityFlashRate = 4; // Toggle visibility every N frames
+
+        // Hit flash effect (brief white flash on damage)
+        this.hitFlashTimer = 0;
+        this.hitFlashDuration = 8;
+
+        // Landing squash/stretch
+        this.squashAmount = 0;
+        this.squashDecay = 0.15;
+    }
+
+    /**
+     * Trigger hit flash effect
+     */
+    triggerHitFlash() {
+        this.hitFlashTimer = this.hitFlashDuration;
+    }
+
+    /**
+     * Trigger landing squash effect
+     */
+    triggerLandingSquash(impactVelocity) {
+        // Squash amount based on fall speed (capped)
+        this.squashAmount = Math.min(0.3, Math.abs(impactVelocity) * 0.015);
     }
     
     /**
@@ -24,13 +52,46 @@ export class PlayerAnimation {
      */
     render(ctx, playerSprite, spriteLoaded, spriteAnimations, armorData, overrideX = null) {
         if (this.player.dead) return;
-        
+
+        // Handle invincibility flash - don't render every few frames
+        if (this.player.invincible) {
+            this.invincibilityFlashTimer++;
+            if (Math.floor(this.invincibilityFlashTimer / this.invincibilityFlashRate) % 2 === 0) {
+                // Skip rendering on alternating intervals for flash effect
+                return;
+            }
+        } else {
+            this.invincibilityFlashTimer = 0;
+        }
+
         const drawX = overrideX !== null ? overrideX : this.player.x;
-        
+
+        // Apply hit flash effect (white tint)
+        if (this.hitFlashTimer > 0) {
+            this.hitFlashTimer--;
+            ctx.save();
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        // Update squash effect
+        if (this.squashAmount > 0) {
+            this.squashAmount *= (1 - this.squashDecay);
+            if (this.squashAmount < 0.01) this.squashAmount = 0;
+        }
+
         if (spriteLoaded) {
             this.renderSprite(ctx, playerSprite, spriteAnimations, drawX);
         } else {
             this.renderFallback(ctx, armorData, drawX);
+        }
+
+        // Draw hit flash overlay
+        if (this.hitFlashTimer > 0) {
+            ctx.restore();
+            // Draw white overlay on player
+            const flashAlpha = this.hitFlashTimer / this.hitFlashDuration * 0.6;
+            ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+            ctx.fillRect(drawX, this.player.y, this.player.width, this.player.height);
         }
     }
     
@@ -202,5 +263,8 @@ export class PlayerAnimation {
         this.animationTimer = 0;
         this.player.isShooting = false;
         this.player.shootTimer = 0;
+        this.invincibilityFlashTimer = 0;
+        this.hitFlashTimer = 0;
+        this.squashAmount = 0;
     }
 }
